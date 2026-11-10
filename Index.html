@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mis gastos</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Rajdhani:wght@500;600;700&display=swap">
+<style>
+:root{
+  --bg:#070B1A;--glass:rgba(20,30,64,.72);--line:rgba(120,170,255,.24);
+  --ink:#E8F1FF;--mute:#8FA3CC;--cy:#27E6F5;--mg:#E94BFF;--ok:#3DF5A0;--bad:#FF6B7A;
+  color-scheme:dark;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:"Rajdhani",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-weight:600;font-size:17px;line-height:1.3;
+  background:radial-gradient(ellipse at 50% -10%,#16295A 0%,var(--bg) 62%) fixed}
+main{max-width:480px;margin:0 auto;padding:18px 16px 150px}
+h1{font-family:"Orbitron",system-ui,sans-serif;font-size:20px;font-weight:800;letter-spacing:.04em;margin:2px 0 16px;text-align:center;color:var(--cy);text-shadow:0 0 14px rgba(39,230,245,.55)}
+.card{background:var(--glass);border:1px solid var(--line);border-radius:22px;padding:16px;margin-bottom:14px;box-shadow:0 0 24px rgba(39,230,245,.08),inset 0 1px 0 rgba(255,255,255,.05);backdrop-filter:blur(6px)}
+.lbl{color:var(--mute);font-size:15px}
+.big{font-family:"Orbitron",system-ui,sans-serif;font-weight:800;font-size:34px;margin-top:2px;text-shadow:0 0 18px rgba(39,230,245,.5);word-break:break-word}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.two .card{margin:0;padding:14px}
+.mid{font-family:"Orbitron",system-ui,sans-serif;font-weight:600;font-size:17px;margin:2px 0 4px}
+.in .mid{color:var(--cy)}.out .mid{color:var(--mg)}
+svg{display:block;width:100%;height:auto}
+h2{font-size:18px;font-weight:700;margin:0 0 8px;color:var(--mute)}
+ul{list-style:none;margin:0;padding:0}
+li{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+li:first-child{border-top:0}
+.ico{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:21px;background:rgba(39,230,245,.08);border:1px solid var(--line);flex:none}
+.nm{flex:1;min-width:0}.nm span{display:block;color:var(--mute);font-size:14px}
+.amt{font-weight:700}.amt.out{color:var(--bad)}.amt.in{color:var(--ok)}
+.del{border:0;background:none;color:var(--mute);font-size:18px;cursor:pointer;padding:6px}
+.empty{color:var(--mute);text-align:center;padding:10px 0}
+.ghost{width:100%;margin-top:12px;border:1px solid var(--cy);border-radius:999px;padding:11px;font:inherit;font-weight:700;background:transparent;color:var(--cy);cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--mg);outline-offset:2px}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:26px 16px calc(14px + env(safe-area-inset-bottom,0px));text-align:center;background:linear-gradient(to top,rgba(7,11,26,.96) 55%,rgba(7,11,26,0));pointer-events:none}
+.fab{pointer-events:auto;width:76px;height:76px;border-radius:50%;border:0;cursor:pointer;color:var(--cy);font-size:42px;line-height:1;font-weight:500;
+  background:radial-gradient(circle,#0B1738 55%,#14224D);box-shadow:0 0 0 3px #0B1738,0 0 0 5px var(--cy),0 0 26px 6px rgba(39,230,245,.55),0 0 40px 10px rgba(233,75,255,.25);animation:pulse 3s ease-in-out infinite}
+.fab:active{transform:scale(.95)}
+.bar p{margin:8px 0 0;color:var(--cy);font-weight:700}
+@keyframes pulse{50%{box-shadow:0 0 0 3px #0B1738,0 0 0 5px var(--cy),0 0 34px 10px rgba(39,230,245,.7),0 0 52px 14px rgba(233,75,255,.35)}}
+@media (prefers-reduced-motion:reduce){.fab{animation:none}}
+.sheet{position:fixed;inset:0;display:none;align-items:flex-end;background:rgba(3,6,16,.7);z-index:5}
+.sheet.open{display:flex}
+.panel{width:100%;max-width:480px;margin:0 auto;background:#0E1838;border:1px solid var(--line);border-bottom:0;border-radius:26px 26px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 40px rgba(39,230,245,.15)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
+.seg button{border:1px solid var(--line);border-radius:999px;padding:11px;font:inherit;font-weight:700;background:transparent;color:var(--mute);cursor:pointer}
+.seg button.on[data-t="out"]{background:var(--mg);color:#1A0620;border-color:var(--mg)}
+.seg button.on[data-t="in"]{background:var(--cy);color:#04222A;border-color:var(--cy)}
+label{display:block;color:var(--mute);margin:12px 0 4px}
+input,select{width:100%;border:1px solid var(--line);border-radius:16px;padding:12px 14px;font:inherit;font-size:20px;background:#0A122B;color:var(--ink)}
+.save{width:100%;margin-top:16px;border:0;border-radius:999px;padding:14px;font:inherit;font-size:19px;font-weight:700;background:linear-gradient(90deg,var(--cy),var(--mg));color:#07102A;cursor:pointer}
+.cancel{width:100%;margin-top:8px;border:0;background:none;color:var(--mute);font:inherit;padding:8px;cursor:pointer}
+</style>
+</head>
+<body>
+<main>
+  <h1>MIS GASTOS</h1>
+
+  <section class="card">
+    <div class="lbl" id="mes">Saldo del mes</div>
+    <div class="big" id="tbal">0 €</div>
+  </section>
+
+  <div class="two">
+    <section class="card in"><div class="lbl">Ingresos</div><div class="mid" id="tin">0 €</div><div id="spIn"></div></section>
+    <section class="card out"><div class="lbl">Gastos</div><div class="mid" id="tout">0 €</div><div id="spOut"></div></section>
+  </div>
+
+  <section class="card"><h2>Evolución del mes</h2><div id="chart"></div></section>
+
+  <section class="card">
+    <h2>Actividad reciente</h2>
+    <ul id="list"></ul>
+    <button type="button" class="ghost" id="share">Resumen para WhatsApp</button>
+    <textarea id="box" rows="7" readonly style="display:none;width:100%;margin-top:10px;border:1px solid var(--line);border-radius:16px;padding:12px;font:inherit;background:#0A122B;color:var(--ink)"></textarea>
+    <button type="button" class="ghost" id="copy" style="display:none">Copiar resumen</button>
+  </section>
+</main>
+
+<div class="bar"><button type="button" class="fab" id="fab" aria-label="Añadir movimiento">+</button><p>Añadir movimiento</p></div>
+
+<div class="sheet" id="sheet">
+  <div class="panel">
+    <div class="seg"><button type="button" data-t="out" class="on">Gasto</button><button type="button" data-t="in">Ingreso</button></div>
+    <label for="amount">Importe (€)</label>
+    <input id="amount" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0,00">
+    <label for="cat">Categoría</label>
+    <select id="cat"></select>
+    <button type="button" class="save" id="save">Guardar</button>
+    <button type="button" class="cancel" id="cancel">Cancelar</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var CATS={
+    out:[["🏠","Vivienda"],["🛒","Alimentación"],["⛽","Transporte"],["📱","Gastos mensuales fijos"],["🎉","Ocio"],["💊","Salud"],["📦","Otros"]],
+    in:[["💼","Nómina"],["💶","Otros ingresos"]]
+  };
+  var KEY="gastos-v1",mem=[],tipo="out";
+  var fmt=new Intl.NumberFormat("es-ES",{style:"currency",currency:"EUR"});
+  var $=function(id){return document.getElementById(id)};
+  function load(){try{var r=localStorage.getItem(KEY);return r?JSON.parse(r):mem}catch(e){return mem}}
+  function store(d){mem=d;try{localStorage.setItem(KEY,JSON.stringify(d))}catch(e){}}
+
+  function fillCats(){$("cat").innerHTML=CATS[tipo].map(function(c){return '<option value="'+c[1]+'">'+c[0]+" "+c[1]+"</option>"}).join("")}
+  function icon(n){var a=CATS.out.concat(CATS.in);for(var i=0;i<a.length;i++){if(a[i][1]===n)return a[i][0]}return "💶"}
+  function setTipo(t){
+    tipo=t;
+    var b=document.querySelectorAll(".seg button");
+    for(var i=0;i<b.length;i++){b[i].className=b[i].getAttribute("data-t")===t?"on":""}
+    fillCats();
+  }
+  function monthItems(d){var n=new Date();return d.filter(function(x){var f=new Date(x.f);return f.getMonth()===n.getMonth()&&f.getFullYear()===n.getFullYear()})}
+  function sums(d){var i=0,o=0;monthItems(d).forEach(function(x){if(x.t==="in")i+=x.a;else o+=x.a});return{i:i,o:o}}
+
+  function pts(arr,w,h,max,px,py,slots){
+    return arr.map(function(v,i){return [px+(w-2*px)*i/((slots||arr.length)-1||1),h-py-(h-2*py)*v/max]});
+  }
+  function smooth(p){
+    var d="M"+p[0][0].toFixed(1)+" "+p[0][1].toFixed(1);
+    for(var i=1;i<p.length;i++){var mx=(p[i-1][0]+p[i][0])/2;
+      d+=" C"+mx.toFixed(1)+" "+p[i-1][1].toFixed(1)+" "+mx.toFixed(1)+" "+p[i][1].toFixed(1)+" "+p[i][0].toFixed(1)+" "+p[i][1].toFixed(1)}
+    return d;
+  }
+  function area(p,h,py){return smooth(p)+" L"+p[p.length-1][0].toFixed(1)+" "+(h-py)+" L"+p[0][0].toFixed(1)+" "+(h-py)+" Z"}
+  function spark(arr,color,id){
+    var max=Math.max.apply(null,arr.concat([1])),p=pts(arr,120,46,max,2,4);
+    return '<svg viewBox="0 0 120 46"><defs><linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+color+'" stop-opacity=".45"/><stop offset="1" stop-color="'+color+'" stop-opacity="0"/></linearGradient></defs>'+
+      '<path d="'+area(p,46,4)+'" fill="url(#'+id+')"/><path d="'+smooth(p)+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round"/></svg>';
+  }
+  function short(v){return v>=1000?(Math.round(v/100)/10)+"k":String(Math.round(v))}
+
+  function render(){
+    var d=load(),s=sums(d),n=new Date(),dim=new Date(n.getFullYear(),n.getMonth()+1,0).getDate(),today=Math.max(2,n.getDate());
+    $("mes").textContent="Saldo de "+n.toLocaleDateString("es-ES",{month:"long"});
+    $("tbal").textContent=fmt.format(s.i-s.o);
+    $("tin").textContent="+"+fmt.format(s.i);
+    $("tout").textContent="−"+fmt.format(s.o);
+    var di=[],dd=[],k;
+    for(k=0;k<today;k++){di.push(0);dd.push(0)}
+    monthItems(d).forEach(function(x){var day=new Date(x.f).getDate()-1;if(x.t==="in")di[day]+=x.a;else dd[day]+=x.a});
+    var ci=[],cd=[],a=0,b=0;
+    for(k=0;k<today;k++){a+=di[k];b+=dd[k];ci.push(a);cd.push(b)}
+    $("spIn").innerHTML=spark(ci,"#27E6F5","gi");
+    $("spOut").innerHTML=spark(cd,"#E94BFF","go");
+    var W=320,H=170,max=Math.max(a,b,1),pi=pts(ci,W,H,max,34,22,dim),pd=pts(cd,W,H,max,34,22,dim),g="",i;
+    for(i=0;i<=4;i++){var y=H-22-(H-44)*i/4;g+='<line x1="34" x2="'+(W-34)+'" y1="'+y+'" y2="'+y+'" stroke="rgba(120,170,255,.18)"/><text x="28" y="'+(y+4)+'" text-anchor="end" fill="#8FA3CC" font-size="11">'+short(max*i/4)+'</text>'}
+    var xs=[1,Math.round(dim/4),Math.round(dim/2),Math.round(dim*3/4),dim];
+    xs.forEach(function(dn){var x=34+(W-68)*(dn-1)/(dim-1);g+='<text x="'+x+'" y="'+(H-4)+'" text-anchor="middle" fill="#8FA3CC" font-size="11">'+dn+'</text>'});
+    $("chart").innerHTML='<svg viewBox="0 0 '+W+" "+H+'">'+g+
+      '<path d="'+smooth(pi)+'" fill="none" stroke="#27E6F5" stroke-width="2.5" stroke-linecap="round"/>'+
+      '<path d="'+smooth(pd)+'" fill="none" stroke="#E94BFF" stroke-width="2.5" stroke-linecap="round"/>'+
+      '<circle cx="'+pi[pi.length-1][0]+'" cy="'+pi[pi.length-1][1]+'" r="4" fill="#27E6F5"/>'+
+      '<circle cx="'+pd[pd.length-1][0]+'" cy="'+pd[pd.length-1][1]+'" r="4" fill="#E94BFF"/></svg>';
+    var ul=$("list");
+    if(!d.length){ul.innerHTML='<li class="empty">Aún no hay nada. Pulsa + para apuntar tu primer movimiento.</li>';return}
+    ul.innerHTML=d.slice().reverse().slice(0,6).map(function(x){
+      var f=new Date(x.f).toLocaleDateString("es-ES",{day:"numeric",month:"short"});
+      return '<li><div class="ico">'+icon(x.c)+'</div><div class="nm">'+x.c+"<span>"+f+'</span></div><div class="amt '+x.t+'">'+(x.t==="in"?"+":"−")+fmt.format(x.a)+'</div><button class="del" data-id="'+x.id+'" aria-label="Borrar">✕</button></li>';
+    }).join("");
+  }
+
+  function open(){setTipo("out");$("sheet").className="sheet open";setTimeout(function(){$("amount").focus()},50)}
+  function close(){$("sheet").className="sheet"}
+  $("fab").onclick=open;
+  $("cancel").onclick=close;
+  $("sheet").onclick=function(e){if(e.target===$("sheet"))close()};
+  var segs=document.querySelectorAll(".seg button");
+  for(var q=0;q<segs.length;q++){segs[q].onclick=function(){setTipo(this.getAttribute("data-t"))}}
+  $("save").onclick=function(){
+    var a=parseFloat(String($("amount").value).replace(",","."));
+    if(!(a>0)){$("amount").focus();return}
+    var d=load();d.push({id:Date.now(),a:a,t:tipo,c:$("cat").value,f:new Date().toISOString()});
+    store(d);$("amount").value="";close();render();
+  };
+  $("list").onclick=function(e){
+    var id=e.target.getAttribute&&e.target.getAttribute("data-id");
+    if(!id)return;store(load().filter(function(x){return String(x.id)!==id}));render();
+  };
+  $("share").onclick=function(){
+    var d=monthItems(load()),s=sums(load()),por={};
+    d.filter(function(x){return x.t==="out"}).forEach(function(x){por[x.c]=(por[x.c]||0)+x.a});
+    var top=Object.keys(por).sort(function(a,b){return por[b]-por[a]}).slice(0,3).map(function(k){return "• "+k+": "+fmt.format(por[k])}).join("\n");
+    var mes=new Date().toLocaleDateString("es-ES",{month:"long",year:"numeric"});
+    var txt="Resumen de "+mes+"\nIngresos: "+fmt.format(s.i)+"\nGastos: "+fmt.format(s.o)+"\nSaldo: "+fmt.format(s.i-s.o)+(top?"\n\nMás gasto en:\n"+top:"");
+    function fallback(){var t=$("box");t.value=txt;t.style.display="block";$("copy").style.display="block";t.focus();t.select()}
+    if(navigator.share){navigator.share({text:txt}).catch(function(e){if(!e||e.name!=="AbortError")fallback()})}else{fallback()}
+  };
+  $("copy").onclick=function(){
+    var t=$("box");t.focus();t.select();var ok=false;
+    try{ok=document.execCommand("copy")}catch(e){}
+    $("copy").textContent=ok?"¡Copiado! Pégalo en WhatsApp":"Mantén pulsado el texto y copia";
+  };
+  setTipo("out");render();
+})();
+</script>
+</body>
+</html>
