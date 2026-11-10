@@ -7,7 +7,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         :root {
             --neon-blue: #00f0ff;
             --neon-purple: #b026ff;
@@ -21,7 +20,6 @@
             --text-secondary: #8892a4;
             --border-glow: rgba(0, 240, 255, 0.3);
         }
-
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background: var(--bg-dark);
@@ -29,7 +27,6 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
-
         .app-container {
             max-width: 430px;
             margin: 0 auto;
@@ -38,29 +35,16 @@
             padding: 20px 16px 100px;
             background: linear-gradient(180deg, #0a0e1a 0%, #0d1225 50%, #0a0e1a 100%);
         }
-
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 0 20px;
-        }
-
+        .header { display: flex; align-items: center; justify-content: space-between; padding: 10px 0 20px; }
         .menu-btn {
-            width: 48px; height: 48px;
-            border: 1px solid var(--border-glow);
-            border-radius: 12px;
-            background: rgba(0, 240, 255, 0.05);
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            gap: 4px; cursor: pointer;
-            transition: all 0.3s;
-            -webkit-tap-highlight-color: transparent;
+            width: 48px; height: 48px; border: 1px solid var(--border-glow);
+            border-radius: 12px; background: rgba(0, 240, 255, 0.05);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 4px; cursor: pointer; transition: all 0.3s; -webkit-tap-highlight-color: transparent;
         }
         .menu-btn:active { background: rgba(0, 240, 255, 0.2); transform: scale(0.95); }
         .menu-btn span { display: block; width: 22px; height: 2px; background: var(--neon-blue); border-radius: 2px; }
         .menu-label { font-size: 9px; color: var(--neon-blue); margin-top: 2px; letter-spacing: 1px; }
-
         .app-title { text-align: center; flex: 1; }
         .app-title h1 {
             font-size: 20px; font-weight: 700; letter-spacing: 2px;
@@ -68,7 +52,6 @@
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
         .app-title h2 { font-size: 14px; color: var(--neon-blue); letter-spacing: 3px; font-weight: 400; }
-
         .avatar {
             width: 48px; height: 48px; border-radius: 50%;
             border: 2px solid var(--neon-blue);
@@ -78,12 +61,11 @@
             cursor: pointer; -webkit-tap-highlight-color: transparent;
         }
         .avatar:active { transform: scale(0.95); }
-
         .balance-card {
             background: linear-gradient(135deg, rgba(17, 24, 39, 0.9), rgba(26, 35, 50, 0.9));
-            border: 1px solid var(--border-glow);
-            border-radius: 16px; padding: 24px; text-align: center;
-            margin-bottom: 20px; position: relative; overflow: hidden;
+            border: 1px solid var(--border-glow); border-radius: 16px;
+            padding: 24px; text-align: center; margin-bottom: 20px;
+            position: relative; overflow: hidden;
         }
         .balance-card::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
@@ -98,7 +80,6 @@
             font-size: 42px; font-weight: 700; color: var(--text-primary);
             text-shadow: 0 0 20px rgba(0, 240, 255, 0.3); letter-spacing: -1px;
         }
-
         .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
         .stat-card {
             background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05);
@@ -110,32 +91,24 @@
         .stat-amount { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
         .stat-card.income .stat-amount { color: var(--neon-blue); }
         .stat-card.expense .stat-amount { color: var(--neon-pink); }
-
         .mini-chart { height: 40px !important; width: 100% !important; max-height: 40px; max-width: 100%; display: block; }
-
         .chart-card {
             background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 14px; padding: 16px; margin-bottom: 20px;
         }
         .chart-container { height: 200px; position: relative; }
-
         .filter-bar {
             display: flex; gap: 8px; margin-bottom: 16px;
             overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch;
         }
         .filter-chip {
-            padding: 8px 16px; border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1);
             background: transparent; color: var(--text-secondary);
             font-size: 12px; white-space: nowrap; cursor: pointer;
             transition: all 0.3s; -webkit-tap-highlight-color: transparent;
         }
         .filter-chip:active { transform: scale(0.95); }
-        .filter-chip.active {
-            border-color: var(--neon-blue); color: var(--neon-blue);
-            background: rgba(0, 240, 255, 0.1);
-        }
-
+        .filter-chip.active { border-color: var(--neon-blue); color: var(--neon-blue); background: rgba(0, 240, 255, 0.1); }
         .activity-card {
             background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 14px; padding: 16px; margin-bottom: 20px;
@@ -169,7 +142,6 @@
             transition: all 0.2s; -webkit-tap-highlight-color: transparent;
         }
         .delete-btn:active { color: var(--neon-red); background: rgba(255, 71, 87, 0.1); }
-
         .add-btn-container {
             position: fixed; bottom: 30px; left: 50%;
             transform: translateX(-50%); z-index: 100;
@@ -195,7 +167,6 @@
         }
         .add-btn:active { transform: scale(0.95); }
         .add-btn-text { font-size: 12px; color: var(--neon-blue); letter-spacing: 2px; font-weight: 600; }
-
         .modal-overlay {
             display: none; position: fixed; inset: 0;
             background: rgba(0, 0, 0, 0.8); z-index: 200;
@@ -223,24 +194,16 @@
             -webkit-tap-highlight-color: transparent;
         }
         .modal-close:active { background: rgba(255, 255, 255, 0.1); }
-
         .type-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .type-btn {
-            padding: 12px; border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1); background: transparent;
-            color: var(--text-secondary); font-size: 14px; font-weight: 600;
-            cursor: pointer; transition: all 0.3s; -webkit-tap-highlight-color: transparent;
+            padding: 12px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1);
+            background: transparent; color: var(--text-secondary);
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            transition: all 0.3s; -webkit-tap-highlight-color: transparent;
         }
         .type-btn:active { transform: scale(0.95); }
-        .type-btn.active.income-type {
-            border-color: var(--neon-blue); color: var(--neon-blue);
-            background: rgba(0, 240, 255, 0.1);
-        }
-        .type-btn.active.expense-type {
-            border-color: var(--neon-pink); color: var(--neon-pink);
-            background: rgba(255, 45, 149, 0.1);
-        }
-
+        .type-btn.active.income-type { border-color: var(--neon-blue); color: var(--neon-blue); background: rgba(0, 240, 255, 0.1); }
+        .type-btn.active.expense-type { border-color: var(--neon-pink); color: var(--neon-pink); background: rgba(255, 45, 149, 0.1); }
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; letter-spacing: 1px; }
         .form-group input, .form-group select, .form-group textarea {
@@ -253,14 +216,12 @@
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--neon-blue); }
         .form-group select option { background: var(--bg-card); color: var(--text-primary); }
         .form-group textarea { min-height: 120px; resize: vertical; font-size: 13px; line-height: 1.5; }
-
         .voice-btn {
             width: 100%; padding: 14px; border-radius: 10px;
             border: 1px solid var(--neon-purple); background: rgba(176, 38, 255, 0.1);
             color: var(--neon-purple); font-size: 14px; font-weight: 600;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
-            gap: 10px; margin-bottom: 16px; transition: all 0.3s;
-            -webkit-tap-highlight-color: transparent;
+            gap: 10px; margin-bottom: 16px; transition: all 0.3s; -webkit-tap-highlight-color: transparent;
         }
         .voice-btn:active { transform: scale(0.95); }
         .voice-btn.listening {
@@ -272,7 +233,6 @@
             50% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
         }
         .voice-icon { font-size: 18px; }
-
         .submit-btn {
             width: 100%; padding: 16px; border-radius: 12px; border: none;
             background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
@@ -282,14 +242,12 @@
         }
         .submit-btn:active { transform: scale(0.98); }
         .submit-btn.danger { background: transparent; border: 1px solid var(--neon-red); color: var(--neon-red); }
-
         .voice-result {
             background: rgba(176, 38, 255, 0.1); border: 1px solid var(--neon-purple);
             border-radius: 10px; padding: 12px; margin-bottom: 16px;
             font-size: 13px; color: var(--neon-purple); display: none;
         }
         .voice-result.show { display: block; }
-
         .side-menu {
             position: fixed; top: 0; left: -300px; width: 280px; height: 100vh;
             background: var(--bg-card); border-right: 1px solid var(--border-glow);
@@ -303,7 +261,6 @@
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
         .side-menu-close { background: none; border: none; color: var(--text-secondary); font-size: 24px; cursor: pointer; }
-
         .menu-item {
             display: flex; align-items: center; gap: 12px; padding: 14px;
             border-radius: 10px; margin-bottom: 8px; cursor: pointer;
@@ -312,10 +269,8 @@
         }
         .menu-item:active { background: rgba(0, 240, 255, 0.1); }
         .menu-item-icon { font-size: 18px; }
-
         .menu-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 240; }
         .menu-overlay.active { display: block; }
-
         .notification {
             position: fixed; top: 20px; left: 50%;
             transform: translateX(-50%) translateY(-100px);
@@ -327,14 +282,9 @@
             max-width: 90%; text-align: center;
         }
         .notification.show { transform: translateX(-50%) translateY(0); }
-        .notification.error {
-            border-color: var(--neon-red); color: var(--neon-red);
-            box-shadow: 0 10px 30px rgba(255, 71, 87, 0.2);
-        }
-
+        .notification.error { border-color: var(--neon-red); color: var(--neon-red); box-shadow: 0 10px 30px rgba(255, 71, 87, 0.2); }
         .empty-state { text-align: center; padding: 20px; color: var(--text-secondary); }
         .empty-state-icon { font-size: 32px; margin-bottom: 8px; }
-
         .demo-banner {
             background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3);
             border-radius: 10px; padding: 12px; margin-bottom: 16px;
@@ -345,32 +295,22 @@
             color: #ffc107; padding: 6px 12px; border-radius: 6px;
             margin-left: 8px; cursor: pointer; font-size: 11px;
         }
-
         .sync-status {
             font-size: 11px; color: var(--text-secondary);
             text-align: center; padding: 6px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            margin-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.05); margin-top: 10px;
         }
         .sync-status.online { color: var(--neon-green); }
         .sync-status.offline { color: var(--neon-red); }
-
         .cat-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .cat-tab {
-            padding: 12px; border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1); background: transparent;
-            color: var(--text-secondary); font-size: 14px; font-weight: 600;
-            cursor: pointer; transition: all 0.3s; -webkit-tap-highlight-color: transparent;
+            padding: 12px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1);
+            background: transparent; color: var(--text-secondary);
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            transition: all 0.3s; -webkit-tap-highlight-color: transparent;
         }
-        .cat-tab.active.income-tab {
-            border-color: var(--neon-blue); color: var(--neon-blue);
-            background: rgba(0, 240, 255, 0.1);
-        }
-        .cat-tab.active.expense-tab {
-            border-color: var(--neon-pink); color: var(--neon-pink);
-            background: rgba(255, 45, 149, 0.1);
-        }
-
+        .cat-tab.active.income-tab { border-color: var(--neon-blue); color: var(--neon-blue); background: rgba(0, 240, 255, 0.1); }
+        .cat-tab.active.expense-tab { border-color: var(--neon-pink); color: var(--neon-pink); background: rgba(255, 45, 149, 0.1); }
         .cat-list { max-height: 400px; overflow-y: auto; margin-bottom: 16px; }
         .cat-item {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05);
@@ -393,17 +333,11 @@
         .cat-action-btn:active { transform: scale(0.9); }
         .cat-action-btn.edit:active { color: var(--neon-blue); border-color: var(--neon-blue); }
         .cat-action-btn.delete:active { color: var(--neon-red); border-color: var(--neon-red); }
-        .cat-expand-icon {
-            font-size: 12px; color: var(--text-secondary);
-            margin-right: 10px; transition: transform 0.3s;
-        }
+        .cat-expand-icon { font-size: 12px; color: var(--text-secondary); margin-right: 10px; transition: transform 0.3s; }
         .cat-item.expanded .cat-expand-icon { transform: rotate(90deg); }
         .cat-sub-list { display: none; padding: 0 16px 14px; border-top: 1px solid rgba(255, 255, 255, 0.05); }
         .cat-item.expanded .cat-sub-list { display: block; }
-        .sub-item {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        }
+        .sub-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.03); }
         .sub-item:last-child { border-bottom: none; }
         .sub-item-name { font-size: 13px; color: var(--text-secondary); flex: 1; padding-left: 12px; }
         .sub-item-name::before { content: '→ '; color: var(--neon-purple); }
@@ -456,7 +390,6 @@
         .inline-edit button { padding: 8px 12px; border-radius: 6px; border: none; font-size: 12px; cursor: pointer; font-weight: 600; }
         .inline-edit .save-btn { background: var(--neon-green); color: #000; }
         .inline-edit .cancel-btn { background: rgba(255, 255, 255, 0.1); color: var(--text-secondary); }
-
         @media (max-width: 430px) { .app-container { padding: 16px 12px 100px; } }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
@@ -653,7 +586,7 @@
 
     <script>
         // ===== CONFIGURACIÓN DE LA NUBE - EDITA ESTAS 2 LÍNEAS =====
-        const GIST_ID = 'aaf3daadbe4b9172a965a6f7fbc16d57';
+        const GIST_ID = '612a90c6a6c1f0e15f44d4852d3a9720';
         const GITHUB_TOKEN = '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';
         const GIST_FILENAME = 'billetera-nexus-data.json';
         // ==========================================================
@@ -702,7 +635,6 @@
             updateCategoriesSelect();
             updateUI();
 
-            // Intentar sincronizar con la nube al abrir
             if (GIST_ID !== 'PEGA_AQUI_TU_ID_DEL_GIST' && GITHUB_TOKEN !== 'PEGA_AQUI_TU_TOKEN_DE_GITHUB') {
                 cloudSyncEnabled = true;
                 updateSyncStatus('☁️ Conectando...', 'online');
@@ -716,7 +648,7 @@
             }
         });
 
-        // ===== FUNCIONES DE SINCRONIZACIÓN EN LA NUBE =====
+        // ===== SINCRONIZACIÓN EN LA NUBE =====
         async function loadFromCloud() {
             try {
                 const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
@@ -726,30 +658,67 @@
                     }
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Error ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`Error ${response.status}`);
 
                 const data = await response.json();
                 const fileContent = data.files[GIST_FILENAME]?.content;
 
                 if (fileContent) {
                     const parsed = JSON.parse(fileContent);
+                    const cloudLastUpdate = parsed.lastUpdate ? new Date(parsed.lastUpdate) : null;
+                    const localLastUpdateStr = localStorage.getItem('nexus_last_sync');
+                    const localLastUpdate = localLastUpdateStr ? new Date(localLastUpdateStr) : null;
 
-                    // Solo sobrescribir si hay datos en la nube
+                    // Si los datos locales son más recientes, subirlos a la nube
+                    if (localLastUpdate && cloudLastUpdate && localLastUpdate > cloudLastUpdate) {
+                        console.log('Datos locales más recientes, subiendo a la nube...');
+                        await saveToCloudImmediate();
+                        updateSyncStatus('☁️ Locales más recientes, subiendo...', 'online');
+                        return false;
+                    }
+
+                    let dataUpdated = false;
+
                     if (parsed.transactions && parsed.transactions.length > 0) {
                         transactions = parsed.transactions;
                         saveTransactionsLocal();
+                        dataUpdated = true;
                     }
 
                     if (parsed.categories && Object.keys(parsed.categories).length > 0) {
-                        categories = parsed.categories;
+                        // Fusionar categorías en lugar de sobrescribir
+                        if (categories.income && Object.keys(categories.income).length > 0) {
+                            for (let type in parsed.categories) {
+                                if (!categories[type]) categories[type] = {};
+                                for (let cat in parsed.categories[type]) {
+                                    if (!categories[type][cat]) {
+                                        categories[type][cat] = parsed.categories[type][cat];
+                                    } else {
+                                        parsed.categories[type][cat].forEach(sub => {
+                                            if (!categories[type][cat].includes(sub)) {
+                                                categories[type][cat].push(sub);
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        } else {
+                            categories = parsed.categories;
+                        }
                         saveCategoriesLocal();
+                        dataUpdated = true;
                     }
 
-                    updateSyncStatus('☁️ Sincronizado: ' + new Date().toLocaleTimeString(), 'online');
-                    showNotification('☁️ Datos cargados desde la nube');
-                    return true;
+                    const syncTime = new Date().toISOString();
+                    localStorage.setItem('nexus_last_sync', syncTime);
+
+                    if (dataUpdated) {
+                        updateSyncStatus('☁️ Sincronizado: ' + new Date().toLocaleTimeString(), 'online');
+                        showNotification('☁️ Datos cargados desde la nube');
+                    } else {
+                        updateSyncStatus('☁️ Nube vacía, usando locales', 'online');
+                    }
+                    return dataUpdated;
                 }
             } catch (e) {
                 console.log('Error al cargar desde la nube:', e);
@@ -761,40 +730,43 @@
 
         async function saveToCloud() {
             if (!cloudSyncEnabled) return;
-
-            // Debounce: esperar 1 segundo antes de guardar para no saturar
             clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(async () => {
-                try {
-                    const data = {
-                        transactions: transactions,
-                        categories: categories,
-                        lastUpdate: new Date().toISOString()
-                    };
+            saveTimeout = setTimeout(() => saveToCloudImmediate(), 1000);
+        }
 
-                    const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Authorization': `token ${GITHUB_TOKEN}`,
-                            'Accept': 'application/vnd.github.v3+json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            files: {
-                                [GIST_FILENAME]: { content: JSON.stringify(data, null, 2) }
-                            }
-                        })
-                    });
+        async function saveToCloudImmediate() {
+            if (!cloudSyncEnabled) return;
+            try {
+                const syncTime = new Date().toISOString();
+                const data = {
+                    transactions: transactions,
+                    categories: categories,
+                    lastUpdate: syncTime
+                };
 
-                    if (!response.ok) throw new Error(`Error ${response.status}`);
+                const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        files: {
+                            [GIST_FILENAME]: { content: JSON.stringify(data, null, 2) }
+                        }
+                    })
+                });
 
-                    updateSyncStatus('☁️ Guardado: ' + new Date().toLocaleTimeString(), 'online');
-                    console.log('✓ Guardado en la nube');
-                } catch (e) {
-                    console.log('Error al guardar en la nube:', e);
-                    updateSyncStatus('❌ Error al guardar', 'offline');
-                }
-            }, 1000);
+                if (!response.ok) throw new Error(`Error ${response.status}`);
+
+                localStorage.setItem('nexus_last_sync', syncTime);
+                updateSyncStatus('☁️ Guardado: ' + new Date().toLocaleTimeString(), 'online');
+                console.log('✓ Guardado en la nube');
+            } catch (e) {
+                console.log('Error al guardar en la nube:', e);
+                updateSyncStatus('❌ Error al guardar', 'offline');
+            }
         }
 
         function updateSyncStatus(text, type) {
@@ -809,21 +781,14 @@
             toggleMenu();
             showNotification('🔄 Sincronizando...');
             updateSyncStatus('🔄 Sincronizando...', 'online');
-
-            // Primero guardar lo local en la nube
-            await saveToCloud();
-
-            // Esperar un poco para que termine el debounce
-            await new Promise(r => setTimeout(r, 1500));
-
-            // Luego cargar lo último de la nube
+            await saveToCloudImmediate();
+            await new Promise(r => setTimeout(r, 500));
             await loadFromCloud();
-
             updateCategoriesSelect();
             updateUI();
         }
 
-        // ===== FUNCIONES LOCALES (backup) =====
+        // ===== FUNCIONES LOCALES =====
         function loadCategoriesLocal() {
             try {
                 const stored = localStorage.getItem('nexus_categories');
@@ -838,24 +803,18 @@
         }
 
         function saveCategoriesLocal() {
-            try {
-                localStorage.setItem('nexus_categories', JSON.stringify(categories));
-            } catch (e) {}
+            try { localStorage.setItem('nexus_categories', JSON.stringify(categories)); } catch (e) {}
         }
 
         function loadFromStorage() {
             try {
                 const stored = localStorage.getItem('nexus_transactions');
-                if (stored) {
-                    transactions = JSON.parse(stored);
-                }
+                if (stored) transactions = JSON.parse(stored);
             } catch (e) {}
         }
 
         function saveTransactionsLocal() {
-            try {
-                localStorage.setItem('nexus_transactions', JSON.stringify(transactions));
-            } catch (e) {}
+            try { localStorage.setItem('nexus_transactions', JSON.stringify(transactions)); } catch (e) {}
         }
 
         function toggleMenu() {
@@ -1113,13 +1072,23 @@
             if (data.income) {
                 for (let cat in data.income) {
                     if (!categories.income[cat]) { categories.income[cat] = data.income[cat]; added++; }
-                    else { data.income[cat].forEach(sub => { if (!categories.income[cat].includes(sub)) categories.income[cat].push(sub); }); updated++; }
+                    else {
+                        data.income[cat].forEach(sub => {
+                            if (!categories.income[cat].includes(sub)) categories.income[cat].push(sub);
+                        });
+                        updated++;
+                    }
                 }
             }
             if (data.expense) {
                 for (let cat in data.expense) {
                     if (!categories.expense[cat]) { categories.expense[cat] = data.expense[cat]; added++; }
-                    else { data.expense[cat].forEach(sub => { if (!categories.expense[cat].includes(sub)) categories.expense[cat].push(sub); }); updated++; }
+                    else {
+                        data.expense[cat].forEach(sub => {
+                            if (!categories.expense[cat].includes(sub)) categories.expense[cat].push(sub);
+                        });
+                        updated++;
+                    }
                 }
             }
             saveCategories();
@@ -1147,6 +1116,10 @@
                 try {
                     const data = JSON.parse(e.target.result);
                     importCategoriesFromObject(data);
+                    if (cloudSyncEnabled) {
+                        showNotification('✓ Importado, sincronizando...');
+                        setTimeout(() => saveToCloudImmediate(), 500);
+                    }
                 } catch (err) { showNotification('Error al leer', true); }
             };
             reader.readAsText(file);
