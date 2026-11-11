@@ -1436,7 +1436,9 @@
     <div class="side-menu" id="sideMenu">
         <div class="side-menu-header"><h3>MENÚ</h3><button class="side-menu-close" onclick="toggleMenu()">✕</button></div>
         <div class="menu-item" onclick="showNotification('Perfil - Próximamente')"><span class="menu-item-icon">👤</span><span>Mi Perfil</span></div>
-        <div class="menu-item" onclick="showNotification('Estadísticas - Próximamente')"><span class="menu-item-icon">📊</span><span>Estadísticas</span></div>
+           <div class="menu-item" onclick="openStatsModal()">
+       <span class="menu-item-icon">📊</span><span>Estadísticas</span>
+   </div>
         <div class="menu-item" onclick="syncNow()"><span class="menu-item-icon">☁️</span><span>Sincronizar ahora</span></div>
         <div class="menu-item" onclick="showAllTransactions()"><span class="menu-item-icon">📋</span><span>Ver todos los movimientos</span></div>
         <div class="menu-item" onclick="openCategoriesModal()"><span class="menu-item-icon">🏷️</span><span>Gestionar categorías</span></div>
