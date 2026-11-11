@@ -79,15 +79,20 @@
         .type-btn.active.income-type { border-color: var(--neon-blue); color: var(--neon-blue); background: rgba(0, 240, 255, 0.1); }
         .type-btn.active.expense-type { border-color: var(--neon-pink); color: var(--neon-pink); background: rgba(255, 45, 149, 0.1); }
         .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; letter-spacing: 1px; }
+        .form-group label { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; letter-spacing: 1px; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 15px; outline: none; transition: border-color 0.3s; -webkit-appearance: none; font-family: inherit; }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--neon-blue); }
         .form-group select option { background: var(--bg-card); color: var(--text-primary); }
         .form-group textarea { min-height: 120px; resize: vertical; font-size: 13px; line-height: 1.5; }
+        .description-input-wrapper { display: flex; gap: 8px; align-items: center; }
+        .description-input-wrapper input { flex: 1; }
+        .voice-desc-btn { width: 48px; height: 48px; border-radius: 10px; border: 1px solid var(--neon-purple); background: rgba(176, 38, 255, 0.1); color: var(--neon-purple); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; flex-shrink: 0; -webkit-tap-highlight-color: transparent; }
+        .voice-desc-btn:active { transform: scale(0.95); }
+        .voice-desc-btn.listening { border-color: var(--neon-red); color: var(--neon-red); background: rgba(255, 71, 87, 0.1); animation: voicePulse 1s infinite; }
+        @keyframes voicePulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); } 50% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); } }
         .voice-btn { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--neon-purple); background: rgba(176, 38, 255, 0.1); color: var(--neon-purple); font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; transition: all 0.3s; -webkit-tap-highlight-color: transparent; }
         .voice-btn:active { transform: scale(0.95); }
         .voice-btn.listening { border-color: var(--neon-red); color: var(--neon-red); background: rgba(255, 71, 87, 0.1); animation: voicePulse 1s infinite; }
-        @keyframes voicePulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); } 50% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); } }
         .voice-icon { font-size: 18px; }
         .submit-btn { width: 100%; padding: 16px; border-radius: 12px; border: none; background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); color: white; font-size: 15px; font-weight: 700; letter-spacing: 1px; cursor: pointer; transition: all 0.3s; margin-top: 8px; -webkit-tap-highlight-color: transparent; }
         .submit-btn:active { transform: scale(0.98); }
@@ -294,30 +299,72 @@
         <span class="add-btn-text">+ AGREGAR TRANSACCIÓN</span>
     </div>
 
+    <!-- Modal de transacción -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
             <div class="modal-header">
                 <h3>NUEVA TRANSACCIÓN</h3>
                 <button class="modal-close" onclick="closeModal()">✕</button>
             </div>
+
+            <!-- Botón de voz completo (opcional) -->
             <button class="voice-btn" id="voiceBtn" onclick="startVoice()">
                 <span class="voice-icon">🎤</span>
-                <span id="voiceText">Agregar con voz</span>
+                <span id="voiceText">Dictar transacción completa</span>
             </button>
             <div class="voice-result" id="voiceResult"></div>
+
+            <!-- Tipo -->
             <div class="type-selector">
-                <button class="type-btn income-type active" id="btnIncome" onclick="selectType('income')">📈 Ingreso</button>
-                <button class="type-btn expense-type" id="btnExpense" onclick="selectType('expense')">📉 Gasto</button>
+                <button class="type-btn income-type" id="btnIncome" onclick="selectType('income')">📈 Ingreso</button>
+                <button class="type-btn expense-type active" id="btnExpense" onclick="selectType('expense')">📉 Gasto</button>
             </div>
-            <div class="form-group"><label>MONTO</label><input type="number" id="amount" placeholder="0.00" step="0.01" min="0"></div>
-            <div class="form-group"><label>DESCRIPCIÓN</label><input type="text" id="description" placeholder="Ej: Compra supermercado" maxlength="50"></div>
-            <div class="form-group"><label>CATEGORÍA</label><select id="category" onchange="updateSubcategories()"><option value="">Seleccionar categoría</option></select></div>
-            <div class="form-group"><label>SUBCATEGORÍA</label><select id="subcategory"><option value="">Seleccionar subcategoría</option></select></div>
-            <div class="form-group"><label>FECHA</label><input type="date" id="date"></div>
+
+            <!-- Monto -->
+            <div class="form-group">
+                <label>MONTO</label>
+                <input type="number" id="amount" placeholder="0.00" step="0.01" min="0">
+            </div>
+
+            <!-- Categoría -->
+            <div class="form-group">
+                <label>CATEGORÍA</label>
+                <select id="category" onchange="updateSubcategories()">
+                    <option value="">Seleccionar categoría</option>
+                </select>
+            </div>
+
+            <!-- Subcategoría -->
+            <div class="form-group">
+                <label>SUBCATEGORÍA</label>
+                <select id="subcategory">
+                    <option value="">Seleccionar subcategoría</option>
+                </select>
+            </div>
+
+            <!-- Descripción con botón de voz -->
+            <div class="form-group">
+                <label>
+                    DESCRIPCIÓN
+                    <span style="font-size: 10px; color: var(--neon-purple);">🎤 Pulsa el micrófono para dictar</span>
+                </label>
+                <div class="description-input-wrapper">
+                    <input type="text" id="description" placeholder="Ej: Compra supermercado" maxlength="50">
+                    <button class="voice-desc-btn" id="voiceDescBtn" onclick="startVoiceDescription()" title="Dictar descripción">🎤</button>
+                </div>
+            </div>
+
+            <!-- Fecha -->
+            <div class="form-group">
+                <label>FECHA</label>
+                <input type="date" id="date">
+            </div>
+
             <button class="submit-btn" onclick="addTransaction()">AGREGAR TRANSACCIÓN</button>
         </div>
     </div>
 
+    <!-- Modal de categorías -->
     <div class="modal-overlay" id="catModalOverlay">
         <div class="modal">
             <div class="modal-header">
@@ -352,7 +399,7 @@
     <input type="file" id="importCatFile" accept=".json" style="display: none" onchange="handleImportCategories(event)">
 
     <script>
-        // ===== CONFIGURACIÓN - Se carga desde localStorage =====
+        // ===== CONFIGURACIÓN =====
         let GIST_ID = localStorage.getItem('nexus_gist_id') || '';
         let GITHUB_TOKEN = localStorage.getItem('nexus_token') || '';
         const GIST_FILENAME = 'billetera-nexus-data.json';
@@ -380,7 +427,7 @@
 
         let categories = {};
         let transactions = [];
-        let currentType = 'income';
+        let currentType = 'expense'; // ← POR DEFECTO GASTO
         let currentFilter = 'all';
         let currentCatTab = 'income';
         let mainChart = null;
@@ -424,23 +471,16 @@
         function saveConfig() {
             const token = document.getElementById('tokenInput').value.trim();
             const gistId = document.getElementById('gistIdInput').value.trim();
-
             if (!token || !gistId) { showNotification('Completa ambos campos', true); return; }
             if (!token.startsWith('ghp_')) { showNotification('El token debe empezar por ghp_', true); return; }
-
             localStorage.setItem('nexus_token', token);
             localStorage.setItem('nexus_gist_id', gistId);
-
             GITHUB_TOKEN = token;
             GIST_ID = gistId;
             cloudSyncEnabled = true;
-
             document.getElementById('configModal').style.display = 'none';
             updateSyncStatus('☁️ Conectando...', 'online');
-            loadFromCloud().then(success => {
-                if (success) { updateCategoriesSelect(); updateUI(); }
-            });
-
+            loadFromCloud().then(success => { if (success) { updateCategoriesSelect(); updateUI(); } });
             showNotification('✓ Configuración guardada');
         }
 
@@ -479,19 +519,16 @@
                 if (!response.ok) throw new Error(`Error ${response.status}`);
                 const data = await response.json();
                 const fileContent = data.files[GIST_FILENAME]?.content;
-
                 if (fileContent) {
                     const parsed = JSON.parse(fileContent);
                     const cloudLastUpdate = parsed.lastUpdate ? new Date(parsed.lastUpdate) : null;
                     const localLastUpdateStr = localStorage.getItem('nexus_last_sync');
                     const localLastUpdate = localLastUpdateStr ? new Date(localLastUpdateStr) : null;
-
                     if (localLastUpdate && cloudLastUpdate && localLastUpdate > cloudLastUpdate) {
                         await saveToCloudImmediate();
                         updateSyncStatus('☁️ Locales más recientes, subiendo...', 'online');
                         return false;
                     }
-
                     let dataUpdated = false;
                     if (parsed.transactions && parsed.transactions.length > 0) { transactions = parsed.transactions; saveTransactionsLocal(); dataUpdated = true; }
                     if (parsed.categories && Object.keys(parsed.categories).length > 0) {
@@ -507,10 +544,8 @@
                         saveCategoriesLocal();
                         dataUpdated = true;
                     }
-
                     const syncTime = new Date().toISOString();
                     localStorage.setItem('nexus_last_sync', syncTime);
-
                     if (dataUpdated) { updateSyncStatus('☁️ Sincronizado: ' + new Date().toLocaleTimeString(), 'online'); showNotification('☁️ Datos cargados desde la nube'); }
                     else { updateSyncStatus('☁️ Nube vacía, usando locales', 'online'); }
                     return dataUpdated;
@@ -610,7 +645,6 @@
             const cats = categories[currentCatTab];
             const catNames = Object.keys(cats);
             if (catNames.length === 0) { list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏷️</div><div>Sin categorías</div></div>'; return; }
-
             list.innerHTML = catNames.map(catName => {
                 const subs = cats[catName];
                 const isEditing = editingCat === catName;
@@ -621,7 +655,6 @@
                     }
                     return `<div class="sub-item"><span class="sub-item-name">${escapeHtml(sub)}</span><div class="cat-item-actions"><button class="cat-action-btn edit" onclick="startEditSub('${escapeHtml(catName)}', ${idx})">✏️</button><button class="cat-action-btn delete" onclick="deleteSubcategory('${escapeHtml(catName)}', ${idx})">🗑️</button></div></div>`;
                 }).join('');
-
                 if (isEditing) {
                     return `<div class="cat-item expanded"><div class="cat-item-header"><div class="inline-edit" style="flex: 1;"><input type="text" id="catEditInput" value="${escapeHtml(catName)}" maxlength="30"><button class="save-btn" onclick="saveCatEdit('${escapeHtml(catName)}')">✓</button><button class="cancel-btn" onclick="cancelEdit()">✕</button></div></div><div class="cat-sub-list">${subListHtml}<button class="add-sub-btn" onclick="addSubcategory('${escapeHtml(catName)}')">+ Añadir subcategoría</button></div></div>`;
                 }
@@ -709,9 +742,31 @@
             document.getElementById('subcategory').innerHTML = '<option value="">Seleccionar subcategoría</option>';
         }
 
-        function openModal() { if (isModalOpen) return; isModalOpen = true; document.getElementById('modalOverlay').classList.add('active'); document.getElementById('date').valueAsDate = new Date(); document.body.style.overflow = 'hidden'; }
-        function closeModal() { if (!isModalOpen) return; isModalOpen = false; document.getElementById('modalOverlay').classList.remove('active'); document.body.style.overflow = ''; resetForm(); }
-        function resetForm() { document.getElementById('amount').value = ''; document.getElementById('description').value = ''; document.getElementById('category').value = ''; document.getElementById('subcategory').value = ''; document.getElementById('voiceResult').classList.remove('show'); selectType('income'); }
+        function openModal() {
+            if (isModalOpen) return;
+            isModalOpen = true;
+            document.getElementById('modalOverlay').classList.add('active');
+            document.getElementById('date').valueAsDate = new Date();
+            document.body.style.overflow = 'hidden';
+            resetForm();
+        }
+
+        function closeModal() {
+            if (!isModalOpen) return;
+            isModalOpen = false;
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+            resetForm();
+        }
+
+        function resetForm() {
+            document.getElementById('amount').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('category').value = '';
+            document.getElementById('subcategory').value = '';
+            document.getElementById('voiceResult').classList.remove('show');
+            selectType('expense'); // ← POR DEFECTO GASTO
+        }
 
         function addTransaction() {
             const amount = parseFloat(document.getElementById('amount').value);
@@ -739,13 +794,9 @@
             const totalIncome = filtered.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
             const totalExpense = filtered.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
             const balance = totalIncome - totalExpense;
-
-            // Guardar valores reales
             realBalance = balance;
             realIncome = totalIncome;
             realExpense = totalExpense;
-
-            // Mostrar u ocultar según el estado
             if (balanceVisible) {
                 document.getElementById('totalBalance').textContent = `$${balance.toLocaleString('es-ES', {minimumFractionDigits: 2})}`;
                 document.getElementById('totalIncome').textContent = `+$${totalIncome.toLocaleString('es-ES', {minimumFractionDigits: 2})}`;
@@ -755,7 +806,6 @@
                 document.getElementById('totalIncome').textContent = '+****';
                 document.getElementById('totalExpense').textContent = '-****';
             }
-
             const changePercent = totalIncome > 0 ? ((balance / totalIncome) * 100).toFixed(1) : 0;
             document.getElementById('balanceChange').textContent = `▲ +${changePercent}%`;
             updateActivityList(filtered);
@@ -766,23 +816,11 @@
         function getFilteredTransactions() {
             const now = new Date();
             const monthAgo = new Date(now.getFullYear(), now.getMonth(), 1);
-
             if (currentFilter === 'all') return transactions;
-            if (currentFilter === 'income') {
-                // Ingresos del último mes
-                return transactions.filter(t => t.type === 'income' && new Date(t.date + 'T00:00:00') >= monthAgo);
-            }
-            if (currentFilter === 'expense') {
-                // Gastos del último mes
-                return transactions.filter(t => t.type === 'expense' && new Date(t.date + 'T00:00:00') >= monthAgo);
-            }
-            if (currentFilter === 'week') {
-                const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
-                return transactions.filter(t => new Date(t.date + 'T00:00:00') >= weekAgo);
-            }
-            if (currentFilter === 'month') {
-                return transactions.filter(t => new Date(t.date + 'T00:00:00') >= monthAgo);
-            }
+            if (currentFilter === 'income') { return transactions.filter(t => t.type === 'income' && new Date(t.date + 'T00:00:00') >= monthAgo); }
+            if (currentFilter === 'expense') { return transactions.filter(t => t.type === 'expense' && new Date(t.date + 'T00:00:00') >= monthAgo); }
+            if (currentFilter === 'week') { const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000); return transactions.filter(t => new Date(t.date + 'T00:00:00') >= weekAgo); }
+            if (currentFilter === 'month') { return transactions.filter(t => new Date(t.date + 'T00:00:00') >= monthAgo); }
             return transactions;
         }
 
@@ -833,6 +871,7 @@
             expenseMiniChart = new Chart(expenseCtx, { type: 'line', data: { labels: expenseData.map((_, i) => i), datasets: [{ data: expenseData.length ? expenseData : [0,0,0,0,0,0,0], borderColor: '#ff2d95', borderWidth: 2, tension: 0.4, fill: false, pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false, min: 0 } }, layout: { padding: 0 }, animation: { duration: 0 } } });
         }
 
+        // ===== VOZ: Transacción completa =====
         function startVoice() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) { showNotification('Voz no disponible', true); return; }
@@ -844,7 +883,7 @@
             voiceBtn.classList.add('listening'); voiceText.textContent = 'Escuchando...';
             recognition.onresult = (event) => { const transcript = event.results[0][0].transcript; voiceResult.textContent = `🎤 "${transcript}"`; voiceResult.classList.add('show'); parseVoiceCommand(transcript); };
             recognition.onerror = (event) => showNotification('Error: ' + event.error, true);
-            recognition.onend = () => { voiceBtn.classList.remove('listening'); voiceText.textContent = 'Agregar con voz'; };
+            recognition.onend = () => { voiceBtn.classList.remove('listening'); voiceText.textContent = 'Dictar transacción completa'; };
             recognition.start();
         }
 
@@ -865,6 +904,41 @@
             const desc = text.replace(/(\d+[.,]?\d*)/g, '').trim();
             if (desc.length > 3) document.getElementById('description').value = desc.substring(0, 50);
             showNotification('✓ Voz procesada');
+        }
+
+        // ===== VOZ: Solo descripción =====
+        function startVoiceDescription() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) { showNotification('Voz no disponible en este navegador', true); return; }
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'es-ES';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            const voiceDescBtn = document.getElementById('voiceDescBtn');
+            const descriptionInput = document.getElementById('description');
+
+            voiceDescBtn.classList.add('listening');
+            voiceDescBtn.textContent = '⏺️';
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                // Solo rellena la descripción, NO toca categoría/subcategoría
+                descriptionInput.value = transcript.substring(0, 50);
+                showNotification('✓ Descripción dictada');
+            };
+
+            recognition.onerror = (event) => {
+                showNotification('Error al escuchar: ' + event.error, true);
+            };
+
+            recognition.onend = () => {
+                voiceDescBtn.classList.remove('listening');
+                voiceDescBtn.textContent = '🎤';
+            };
+
+            recognition.start();
         }
 
         let notifTimeout;
