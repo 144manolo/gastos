@@ -186,6 +186,7 @@
         .file-input-wrapper input[type="file"] { display: none; }
         .attached-file-name { font-size: 11px; color: var(--neon-green); margin-top: 4px; }
         .remove-attachment { background: none; border: none; color: var(--neon-red); font-size: 11px; cursor: pointer; margin-left: 8px; }
+        .upload-progress { font-size: 11px; color: var(--neon-blue); margin-top: 4px; }
         @media (max-width: 430px) { .app-container { padding: 16px 12px 100px; } }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
@@ -197,7 +198,7 @@
     <div class="modal-overlay" id="configModal" style="display: flex;">
         <div class="modal">
             <div class="modal-header">
-                <h3>⚙️ CONFIGURACIÓN INICIAL</h3>
+                <h3>️ CONFIGURACIÓN INICIAL</h3>
             </div>
             <p style="margin-bottom: 16px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
                 Para sincronizar tus datos entre dispositivos, introduce tu token de GitHub y el ID de tu Gist.
@@ -364,20 +365,19 @@
                 </label>
                 <div class="description-input-wrapper">
                     <input type="text" id="description" placeholder="Ej: Compra supermercado" maxlength="50">
-                    <button class="voice-desc-btn" id="voiceDescBtn" onclick="startVoiceDescription()" title="Dictar descripción">🎤</button>
+                    <button class="voice-desc-btn" id="voiceDescBtn" onclick="startVoiceDescription()" title="Dictar descripción"></button>
                 </div>
             </div>
             <div class="form-group">
-                <label>📎 ADJUNTOS (opcional)</label>
+                <label>📎 IMAGEN (se sincroniza entre dispositivos)</label>
                 <div class="file-input-wrapper">
-                    <label for="imageInput">🖼️ Imagen</label>
-                    <label for="fileInput">📄 Archivo</label>
-                    <input type="file" id="imageInput" accept="image/*" onchange="handleImageAttach(event)">
-                    <input type="file" id="fileInput" onchange="handleFileAttach(event)">
+                    <label for="imageInput">🖼️ Seleccionar imagen</label>
+                    <input type="file" id="imageInput" accept="image/*" onchange="uploadImageToCloudinary(event)">
                 </div>
+                <div id="uploadProgress" class="upload-progress" style="display: none;">⏳ Subiendo imagen...</div>
                 <div id="attachmentInfo"></div>
                 <div class="form-group" style="margin-top: 10px;">
-                    <label style="font-size: 11px;">O pega URL de imagen (se sincroniza entre dispositivos):</label>
+                    <label style="font-size: 11px;">O pega URL de imagen:</label>
                     <input type="text" id="imageUrlInput" placeholder="https://..." style="font-size: 13px; padding: 10px;">
                 </div>
             </div>
@@ -432,7 +432,7 @@
         <div class="modal">
             <div class="modal-header">
                 <h3>📋 TODOS LOS MOVIMIENTOS</h3>
-                <button class="modal-close" onclick="closeAllModal()">✕</button>
+                <button class="modal-close" onclick="closeAllModal()"></button>
             </div>
             <div id="allModalContent"></div>
         </div>
@@ -447,6 +447,10 @@
         let GIST_ID = localStorage.getItem('nexus_gist_id') || '';
         let GITHUB_TOKEN = localStorage.getItem('nexus_token') || '';
         const GIST_FILENAME = 'billetera-nexus-data.json';
+
+        // Cloudinary
+        const CLOUDINARY_CLOUD_NAME = 'wmvlmzm0';
+        const CLOUDINARY_UPLOAD_PRESET = 'billetera-nexus';
 
         const defaultCategories = {
             income: {
@@ -488,9 +492,7 @@
         let saveTimeout = null;
         let cloudSyncEnabled = false;
         let chartExpanded = false;
-
-        // Archivos adjuntos temporales (en memoria durante edición)
-        let tempAttachment = { imageBase64: null, fileName: null, fileBase64: null, imageUrl: null };
+        let currentImageUrl = null;
 
         // ===== SALDO OCULTO =====
         let balanceVisible = false;
@@ -532,53 +534,57 @@
             }
         }
 
-        // ===== IndexedDB para archivos locales =====
-        let db = null;
-        function openDB() {
-            return new Promise((resolve, reject) => {
-                if (db) { resolve(db); return; }
-                const request = indexedDB.open('nexus_attachments', 1);
-                request.onupgradeneeded = (e) => {
-                    const database = e.target.result;
-                    if (!database.objectStoreNames.contains('files')) {
-                        database.createObjectStore('files');
-                    }
-                };
-                request.onsuccess = (e) => { db = e.target.result; resolve(db); };
-                request.onerror = (e) => reject(e);
-            });
-        }
+        // ===== SUBIR IMAGEN A CLOUDINARY =====
+        async function uploadImageToCloudinary(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-        async function saveAttachment(id, data) {
+            if (file.size > 10 * 1024 * 1024) {
+                showNotification('Imagen muy grande (máx 10MB)', true);
+                return;
+            }
+
+            const progressDiv = document.getElementById('uploadProgress');
+            progressDiv.style.display = 'block';
+            progressDiv.textContent = '⏳ Subiendo imagen...';
+
             try {
-                const database = await openDB();
-                const tx = database.transaction('files', 'readwrite');
-                tx.objectStore('files').put(data, id);
-                return new Promise((resolve, reject) => {
-                    tx.oncomplete = () => resolve();
-                    tx.onerror = (e) => reject(e);
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+                const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                    method: 'POST',
+                    body: formData
                 });
-            } catch (e) { console.log('Error guardando adjunto:', e); }
+
+                if (!response.ok) throw new Error('Error al subir');
+
+                const data = await response.json();
+                currentImageUrl = data.secure_url;
+
+                // Mostrar preview
+                const attachmentInfo = document.getElementById('attachmentInfo');
+                attachmentInfo.innerHTML = `
+                    <div class="attachment-preview">
+                        <img src="${data.secure_url}" alt="Imagen subida">
+                        <button class="remove-attachment" onclick="removeImage()">✕ Quitar imagen</button>
+                    </div>
+                `;
+
+                showNotification('✓ Imagen subida a Cloudinary');
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('❌ Error al subir imagen', true);
+            } finally {
+                progressDiv.style.display = 'none';
+            }
         }
 
-        async function getAttachment(id) {
-            try {
-                const database = await openDB();
-                const tx = database.transaction('files', 'readonly');
-                const req = tx.objectStore('files').get(id);
-                return new Promise((resolve, reject) => {
-                    req.onsuccess = () => resolve(req.result);
-                    req.onerror = (e) => reject(e);
-                });
-            } catch (e) { return null; }
-        }
-
-        async function deleteAttachment(id) {
-            try {
-                const database = await openDB();
-                const tx = database.transaction('files', 'readwrite');
-                tx.objectStore('files').delete(id);
-            } catch (e) {}
+        function removeImage() {
+            currentImageUrl = null;
+            document.getElementById('imageInput').value = '';
+            document.getElementById('attachmentInfo').innerHTML = '';
         }
 
         // ===== LISTADO MENSUAL =====
@@ -587,7 +593,7 @@
             const monthAgo = new Date(now.getFullYear(), now.getMonth(), 1);
             const filtered = transactions.filter(t => t.type === type && new Date(t.date + 'T00:00:00') >= monthAgo);
             const total = filtered.reduce((sum, t) => sum + t.amount, 0);
-            const title = type === 'income' ? '📈 INGRESOS DEL MES' : '📉 GASTOS DEL MES';
+            const title = type === 'income' ? ' INGRESOS DEL MES' : '📉 GASTOS DEL MES';
             const totalClass = type === 'income' ? 'income-total' : 'expense-total';
             const sign = type === 'income' ? '+' : '-';
             const colorClass = type === 'income' ? 'positive' : 'negative';
@@ -632,10 +638,10 @@
             toggleMenu();
             const sorted = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-            document.getElementById('allModalTitle').textContent = '📋 TODOS LOS MOVIMIENTOS';
+            document.getElementById('allModalTitle').textContent = ' TODOS LOS MOVIMIENTOS';
 
             if (sorted.length === 0) {
-                document.getElementById('allModalContent').innerHTML = `<div class="empty-state"><div class="empty-state-icon">📭</div><div>Sin transacciones</div></div>`;
+                document.getElementById('allModalContent').innerHTML = `<div class="empty-state"><div class="empty-state-icon"></div><div>Sin transacciones</div></div>`;
             } else {
                 // Agrupar por fecha
                 const groups = {};
@@ -715,21 +721,20 @@
             document.getElementById('subcategory').value = t.subcategory;
             document.getElementById('date').value = t.date;
 
-            // Cargar adjuntos
-            tempAttachment = { imageBase64: null, fileName: null, fileBase64: null, imageUrl: t.imageUrl || null };
+            // Cargar imagen
+            currentImageUrl = t.imageUrl || null;
             document.getElementById('imageUrlInput').value = t.imageUrl || '';
 
             const attachmentInfo = document.getElementById('attachmentInfo');
             attachmentInfo.innerHTML = '';
 
-            if (t.imageBase64) {
-                tempAttachment.imageBase64 = t.imageBase64;
-                attachmentInfo.innerHTML += `<div class="attachment-preview"><img src="${t.imageBase64}" alt="Imagen"><button class="remove-attachment" onclick="removeImage()">✕ Quitar</button></div>`;
-            }
-            if (t.fileName) {
-                tempAttachment.fileName = t.fileName;
-                tempAttachment.fileBase64 = t.fileBase64;
-                attachmentInfo.innerHTML += `<div class="attached-file-name">📄 ${escapeHtml(t.fileName)} <button class="remove-attachment" onclick="removeFile()">✕ Quitar</button></div>`;
+            if (t.imageUrl) {
+                attachmentInfo.innerHTML += `
+                    <div class="attachment-preview">
+                        <img src="${t.imageUrl}" alt="Imagen">
+                        <button class="remove-attachment" onclick="removeImage()">✕ Quitar imagen</button>
+                    </div>
+                `;
             }
 
             // Cerrar otros modales y abrir el de edición
@@ -739,68 +744,6 @@
             document.getElementById('modalOverlay').classList.add('active');
             isModalOpen = true;
             document.body.style.overflow = 'hidden';
-        }
-
-        function removeImage() {
-            tempAttachment.imageBase64 = null;
-            document.getElementById('imageInput').value = '';
-            const info = document.getElementById('attachmentInfo');
-            const img = info.querySelector('.attachment-preview');
-            if (img) img.remove();
-        }
-
-        function removeFile() {
-            tempAttachment.fileName = null;
-            tempAttachment.fileBase64 = null;
-            document.getElementById('fileInput').value = '';
-            const info = document.getElementById('attachmentInfo');
-            const file = info.querySelector('.attached-file-name');
-            if (file) file.remove();
-        }
-
-        function handleImageAttach(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            if (file.size > 2 * 1024 * 1024) {
-                showNotification('Imagen muy grande (máx 2MB)', true);
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                tempAttachment.imageBase64 = e.target.result;
-                const info = document.getElementById('attachmentInfo');
-                let preview = info.querySelector('.attachment-preview');
-                if (!preview) {
-                    preview = document.createElement('div');
-                    preview.className = 'attachment-preview';
-                    info.appendChild(preview);
-                }
-                preview.innerHTML = `<img src="${e.target.result}" alt="Imagen"><button class="remove-attachment" onclick="removeImage()">✕ Quitar</button>`;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function handleFileAttach(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            if (file.size > 2 * 1024 * 1024) {
-                showNotification('Archivo muy grande (máx 2MB)', true);
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                tempAttachment.fileName = file.name;
-                tempAttachment.fileBase64 = e.target.result;
-                const info = document.getElementById('attachmentInfo');
-                let fileDiv = info.querySelector('.attached-file-name');
-                if (!fileDiv) {
-                    fileDiv = document.createElement('div');
-                    fileDiv.className = 'attached-file-name';
-                    info.appendChild(fileDiv);
-                }
-                fileDiv.innerHTML = `📄 ${escapeHtml(file.name)} <button class="remove-attachment" onclick="removeFile()">✕ Quitar</button>`;
-            };
-            reader.readAsDataURL(file);
         }
 
         // ===== MODAL DE CONFIGURACIÓN =====
@@ -914,7 +857,7 @@
                 updateSyncStatus('☁️ Guardado: ' + new Date().toLocaleTimeString(), 'online');
             } catch (e) {
                 console.log('Error al guardar en la nube:', e);
-                updateSyncStatus('❌ Error al guardar', 'offline');
+                updateSyncStatus(' Error al guardar', 'offline');
             }
         }
 
@@ -927,7 +870,7 @@
             toggleMenu();
             if (!cloudSyncEnabled) { showConfigModal(); return; }
             showNotification('🔄 Sincronizando...');
-            updateSyncStatus('🔄 Sincronizando...', 'online');
+            updateSyncStatus(' Sincronizando...', 'online');
             await saveToCloudImmediate();
             await new Promise(r => setTimeout(r, 500));
             await loadFromCloud();
@@ -1106,9 +1049,8 @@
             document.getElementById('voiceResult').classList.remove('show');
             document.getElementById('imageUrlInput').value = '';
             document.getElementById('imageInput').value = '';
-            document.getElementById('fileInput').value = '';
             document.getElementById('attachmentInfo').innerHTML = '';
-            tempAttachment = { imageBase64: null, fileName: null, fileBase64: null, imageUrl: null };
+            currentImageUrl = null;
             selectType('expense');
         }
 
@@ -1118,7 +1060,7 @@
             const category = document.getElementById('category').value;
             const subcategory = document.getElementById('subcategory').value;
             const date = document.getElementById('date').value;
-            const imageUrl = document.getElementById('imageUrlInput').value.trim();
+            const imageUrl = document.getElementById('imageUrlInput').value.trim() || currentImageUrl;
 
             if (!amount || amount <= 0) { showNotification('Monto válido', true); return; }
             if (!description) { showNotification('Descripción', true); return; }
@@ -1131,10 +1073,7 @@
                 category: category,
                 subcategory: subcategory || category,
                 date: date || new Date().toISOString().split('T')[0],
-                imageUrl: imageUrl || null,
-                imageBase64: tempAttachment.imageBase64,
-                fileName: tempAttachment.fileName,
-                fileBase64: tempAttachment.fileBase64
+                imageUrl: imageUrl || null
             };
 
             if (editingTransactionId) {
@@ -1159,7 +1098,6 @@
         function deleteTransaction(id) {
             if (!confirm('¿Eliminar?')) return;
             transactions = transactions.filter(t => t.id !== id);
-            deleteAttachment(id);
             saveTransactions();
             updateUI();
             showNotification('Eliminada');
@@ -1262,7 +1200,7 @@
             voiceBtn.classList.add('listening'); voiceText.textContent = 'Escuchando...';
             recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
-                voiceResult.textContent = `🎤 "${transcript}"`;
+                voiceResult.textContent = ` "${transcript}"`;
                 voiceResult.classList.add('show');
                 parseVoiceCommand(transcript);
             };
@@ -1295,7 +1233,7 @@
             recognition.lang = 'es-ES'; recognition.continuous = false; recognition.interimResults = false;
             const voiceDescBtn = document.getElementById('voiceDescBtn');
             const descriptionInput = document.getElementById('description');
-            voiceDescBtn.classList.add('listening'); voiceDescBtn.textContent = '⏺️';
+            voiceDescBtn.classList.add('listening'); voiceDescBtn.textContent = '️';
             recognition.onresult = (event) => { descriptionInput.value = event.results[0][0].transcript.substring(0, 50); showNotification('✓ Descripción dictada'); };
             recognition.onerror = (event) => showNotification('Error: ' + event.error, true);
             recognition.onend = () => { voiceDescBtn.classList.remove('listening'); voiceDescBtn.textContent = '🎤'; };
