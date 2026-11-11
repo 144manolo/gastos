@@ -33,16 +33,24 @@
         .toggle-balance:active { transform: scale(0.9); }
         .balance-amount { font-size: 42px; font-weight: 700; color: var(--text-primary); text-shadow: 0 0 20px rgba(0, 240, 255, 0.3); letter-spacing: -1px; }
         .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .stat-card { background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 14px; padding: 16px; position: relative; overflow: hidden; min-height: 120px; }
+        .stat-card { background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 14px; padding: 16px; position: relative; overflow: hidden; min-height: 120px; cursor: pointer; transition: all 0.2s; }
+        .stat-card:active { transform: scale(0.97); }
         .stat-card.income { border-color: rgba(0, 240, 255, 0.2); }
         .stat-card.expense { border-color: rgba(255, 45, 149, 0.2); }
-        .stat-label { font-size: 11px; color: var(--text-secondary); letter-spacing: 1px; margin-bottom: 6px; }
+        .stat-label { font-size: 11px; color: var(--text-secondary); letter-spacing: 1px; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+        .stat-label .tap-hint { font-size: 9px; color: var(--neon-blue); opacity: 0.6; }
         .stat-amount { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
         .stat-card.income .stat-amount { color: var(--neon-blue); }
         .stat-card.expense .stat-amount { color: var(--neon-pink); }
         .mini-chart { height: 40px !important; width: 100% !important; max-height: 40px; max-width: 100%; display: block; }
         .chart-card { background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 14px; padding: 16px; margin-bottom: 20px; }
-        .chart-container { height: 200px; position: relative; }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .chart-header:active { opacity: 0.7; }
+        .chart-header h4 { font-size: 13px; color: var(--text-secondary); letter-spacing: 1px; }
+        .chart-toggle { font-size: 16px; color: var(--neon-blue); transition: transform 0.3s; }
+        .chart-toggle.expanded { transform: rotate(180deg); }
+        .chart-container { height: 200px; position: relative; transition: all 0.3s; }
+        .chart-container.collapsed { height: 0; overflow: hidden; }
         .filter-bar { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
         .filter-chip { padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); background: transparent; color: var(--text-secondary); font-size: 12px; white-space: nowrap; cursor: pointer; transition: all 0.3s; -webkit-tap-highlight-color: transparent; }
         .filter-chip:active { transform: scale(0.95); }
@@ -83,7 +91,6 @@
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 15px; outline: none; transition: border-color 0.3s; -webkit-appearance: none; font-family: inherit; }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--neon-blue); }
         .form-group select option { background: var(--bg-card); color: var(--text-primary); }
-        .form-group textarea { min-height: 120px; resize: vertical; font-size: 13px; line-height: 1.5; }
         .description-input-wrapper { display: flex; gap: 8px; align-items: center; }
         .description-input-wrapper input { flex: 1; }
         .voice-desc-btn { width: 48px; height: 48px; border-radius: 10px; border: 1px solid var(--neon-purple); background: rgba(176, 38, 255, 0.1); color: var(--neon-purple); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; flex-shrink: 0; -webkit-tap-highlight-color: transparent; }
@@ -160,6 +167,9 @@
         .inline-edit button { padding: 8px 12px; border-radius: 6px; border: none; font-size: 12px; cursor: pointer; font-weight: 600; }
         .inline-edit .save-btn { background: var(--neon-green); color: #000; }
         .inline-edit .cancel-btn { background: rgba(255, 255, 255, 0.1); color: var(--text-secondary); }
+        .list-total { font-size: 18px; font-weight: 700; text-align: center; padding: 12px; margin-bottom: 12px; border-radius: 10px; }
+        .list-total.income-total { background: rgba(0, 240, 255, 0.1); color: var(--neon-blue); }
+        .list-total.expense-total { background: rgba(255, 45, 149, 0.1); color: var(--neon-pink); }
         @media (max-width: 430px) { .app-container { padding: 16px 12px 100px; } }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
@@ -256,20 +266,30 @@
         </div>
 
         <div class="stats-row">
-            <div class="stat-card income">
-                <div class="stat-label">INGRESOS</div>
+            <div class="stat-card income" onclick="showMonthList('income')">
+                <div class="stat-label">
+                    INGRESOS
+                    <span class="tap-hint">👆 Ver mes</span>
+                </div>
                 <div class="stat-amount" id="totalIncome">+****</div>
                 <canvas class="mini-chart" id="incomeChart" width="200" height="40"></canvas>
             </div>
-            <div class="stat-card expense">
-                <div class="stat-label">GASTOS</div>
+            <div class="stat-card expense" onclick="showMonthList('expense')">
+                <div class="stat-label">
+                    GASTOS
+                    <span class="tap-hint">👆 Ver mes</span>
+                </div>
                 <div class="stat-amount" id="totalExpense">-****</div>
                 <canvas class="mini-chart" id="expenseChart" width="200" height="40"></canvas>
             </div>
         </div>
 
         <div class="chart-card">
-            <div class="chart-container">
+            <div class="chart-header" onclick="toggleChart()">
+                <h4>📊 GRÁFICO SEMANAL</h4>
+                <span class="chart-toggle" id="chartToggle">▼</span>
+            </div>
+            <div class="chart-container collapsed" id="chartContainer">
                 <canvas id="mainChart"></canvas>
             </div>
         </div>
@@ -306,43 +326,18 @@
                 <h3>NUEVA TRANSACCIÓN</h3>
                 <button class="modal-close" onclick="closeModal()">✕</button>
             </div>
-
-            <!-- Botón de voz completo (opcional) -->
             <button class="voice-btn" id="voiceBtn" onclick="startVoice()">
                 <span class="voice-icon">🎤</span>
                 <span id="voiceText">Dictar transacción completa</span>
             </button>
             <div class="voice-result" id="voiceResult"></div>
-
-            <!-- Tipo -->
             <div class="type-selector">
                 <button class="type-btn income-type" id="btnIncome" onclick="selectType('income')">📈 Ingreso</button>
                 <button class="type-btn expense-type active" id="btnExpense" onclick="selectType('expense')">📉 Gasto</button>
             </div>
-
-            <!-- Monto -->
-            <div class="form-group">
-                <label>MONTO</label>
-                <input type="number" id="amount" placeholder="0.00" step="0.01" min="0">
-            </div>
-
-            <!-- Categoría -->
-            <div class="form-group">
-                <label>CATEGORÍA</label>
-                <select id="category" onchange="updateSubcategories()">
-                    <option value="">Seleccionar categoría</option>
-                </select>
-            </div>
-
-            <!-- Subcategoría -->
-            <div class="form-group">
-                <label>SUBCATEGORÍA</label>
-                <select id="subcategory">
-                    <option value="">Seleccionar subcategoría</option>
-                </select>
-            </div>
-
-            <!-- Descripción con botón de voz -->
+            <div class="form-group"><label>MONTO</label><input type="number" id="amount" placeholder="0.00" step="0.01" min="0"></div>
+            <div class="form-group"><label>CATEGORÍA</label><select id="category" onchange="updateSubcategories()"><option value="">Seleccionar categoría</option></select></div>
+            <div class="form-group"><label>SUBCATEGORÍA</label><select id="subcategory"><option value="">Seleccionar subcategoría</option></select></div>
             <div class="form-group">
                 <label>
                     DESCRIPCIÓN
@@ -353,13 +348,7 @@
                     <button class="voice-desc-btn" id="voiceDescBtn" onclick="startVoiceDescription()" title="Dictar descripción">🎤</button>
                 </div>
             </div>
-
-            <!-- Fecha -->
-            <div class="form-group">
-                <label>FECHA</label>
-                <input type="date" id="date">
-            </div>
-
+            <div class="form-group"><label>FECHA</label><input type="date" id="date"></div>
             <button class="submit-btn" onclick="addTransaction()">AGREGAR TRANSACCIÓN</button>
         </div>
     </div>
@@ -391,6 +380,17 @@
             </div>
             <div class="cat-list" id="catList"></div>
             <button class="submit-btn danger" onclick="resetCategoriesToDefault()">🔄 Restaurar categorías por defecto</button>
+        </div>
+    </div>
+
+    <!-- Modal de listado mensual -->
+    <div class="modal-overlay" id="listModalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="listModalTitle">LISTADO</h3>
+                <button class="modal-close" onclick="closeListModal()">✕</button>
+            </div>
+            <div id="listModalContent"></div>
         </div>
     </div>
 
@@ -427,7 +427,7 @@
 
         let categories = {};
         let transactions = [];
-        let currentType = 'expense'; // ← POR DEFECTO GASTO
+        let currentType = 'expense';
         let currentFilter = 'all';
         let currentCatTab = 'income';
         let mainChart = null;
@@ -435,11 +435,13 @@
         let expenseMiniChart = null;
         let isModalOpen = false;
         let isCatModalOpen = false;
+        let isListModalOpen = false;
         let isDemoMode = false;
         let editingCat = null;
         let editingSub = null;
         let saveTimeout = null;
         let cloudSyncEnabled = false;
+        let chartExpanded = false;
 
         // ===== SALDO OCULTO =====
         let balanceVisible = false;
@@ -453,7 +455,6 @@
             const balanceEl = document.getElementById('totalBalance');
             const incomeEl = document.getElementById('totalIncome');
             const expenseEl = document.getElementById('totalExpense');
-
             if (balanceVisible) {
                 btn.textContent = '🙈';
                 balanceEl.textContent = `$${realBalance.toLocaleString('es-ES', {minimumFractionDigits: 2})}`;
@@ -465,6 +466,66 @@
                 incomeEl.textContent = '+****';
                 expenseEl.textContent = '-****';
             }
+        }
+
+        // ===== GRÁFICO COLAPSABLE =====
+        function toggleChart() {
+            chartExpanded = !chartExpanded;
+            const container = document.getElementById('chartContainer');
+            const toggle = document.getElementById('chartToggle');
+            if (chartExpanded) {
+                container.classList.remove('collapsed');
+                toggle.classList.add('expanded');
+                setTimeout(() => updateCharts(getFilteredTransactions()), 100);
+            } else {
+                container.classList.add('collapsed');
+                toggle.classList.remove('expanded');
+            }
+        }
+
+        // ===== LISTADO MENSUAL =====
+        function showMonthList(type) {
+            const now = new Date();
+            const monthAgo = new Date(now.getFullYear(), now.getMonth(), 1);
+            const filtered = transactions.filter(t => t.type === type && new Date(t.date + 'T00:00:00') >= monthAgo);
+            const total = filtered.reduce((sum, t) => sum + t.amount, 0);
+            const title = type === 'income' ? '📈 INGRESOS DEL MES' : '📉 GASTOS DEL MES';
+            const totalClass = type === 'income' ? 'income-total' : 'expense-total';
+            const sign = type === 'income' ? '+' : '-';
+            const colorClass = type === 'income' ? 'positive' : 'negative';
+
+            document.getElementById('listModalTitle').textContent = title;
+
+            let content = `<div class="list-total ${totalClass}">Total: ${sign}$${total.toLocaleString('es-ES', {minimumFractionDigits: 2})}</div>`;
+
+            if (filtered.length === 0) {
+                content += `<div class="empty-state"><div class="empty-state-icon">📭</div><div>Sin ${type === 'income' ? 'ingresos' : 'gastos'} este mes</div></div>`;
+            } else {
+                content += filtered.map(t => `
+                    <div class="activity-item">
+                        <div class="activity-info">
+                            <h4>${escapeHtml(t.description)}</h4>
+                            <span>${escapeHtml(t.category)} ${t.subcategory !== t.category ? '→ ' + escapeHtml(t.subcategory) : ''} • ${formatDate(t.date)}</span>
+                        </div>
+                        <div class="activity-amount ${colorClass}">
+                            ${sign}$${t.amount.toLocaleString('es-ES', {minimumFractionDigits: 2})}
+                        </div>
+                        <button class="delete-btn" onclick="deleteTransaction(${t.id}); showMonthList('${type}');">🗑️</button>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('listModalContent').innerHTML = content;
+            document.getElementById('listModalOverlay').classList.add('active');
+            isListModalOpen = true;
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeListModal() {
+            if (!isListModalOpen) return;
+            isListModalOpen = false;
+            document.getElementById('listModalOverlay').classList.remove('active');
+            document.body.style.overflow = '';
         }
 
         // ===== MODAL DE CONFIGURACIÓN =====
@@ -498,7 +559,6 @@
             loadFromStorage();
             updateCategoriesSelect();
             updateUI();
-
             if (GITHUB_TOKEN && GIST_ID) {
                 cloudSyncEnabled = true;
                 document.getElementById('configModal').style.display = 'none';
@@ -765,7 +825,7 @@
             document.getElementById('category').value = '';
             document.getElementById('subcategory').value = '';
             document.getElementById('voiceResult').classList.remove('show');
-            selectType('expense'); // ← POR DEFECTO GASTO
+            selectType('expense');
         }
 
         function addTransaction() {
@@ -785,7 +845,14 @@
             showNotification('✓ Transacción agregada');
         }
 
-        function deleteTransaction(id) { if (!confirm('¿Eliminar?')) return; transactions = transactions.filter(t => t.id !== id); saveTransactions(); updateUI(); showNotification('Eliminada'); }
+        function deleteTransaction(id) {
+            if (!confirm('¿Eliminar?')) return;
+            transactions = transactions.filter(t => t.id !== id);
+            saveTransactions();
+            updateUI();
+            showNotification('Eliminada');
+        }
+
         function saveTransactions() { saveTransactionsLocal(); saveToCloud(); }
         function saveCategories() { saveCategoriesLocal(); saveToCloud(); }
 
@@ -809,7 +876,7 @@
             const changePercent = totalIncome > 0 ? ((balance / totalIncome) * 100).toFixed(1) : 0;
             document.getElementById('balanceChange').textContent = `▲ +${changePercent}%`;
             updateActivityList(filtered);
-            updateCharts(filtered);
+            if (chartExpanded) updateCharts(filtered);
             updateMiniCharts();
         }
 
@@ -871,7 +938,7 @@
             expenseMiniChart = new Chart(expenseCtx, { type: 'line', data: { labels: expenseData.map((_, i) => i), datasets: [{ data: expenseData.length ? expenseData : [0,0,0,0,0,0,0], borderColor: '#ff2d95', borderWidth: 2, tension: 0.4, fill: false, pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false, min: 0 } }, layout: { padding: 0 }, animation: { duration: 0 } } });
         }
 
-        // ===== VOZ: Transacción completa =====
+        // ===== VOZ: Transacción completa (SIN descripción) =====
         function startVoice() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) { showNotification('Voz no disponible', true); return; }
@@ -881,7 +948,12 @@
             const voiceText = document.getElementById('voiceText');
             const voiceResult = document.getElementById('voiceResult');
             voiceBtn.classList.add('listening'); voiceText.textContent = 'Escuchando...';
-            recognition.onresult = (event) => { const transcript = event.results[0][0].transcript; voiceResult.textContent = `🎤 "${transcript}"`; voiceResult.classList.add('show'); parseVoiceCommand(transcript); };
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                voiceResult.textContent = `🎤 "${transcript}"`;
+                voiceResult.classList.add('show');
+                parseVoiceCommand(transcript);
+            };
             recognition.onerror = (event) => showNotification('Error: ' + event.error, true);
             recognition.onend = () => { voiceBtn.classList.remove('listening'); voiceText.textContent = 'Dictar transacción completa'; };
             recognition.start();
@@ -889,55 +961,54 @@
 
         function parseVoiceCommand(text) {
             const lower = text.toLowerCase();
-            if (lower.includes('gasto') || lower.includes('pagué') || lower.includes('compré')) selectType('expense');
-            else if (lower.includes('ingreso') || lower.includes('cobré') || lower.includes('recibí')) selectType('income');
+            // Detectar tipo
+            if (lower.includes('gasto') || lower.includes('pagué') || lower.includes('compré') || lower.includes('gaste')) selectType('expense');
+            else if (lower.includes('ingreso') || lower.includes('cobré') || lower.includes('recibí') || lower.includes('salario')) selectType('income');
+
+            // Detectar monto
             const amountMatch = text.match(/(\d+[.,]?\d*)/);
             if (amountMatch) document.getElementById('amount').value = parseFloat(amountMatch[1].replace(',', '.'));
+
+            // Detectar categoría y subcategoría
             for (let cat in categories[currentType]) {
                 if (lower.includes(cat.toLowerCase())) {
                     document.getElementById('category').value = cat;
                     updateSubcategories();
-                    for (let sub of categories[currentType][cat]) { if (lower.includes(sub.toLowerCase())) { document.getElementById('subcategory').value = sub; break; } }
+                    for (let sub of categories[currentType][cat]) {
+                        if (lower.includes(sub.toLowerCase())) {
+                            document.getElementById('subcategory').value = sub;
+                            break;
+                        }
+                    }
                     break;
                 }
             }
-            const desc = text.replace(/(\d+[.,]?\d*)/g, '').trim();
-            if (desc.length > 3) document.getElementById('description').value = desc.substring(0, 50);
-            showNotification('✓ Voz procesada');
+            // ⚠️ NO rellena la descripción - solo categoría, subcategoría y monto
+            showNotification('✓ Monto, categoría y subcategoría detectados. Dicta la descripción con el 🎤 pequeño');
         }
 
         // ===== VOZ: Solo descripción =====
         function startVoiceDescription() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) { showNotification('Voz no disponible en este navegador', true); return; }
-
             const recognition = new SpeechRecognition();
             recognition.lang = 'es-ES';
             recognition.continuous = false;
             recognition.interimResults = false;
-
             const voiceDescBtn = document.getElementById('voiceDescBtn');
             const descriptionInput = document.getElementById('description');
-
             voiceDescBtn.classList.add('listening');
             voiceDescBtn.textContent = '⏺️';
-
             recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
-                // Solo rellena la descripción, NO toca categoría/subcategoría
                 descriptionInput.value = transcript.substring(0, 50);
                 showNotification('✓ Descripción dictada');
             };
-
-            recognition.onerror = (event) => {
-                showNotification('Error al escuchar: ' + event.error, true);
-            };
-
+            recognition.onerror = (event) => showNotification('Error al escuchar: ' + event.error, true);
             recognition.onend = () => {
                 voiceDescBtn.classList.remove('listening');
                 voiceDescBtn.textContent = '🎤';
             };
-
             recognition.start();
         }
 
@@ -996,11 +1067,22 @@
 
         document.getElementById('modalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeModal(); });
         document.getElementById('catModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeCategoriesModal(); });
+        document.getElementById('listModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeListModal(); });
         document.getElementById('configModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) {} });
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') { if (isModalOpen) closeModal(); if (isCatModalOpen) closeCategoriesModal(); if (editingCat || editingSub) cancelEdit(); const menu = document.getElementById('sideMenu'); if (menu.classList.contains('active')) toggleMenu(); }
-            if (e.key === 'Enter') { if (editingCat) { const input = document.getElementById('catEditInput'); if (input && document.activeElement === input) saveCatEdit(editingCat); } if (editingSub) { const input = document.getElementById('subEditInput'); if (input && document.activeElement === input) { const parts = editingSub.split('::'); saveSubEdit(parts[0], parseInt(parts[1])); } } }
+            if (e.key === 'Escape') {
+                if (isModalOpen) closeModal();
+                if (isCatModalOpen) closeCategoriesModal();
+                if (isListModalOpen) closeListModal();
+                if (editingCat || editingSub) cancelEdit();
+                const menu = document.getElementById('sideMenu');
+                if (menu.classList.contains('active')) toggleMenu();
+            }
+            if (e.key === 'Enter') {
+                if (editingCat) { const input = document.getElementById('catEditInput'); if (input && document.activeElement === input) saveCatEdit(editingCat); }
+                if (editingSub) { const input = document.getElementById('subEditInput'); if (input && document.activeElement === input) { const parts = editingSub.split('::'); saveSubEdit(parts[0], parseInt(parts[1])); } }
+            }
         });
     </script>
 </body>
