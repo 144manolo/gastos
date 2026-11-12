@@ -831,7 +831,7 @@
             const total = pending.reduce((s, i) => s + i.qty * i.price, 0);
             html += `<div class="shop-total"><span class="label">TOTAL ESTIMADO (${pending.length} pendientes)</span><span class="value">${total.toLocaleString('es-ES', {minimumFractionDigits: 2})}€</span></div>`;
             html += `<div class="shop-actions">
-                <button class="shop-register-btn" onclick="registerShoppingAsExpense()">💳 Registrar como gasto</button>
+                <button class="shop-register-btn" onclick="registerShoppingAsExpense()">💳 COMPRADO </button>
                 <button class="shop-clear-btn" onclick="clearShoppingList()">🗑️ Vaciar</button>
             </div>`;
 
