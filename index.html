@@ -199,7 +199,6 @@
         .upload-progress.active { display: block; }
         .upload-progress-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 6px; overflow: hidden; }
         .upload-progress-fill { height: 100%; background: var(--neon-blue); border-radius: 2px; transition: width 0.3s; width: 0%; }
-        /* ===== PRESUPUESTOS ===== */
         .budget-item { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
         .budget-item-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .budget-cat-name { font-size: 14px; font-weight: 600; }
@@ -221,7 +220,6 @@
         .budget-total-summary .label { font-size: 11px; color: var(--text-secondary); letter-spacing: 1px; }
         .budget-total-summary .value { font-size: 18px; font-weight: 700; color: var(--neon-blue); margin-top: 4px; }
         .budget-section-title { font-size: 13px; color: var(--neon-purple); letter-spacing: 1px; margin: 20px 0 12px; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
-        /* ===== LISTA DE LA COMPRA ===== */
         .shop-item { display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; transition: all 0.3s; }
         .shop-item.done { opacity: 0.5; }
         .shop-item.done .shop-item-name { text-decoration: line-through; color: var(--text-secondary); }
@@ -246,6 +244,25 @@
         .shop-register-btn { background: linear-gradient(135deg, var(--neon-green), #00cc6e); color: #000; }
         .shop-clear-btn { background: transparent; border: 1px solid var(--neon-red); color: var(--neon-red); }
         .shop-image-pending { font-size: 11px; color: var(--neon-green); margin-top: 4px; }
+        .shop-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+        .shop-tab { padding: 12px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: transparent; color: var(--text-secondary); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; -webkit-tap-highlight-color: transparent; }
+        .shop-tab.active { border-color: var(--neon-pink); color: var(--neon-pink); background: rgba(255, 45, 149, 0.1); }
+        .shop-search { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 14px; outline: none; margin-bottom: 12px; }
+        .shop-search:focus { border-color: var(--neon-pink); }
+        .shop-history-date { font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
+        .shop-readd-btn { background: rgba(0, 240, 255, 0.1); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 6px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: 600; }
+        .shop-readd-btn:active { background: rgba(0, 240, 255, 0.2); }
+        .shop-history-group { margin-bottom: 16px; }
+        .shop-history-group-title { font-size: 11px; color: var(--neon-yellow); letter-spacing: 1px; padding: 6px 0; border-bottom: 1px solid rgba(255, 193, 7, 0.2); margin-bottom: 8px; }
+        .image-choice-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 500; display: none; align-items: center; justify-content: center; }
+        .image-choice-modal.active { display: flex; }
+        .image-choice-box { background: var(--bg-card); border: 1px solid var(--border-glow); border-radius: 16px; padding: 24px; width: 90%; max-width: 320px; }
+        .image-choice-box h4 { font-size: 16px; margin-bottom: 16px; text-align: center; color: var(--neon-blue); }
+        .image-choice-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .image-choice-btn { padding: 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.03); color: var(--text-primary); font-size: 14px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: all 0.2s; }
+        .image-choice-btn:active { background: rgba(0, 240, 255, 0.1); border-color: var(--neon-blue); }
+        .image-choice-btn .icon { font-size: 28px; }
+        .image-choice-cancel { width: 100%; margin-top: 12px; padding: 12px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: transparent; color: var(--text-secondary); font-size: 14px; cursor: pointer; }
         @media (max-width: 430px) { .app-container { padding: 16px 12px 100px; } }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
@@ -256,82 +273,38 @@
     <!-- Modal de configuración inicial -->
     <div class="modal-overlay" id="configModal" style="display: flex;">
         <div class="modal">
-            <div class="modal-header">
-                <h3>⚙️ CONFIGURACIÓN INICIAL</h3>
-            </div>
-            <p style="margin-bottom: 16px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
-                Para sincronizar tus datos entre dispositivos, introduce tu token de GitHub y el ID de tu Gist.
-            </p>
-            <div class="form-group">
-                <label>🔑 TOKEN DE GITHUB</label>
-                <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxx">
-            </div>
-            <div class="form-group">
-                <label>📋 ID DEL GIST</label>
-                <input type="text" id="gistIdInput" placeholder="abc123def456">
-            </div>
+            <div class="modal-header"><h3>⚙️ CONFIGURACIÓN INICIAL</h3></div>
+            <p style="margin-bottom: 16px; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">Para sincronizar tus datos entre dispositivos, introduce tu token de GitHub y el ID de tu Gist.</p>
+            <div class="form-group"><label>🔑 TOKEN DE GITHUB</label><input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxx"></div>
+            <div class="form-group"><label>📋 ID DEL GIST</label><input type="text" id="gistIdInput" placeholder="abc123def456"></div>
             <button class="submit-btn" onclick="saveConfig()">GUARDAR Y CONECTAR</button>
-            <p style="margin-top: 16px; font-size: 11px; color: var(--text-secondary); text-align: center; line-height: 1.5;">
-                Los datos se guardan solo en este dispositivo.<br>
-                Si no tienes token, crea uno en github.com/settings/tokens
-            </p>
+            <p style="margin-top: 16px; font-size: 11px; color: var(--text-secondary); text-align: center; line-height: 1.5;">Los datos se guardan solo en este dispositivo.<br>Si no tienes token, crea uno en github.com/settings/tokens</p>
         </div>
     </div>
 
     <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
     <div class="side-menu" id="sideMenu">
-        <div class="side-menu-header">
-            <h3>MENÚ</h3>
-            <button class="side-menu-close" onclick="toggleMenu()">✕</button>
-        </div>
-        <div class="menu-item" onclick="showNotification('Perfil - Próximamente')">
-            <span class="menu-item-icon">👤</span><span>Mi Perfil</span>
-        </div>
-        <div class="menu-item" onclick="syncNow()">
-            <span class="menu-item-icon">☁️</span><span>Sincronizar ahora</span>
-        </div>
-        <div class="menu-item" onclick="openBudgetModal()">
-            <span class="menu-item-icon">💰</span><span>Presupuestos</span>
-        </div>
-        <div class="menu-item" onclick="openShoppingModal()">
-            <span class="menu-item-icon">🛒</span><span>Lista de la compra</span>
-        </div>
-        <div class="menu-item" onclick="showAllTransactions()">
-            <span class="menu-item-icon">📋</span><span>Ver todos los movimientos</span>
-        </div>
-        <div class="menu-item" onclick="openCategoriesModal()">
-            <span class="menu-item-icon">🏷️</span><span>Gestionar categorías</span>
-        </div>
-        <div class="menu-item" onclick="exportData()">
-            <span class="menu-item-icon">📥</span><span>Exportar datos</span>
-        </div>
-        <div class="menu-item" onclick="importData()">
-            <span class="menu-item-icon">📤</span><span>Importar datos</span>
-        </div>
-        <div class="menu-item" onclick="clearAllData()">
-            <span class="menu-item-icon">🗑️</span><span>Borrar todo</span>
-        </div>
-        <div class="menu-item" onclick="loadDemoData()">
-            <span class="menu-item-icon">🎲</span><span>Cargar datos demo</span>
-        </div>
-        <div class="menu-item" onclick="showConfigModal()">
-            <span class="menu-item-icon">⚙️</span><span>Configurar token</span>
-        </div>
+        <div class="side-menu-header"><h3>MENÚ</h3><button class="side-menu-close" onclick="toggleMenu()">✕</button></div>
+        <div class="menu-item" onclick="showNotification('Perfil - Próximamente')"><span class="menu-item-icon">👤</span><span>Mi Perfil</span></div>
+        <div class="menu-item" onclick="syncNow()"><span class="menu-item-icon">☁️</span><span>Sincronizar ahora</span></div>
+        <div class="menu-item" onclick="openBudgetModal()"><span class="menu-item-icon">💰</span><span>Presupuestos</span></div>
+        <div class="menu-item" onclick="openShoppingModal()"><span class="menu-item-icon">🛒</span><span>Lista de la compra</span></div>
+        <div class="menu-item" onclick="showAllTransactions()"><span class="menu-item-icon">📋</span><span>Ver todos los movimientos</span></div>
+        <div class="menu-item" onclick="openCategoriesModal()"><span class="menu-item-icon">🏷️</span><span>Gestionar categorías</span></div>
+        <div class="menu-item" onclick="exportData()"><span class="menu-item-icon">📥</span><span>Exportar datos</span></div>
+        <div class="menu-item" onclick="importData()"><span class="menu-item-icon">📤</span><span>Importar datos</span></div>
+        <div class="menu-item" onclick="clearAllData()"><span class="menu-item-icon">🗑️</span><span>Borrar todo</span></div>
+        <div class="menu-item" onclick="loadDemoData()"><span class="menu-item-icon">🎲</span><span>Cargar datos demo</span></div>
+        <div class="menu-item" onclick="showConfigModal()"><span class="menu-item-icon">⚙️</span><span>Configurar token</span></div>
         <div class="sync-status" id="syncStatus">☁️ Sincronización: pendiente</div>
     </div>
 
     <div class="app-container">
         <div class="header">
-            <div class="menu-btn" onclick="toggleMenu()">
-                <span></span><span></span><span></span>
-                <span class="menu-label">MENÚ</span>
-            </div>
-            <div class="app-title">
-                <h1>CONTABILIDAD</h1>
-                <h2>MFB</h2>
-            </div>
+            <div class="menu-btn" onclick="toggleMenu()"><span></span><span></span><span></span><span class="menu-label">MENÚ</span></div>
+            <div class="app-title"><h1>CONTABILIDAD</h1><h2>MFB</h2></div>
             <div class="header-right">
-                <div class="cart-btn" onclick="openShoppingModal()">
+                <div class="cart-btn" onclick="openShoppingModalDirect()">
                     🛒
                     <span class="cart-badge" id="cartBadge">0</span>
                 </div>
@@ -339,52 +312,23 @@
             </div>
         </div>
 
-        <div id="demoBanner" class="demo-banner" style="display: none;">
-            🎲 Modo demo activo
-            <button onclick="clearAllData()">Limpiar</button>
-        </div>
+        <div id="demoBanner" class="demo-banner" style="display: none;">🎲 Modo demo activo<button onclick="clearAllData()">Limpiar</button></div>
 
         <div class="balance-card">
-            <div class="balance-label">
-                SALDO TOTAL
-                <span class="balance-change" id="balanceChange">▲ +0.0%</span>
-                <span class="toggle-balance" onclick="toggleBalanceVisibility()" id="toggleBalanceBtn">👁️</span>
-            </div>
+            <div class="balance-label">SALDO TOTAL<span class="balance-change" id="balanceChange">▲ +0.0%</span><span class="toggle-balance" onclick="toggleBalanceVisibility()" id="toggleBalanceBtn">👁️</span></div>
             <div class="balance-amount" id="totalBalance">****</div>
         </div>
 
-        <div class="budget-alert" id="budgetAlert" onclick="openBudgetModal()">
-            <span id="budgetAlertIcon">⚠️</span>
-            <span id="budgetAlertText"></span>
-        </div>
+        <div class="budget-alert" id="budgetAlert" onclick="openBudgetModal()"><span id="budgetAlertIcon">⚠️</span><span id="budgetAlertText"></span></div>
 
         <div class="stats-row">
-            <div class="stat-card income" onclick="showMonthList('income')">
-                <div class="stat-label">
-                    INGRESOS
-                    <span class="tap-hint">👆 Ver mes</span>
-                </div>
-                <div class="stat-amount" id="totalIncome">+****</div>
-                <canvas class="mini-chart" id="incomeChart" width="200" height="40"></canvas>
-            </div>
-            <div class="stat-card expense" onclick="showMonthList('expense')">
-                <div class="stat-label">
-                    GASTOS
-                    <span class="tap-hint">👆 Ver mes</span>
-                </div>
-                <div class="stat-amount" id="totalExpense">-****</div>
-                <canvas class="mini-chart" id="expenseChart" width="200" height="40"></canvas>
-            </div>
+            <div class="stat-card income" onclick="showMonthList('income')"><div class="stat-label">INGRESOS<span class="tap-hint">👆 Ver mes</span></div><div class="stat-amount" id="totalIncome">+****</div><canvas class="mini-chart" id="incomeChart" width="200" height="40"></canvas></div>
+            <div class="stat-card expense" onclick="showMonthList('expense')"><div class="stat-label">GASTOS<span class="tap-hint">👆 Ver mes</span></div><div class="stat-amount" id="totalExpense">-****</div><canvas class="mini-chart" id="expenseChart" width="200" height="40"></canvas></div>
         </div>
 
         <div class="chart-card">
-            <div class="chart-header" onclick="toggleChart()">
-                <h4>📊 GRÁFICO SEMANAL</h4>
-                <span class="chart-toggle" id="chartToggle">▼</span>
-            </div>
-            <div class="chart-container collapsed" id="chartContainer">
-                <canvas id="mainChart"></canvas>
-            </div>
+            <div class="chart-header" onclick="toggleChart()"><h4>📊 GRÁFICO SEMANAL</h4><span class="chart-toggle" id="chartToggle">▼</span></div>
+            <div class="chart-container collapsed" id="chartContainer"><canvas id="mainChart"></canvas></div>
         </div>
 
         <div class="filter-bar">
@@ -397,13 +341,7 @@
 
         <div class="activity-card">
             <div class="activity-title">ACTIVIDAD RECIENTE</div>
-            <div id="activityList">
-                <div class="empty-state">
-                    <div class="empty-state-icon">💳</div>
-                    <div>Sin transacciones aún</div>
-                    <div style="font-size: 11px; margin-top: 4px;">Agrega tu primera transacción</div>
-                </div>
-            </div>
+            <div id="activityList"><div class="empty-state"><div class="empty-state-icon">💳</div><div>Sin transacciones aún</div><div style="font-size: 11px; margin-top: 4px;">Agrega tu primera transacción</div></div></div>
         </div>
     </div>
 
@@ -415,14 +353,8 @@
     <!-- Modal de transacción -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
-            <div class="modal-header">
-                <h3 id="modalTitle">NUEVA TRANSACCIÓN</h3>
-                <button class="modal-close" onclick="closeModal()">✕</button>
-            </div>
-            <button class="voice-btn" id="voiceBtn" onclick="startVoice()">
-                <span class="voice-icon">🎤</span>
-                <span id="voiceText">Dictar transacción completa</span>
-            </button>
+            <div class="modal-header"><h3 id="modalTitle">NUEVA TRANSACCIÓN</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+            <button class="voice-btn" id="voiceBtn" onclick="startVoice()"><span class="voice-icon">🎤</span><span id="voiceText">Dictar transacción completa</span></button>
             <div class="voice-result" id="voiceResult"></div>
             <div class="type-selector">
                 <button class="type-btn income-type" id="btnIncome" onclick="selectType('income')">📈 Ingreso</button>
@@ -432,30 +364,20 @@
             <div class="form-group"><label>CATEGORÍA</label><select id="category" onchange="updateSubcategories()"><option value="">Seleccionar categoría</option></select></div>
             <div class="form-group"><label>SUBCATEGORÍA</label><select id="subcategory"><option value="">Seleccionar subcategoría</option></select></div>
             <div class="form-group">
-                <label>
-                    DESCRIPCIÓN
-                    <span style="font-size: 10px; color: var(--neon-purple);">🎤 Pulsa el micrófono para dictar</span>
-                </label>
+                <label>DESCRIPCIÓN<span style="font-size: 10px; color: var(--neon-purple);">🎤 Pulsa el micrófono para dictar</span></label>
                 <div class="description-input-wrapper">
                     <input type="text" id="description" placeholder="Ej: Compra supermercado" maxlength="50">
-                    <button class="voice-desc-btn" id="voiceDescBtn" onclick="startVoiceDescription()" title="Dictar descripción">🎤</button>
+                    <button class="voice-desc-btn" id="voiceDescBtn" onclick="startVoiceDescription()">🎤</button>
                 </div>
             </div>
             <div class="form-group">
                 <label>📎 IMAGEN (se sube a la nube ☁️)</label>
                 <div class="file-input-wrapper">
-                    <label for="imageInput">🖼️ Seleccionar imagen</label>
-                    <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)">
+                    <label onclick="showImageChoice('transaction')">🖼️ Añadir imagen</label>
                 </div>
                 <div id="imagePreview"></div>
-                <div class="upload-progress" id="uploadProgress">
-                    <span id="uploadText">Subiendo imagen...</span>
-                    <div class="upload-progress-bar"><div class="upload-progress-fill" id="uploadProgressFill"></div></div>
-                </div>
-                <div class="form-group" style="margin-top: 10px;">
-                    <label style="font-size: 11px;">O pega URL de imagen:</label>
-                    <input type="text" id="imageUrlInput" placeholder="https://..." style="font-size: 13px; padding: 10px;">
-                </div>
+                <div class="upload-progress" id="uploadProgress"><span id="uploadText">Subiendo imagen...</span><div class="upload-progress-bar"><div class="upload-progress-fill" id="uploadProgressFill"></div></div></div>
+                <div class="form-group" style="margin-top: 10px;"><label style="font-size: 11px;">O pega URL de imagen:</label><input type="text" id="imageUrlInput" placeholder="https://..." style="font-size: 13px; padding: 10px;"></div>
             </div>
             <div class="form-group"><label>FECHA</label><input type="date" id="date"></div>
             <button class="submit-btn" id="submitBtn" onclick="saveTransaction()">AGREGAR TRANSACCIÓN</button>
@@ -465,18 +387,12 @@
     <!-- Modal de categorías -->
     <div class="modal-overlay" id="catModalOverlay">
         <div class="modal">
-            <div class="modal-header">
-                <h3>GESTIONAR CATEGORÍAS</h3>
-                <button class="modal-close" onclick="closeCategoriesModal()">✕</button>
-            </div>
+            <div class="modal-header"><h3>GESTIONAR CATEGORÍAS</h3><button class="modal-close" onclick="closeCategoriesModal()">✕</button></div>
             <div class="cat-tabs">
                 <button class="cat-tab income-tab active" id="catTabIncome" onclick="selectCatTab('income')">📈 Ingresos</button>
                 <button class="cat-tab expense-tab" id="catTabExpense" onclick="selectCatTab('expense')">📉 Gastos</button>
             </div>
-            <div class="add-cat-section">
-                <input type="text" id="newCatName" placeholder="Nombre de nueva categoría" maxlength="30">
-                <button onclick="addNewCategory()">+ Añadir</button>
-            </div>
+            <div class="add-cat-section"><input type="text" id="newCatName" placeholder="Nombre de nueva categoría" maxlength="30"><button onclick="addNewCategory()">+ Añadir</button></div>
             <div class="import-section">
                 <h4>📋 PEGAR O IMPORTAR CATEGORÍAS</h4>
                 <div class="help-text">Formato: <strong>Categoría: Sub1, Sub2</strong> o solo <strong>Categoría</strong></div>
@@ -495,10 +411,7 @@
     <!-- Modal de listado mensual -->
     <div class="modal-overlay" id="listModalOverlay">
         <div class="modal">
-            <div class="modal-header">
-                <h3 id="listModalTitle">LISTADO</h3>
-                <button class="modal-close" onclick="closeListModal()">✕</button>
-            </div>
+            <div class="modal-header"><h3 id="listModalTitle">LISTADO</h3><button class="modal-close" onclick="closeListModal()">✕</button></div>
             <div id="listModalContent"></div>
         </div>
     </div>
@@ -506,63 +419,58 @@
     <!-- Modal de todos los movimientos -->
     <div class="modal-overlay" id="allModalOverlay">
         <div class="modal">
-            <div class="modal-header">
-                <h3>📋 TODOS LOS MOVIMIENTOS</h3>
-                <button class="modal-close" onclick="closeAllModal()">✕</button>
-            </div>
+            <div class="modal-header"><h3>📋 TODOS LOS MOVIMIENTOS</h3><button class="modal-close" onclick="closeAllModal()">✕</button></div>
             <div id="allModalContent"></div>
         </div>
     </div>
 
-    <!-- Modal de PRESUPUESTOS -->
+    <!-- Modal de presupuestos -->
     <div class="modal-overlay" id="budgetModalOverlay">
         <div class="modal">
-            <div class="modal-header">
-                <h3>💰 PRESUPUESTOS MENSUALES</h3>
-                <button class="modal-close" onclick="closeBudgetModal()">✕</button>
-            </div>
-            <div class="budget-total-summary">
-                <div class="label">PRESUPUESTO TOTAL DEL MES</div>
-                <div class="value" id="budgetTotalSummary">0€</div>
-            </div>
+            <div class="modal-header"><h3>💰 PRESUPUESTOS MENSUALES</h3><button class="modal-close" onclick="closeBudgetModal()">✕</button></div>
+            <div class="budget-total-summary"><div class="label">PRESUPUESTO TOTAL DEL MES</div><div class="value" id="budgetTotalSummary">0€</div></div>
             <div id="budgetList"></div>
             <button class="submit-btn danger" onclick="clearAllBudgets()">🗑️ Eliminar todos los presupuestos</button>
         </div>
     </div>
 
-    <!-- Modal de LISTA DE LA COMPRA -->
+    <!-- Modal de lista de la compra -->
     <div class="modal-overlay" id="shopModalOverlay">
         <div class="modal">
-            <div class="modal-header">
-                <h3>🛒 LISTA DE LA COMPRA</h3>
-                <button class="modal-close" onclick="closeShoppingModal()">✕</button>
+            <div class="modal-header"><h3>🛒 LISTA DE LA COMPRA</h3><button class="modal-close" onclick="closeShoppingModal()">✕</button></div>
+            <div class="shop-tabs">
+                <button class="shop-tab active" id="shopTabList" onclick="switchShopTab('list')">📝 Lista actual</button>
+                <button class="shop-tab" id="shopTabHistory" onclick="switchShopTab('history')">📜 Historial</button>
             </div>
-            <div class="shop-add-row">
-                <input type="text" class="name-input" id="shopName" placeholder="Producto" maxlength="30">
-                <input type="number" class="qty-input" id="shopQty" placeholder="Ud" min="1" value="1">
-                <input type="number" class="price-input" id="shopPrice" placeholder="€" step="0.01" min="0">
+            <div id="shopTabContent"></div>
+        </div>
+    </div>
+
+    <!-- Modal de elección de imagen -->
+    <div class="image-choice-modal" id="imageChoiceModal">
+        <div class="image-choice-box">
+            <h4>📷 ¿Cómo quieres añadir la imagen?</h4>
+            <div class="image-choice-btns">
+                <button class="image-choice-btn" onclick="chooseImageSource('camera')">
+                    <span class="icon">📸</span>
+                    <span>Hacer foto</span>
+                </button>
+                <button class="image-choice-btn" onclick="chooseImageSource('gallery')">
+                    <span class="icon">🖼️</span>
+                    <span>Galería</span>
+                </button>
             </div>
-            <div class="file-input-wrapper" style="margin-bottom: 12px;">
-                <label for="shopImageInput">🖼️ Foto del producto (opcional)</label>
-                <input type="file" id="shopImageInput" accept="image/*" onchange="handleShopImage(event)">
-            </div>
-            <div id="shopImagePreview"></div>
-            <button class="submit-btn" onclick="addShopItem()" style="margin-bottom: 16px;">+ AÑADIR A LA LISTA</button>
-            <div id="shopList"></div>
-            <div class="shop-total">
-                <span class="label">TOTAL ESTIMADO</span>
-                <span class="value" id="shopTotal">0,00€</span>
-            </div>
-            <div class="shop-actions">
-                <button class="shop-register-btn" onclick="registerShoppingAsExpense()">💳 Registrar como gasto</button>
-                <button class="shop-clear-btn" onclick="clearShoppingList()">🗑️ Vaciar</button>
-            </div>
+            <button class="image-choice-cancel" onclick="closeImageChoice()">Cancelar</button>
         </div>
     </div>
 
     <div class="notification" id="notification"></div>
     <input type="file" id="importFile" accept=".json" style="display: none" onchange="handleImport(event)">
     <input type="file" id="importCatFile" accept=".json" style="display: none" onchange="handleImportCategories(event)">
+    <input type="file" id="transactionImageCamera" accept="image/*" capture="environment" style="display: none" onchange="handleImageUpload(event)">
+    <input type="file" id="transactionImageGallery" accept="image/*" style="display: none" onchange="handleImageUpload(event)">
+    <input type="file" id="shopImageCamera" accept="image/*" capture="environment" style="display: none" onchange="handleShopImage(event)">
+    <input type="file" id="shopImageGallery" accept="image/*" style="display: none" onchange="handleShopImage(event)">
 
     <script>
         // ===== CONFIGURACIÓN =====
@@ -597,11 +505,13 @@
 
         let categories = {};
         let transactions = [];
-        let budgets = {};          // { 'Alimentación': 200, ... }
-        let shoppingList = [];     // [{ id, name, qty, price, done, image }]
+        let budgets = {};
+        let shoppingList = [];
+        let shoppingHistory = [];
         let currentType = 'expense';
         let currentFilter = 'all';
         let currentCatTab = 'income';
+        let currentShopTab = 'list';
         let mainChart = null;
         let incomeMiniChart = null;
         let expenseMiniChart = null;
@@ -620,8 +530,8 @@
         let chartExpanded = false;
         let pendingImageUrl = null;
         let pendingShopImage = null;
+        let currentImageTarget = null;
 
-        // ===== SALDO OCULTO =====
         let balanceVisible = false;
         let realBalance = 0;
         let realIncome = 0;
@@ -643,23 +553,36 @@
             }
         }
 
-        // ===== GRÁFICO COLAPSABLE =====
         function toggleChart() {
             chartExpanded = !chartExpanded;
             const container = document.getElementById('chartContainer');
             const toggle = document.getElementById('chartToggle');
-            if (chartExpanded) {
-                container.classList.remove('collapsed');
-                toggle.classList.add('expanded');
-                setTimeout(() => updateCharts(getFilteredTransactions()), 100);
-            } else {
-                container.classList.add('collapsed');
-                toggle.classList.remove('expanded');
+            if (chartExpanded) { container.classList.remove('collapsed'); toggle.classList.add('expanded'); setTimeout(() => updateCharts(getFilteredTransactions()), 100); }
+            else { container.classList.add('collapsed'); toggle.classList.remove('expanded'); }
+        }
+
+        // ===== SELECCIÓN DE IMAGEN (cámara o galería) =====
+        function showImageChoice(target) {
+            currentImageTarget = target;
+            document.getElementById('imageChoiceModal').classList.add('active');
+        }
+        function closeImageChoice() {
+            document.getElementById('imageChoiceModal').classList.remove('active');
+            currentImageTarget = null;
+        }
+        function chooseImageSource(source) {
+            closeImageChoice();
+            if (currentImageTarget === 'transaction') {
+                if (source === 'camera') document.getElementById('transactionImageCamera').click();
+                else document.getElementById('transactionImageGallery').click();
+            } else if (currentImageTarget === 'shop') {
+                if (source === 'camera') document.getElementById('shopImageCamera').click();
+                else document.getElementById('shopImageGallery').click();
             }
         }
 
         // ===== CLOUDINARY =====
-        async function uploadImageToCloudinary(file) {
+        async function uploadImageToCloudinary(file, progressEl, fillEl, textEl) {
             return new Promise((resolve, reject) => {
                 const formData = new FormData();
                 formData.append('file', file);
@@ -667,17 +590,16 @@
                 formData.append('folder', 'Billetera');
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', CLOUDINARY_UPLOAD_URL, true);
-                xhr.upload.onprogress = (e) => {
-                    if (e.lengthComputable) {
-                        const percent = Math.round((e.loaded / e.total) * 100);
-                        document.getElementById('uploadProgressFill').style.width = percent + '%';
-                        document.getElementById('uploadText').textContent = `Subiendo... ${percent}%`;
-                    }
-                };
-                xhr.onload = () => {
-                    if (xhr.status === 200) resolve(JSON.parse(xhr.responseText).secure_url);
-                    else reject(new Error('Error al subir'));
-                };
+                if (progressEl && fillEl && textEl) {
+                    xhr.upload.onprogress = (e) => {
+                        if (e.lengthComputable) {
+                            const percent = Math.round((e.loaded / e.total) * 100);
+                            fillEl.style.width = percent + '%';
+                            textEl.textContent = `Subiendo... ${percent}%`;
+                        }
+                    };
+                }
+                xhr.onload = () => { if (xhr.status === 200) resolve(JSON.parse(xhr.responseText).secure_url); else reject(new Error('Error al subir')); };
                 xhr.onerror = () => reject(new Error('Error de red'));
                 xhr.send(formData);
             });
@@ -698,20 +620,19 @@
             reader.onload = (e) => { preview.innerHTML = `<div class="attachment-preview"><img src="${e.target.result}" alt="Preview"></div>`; };
             reader.readAsDataURL(file);
             try {
-                const imageUrl = await uploadImageToCloudinary(file);
+                const imageUrl = await uploadImageToCloudinary(file, progress, document.getElementById('uploadProgressFill'), document.getElementById('uploadText'));
                 pendingImageUrl = imageUrl;
                 preview.innerHTML = `<div class="attachment-preview"><img src="${imageUrl}" alt="Imagen subida"><button class="remove-attachment" onclick="removeImage()">✕ Quitar</button></div>`;
                 progress.classList.remove('active');
                 showNotification('✓ Imagen subida a la nube');
-            } catch (error) {
-                progress.classList.remove('active');
-                showNotification('Error al subir imagen', true);
-            } finally { submitBtn.disabled = false; }
+            } catch (error) { progress.classList.remove('active'); showNotification('Error al subir imagen', true); }
+            finally { submitBtn.disabled = false; }
         }
 
         function removeImage() {
             pendingImageUrl = null;
-            document.getElementById('imageInput').value = '';
+            document.getElementById('transactionImageCamera').value = '';
+            document.getElementById('transactionImageGallery').value = '';
             document.getElementById('imagePreview').innerHTML = '';
             document.getElementById('uploadProgress').classList.remove('active');
         }
@@ -721,8 +642,7 @@
             const now = new Date();
             const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
             const result = {};
-            transactions.filter(t => t.type === 'expense' && new Date(t.date + 'T00:00:00') >= monthStart)
-                .forEach(t => { result[t.category] = (result[t.category] || 0) + t.amount; });
+            transactions.filter(t => t.type === 'expense' && new Date(t.date + 'T00:00:00') >= monthStart).forEach(t => { result[t.category] = (result[t.category] || 0) + t.amount; });
             return result;
         }
 
@@ -734,7 +654,6 @@
             document.body.style.overflow = 'hidden';
             renderBudgetList();
         }
-
         function closeBudgetModal() {
             if (!isBudgetModalOpen) return;
             isBudgetModalOpen = false;
@@ -747,63 +666,32 @@
             const container = document.getElementById('budgetList');
             const monthExpenses = getMonthExpensesByCategory();
             const cats = Object.keys(categories.expense);
-            let totalBudget = 0;
-            let totalSpent = 0;
-
+            let totalBudget = 0, totalSpent = 0;
             container.innerHTML = cats.map(cat => {
                 const limit = budgets[cat] || 0;
                 const spent = monthExpenses[cat] || 0;
-                totalBudget += limit;
-                totalSpent += spent;
+                totalBudget += limit; totalSpent += spent;
                 const percent = limit > 0 ? Math.min(Math.round((spent / limit) * 100), 999) : 0;
                 const status = limit === 0 ? '' : percent >= 100 ? 'danger' : percent >= 80 ? 'warning' : 'ok';
                 const barWidth = limit > 0 ? Math.min((spent / limit) * 100, 100) : 0;
-
-                return `
-                    <div class="budget-item">
-                        <div class="budget-item-top">
-                            <span class="budget-cat-name">${escapeHtml(cat)}</span>
-                            <span class="budget-percent ${status}">${limit > 0 ? percent + '%' : 'Sin límite'}</span>
-                        </div>
-                        ${limit > 0 ? `<div class="budget-bar"><div class="budget-bar-fill ${status}" style="width:${barWidth}%"></div></div>` : ''}
-                        <div class="budget-values">
-                            ${spent.toFixed(2)}€ gastados${limit > 0 ? ' de ' + limit + '€' : ''}
-                        </div>
-                        <div class="budget-edit-row" style="margin-top: 10px;">
-                            <input type="number" id="budget-${escapeHtml(cat)}" value="${limit || ''}" placeholder="Límite mensual €" step="1" min="0">
-                            <button onclick="setBudget('${escapeHtml(cat)}')">💾</button>
-                        </div>
-                    </div>
-                `;
+                return `<div class="budget-item">
+                    <div class="budget-item-top"><span class="budget-cat-name">${escapeHtml(cat)}</span><span class="budget-percent ${status}">${limit > 0 ? percent + '%' : 'Sin límite'}</span></div>
+                    ${limit > 0 ? `<div class="budget-bar"><div class="budget-bar-fill ${status}" style="width:${barWidth}%"></div></div>` : ''}
+                    <div class="budget-values">${spent.toFixed(2)}€ gastados${limit > 0 ? ' de ' + limit + '€' : ''}</div>
+                    <div class="budget-edit-row" style="margin-top: 10px;"><input type="number" id="budget-${escapeHtml(cat)}" value="${limit || ''}" placeholder="Límite mensual €" step="1" min="0"><button onclick="setBudget('${escapeHtml(cat)}')">💾</button></div>
+                </div>`;
             }).join('');
-
-            document.getElementById('budgetTotalSummary').textContent =
-                totalBudget > 0 ? `${totalSpent.toFixed(2)}€ / ${totalBudget}€` : 'Sin presupuestos';
+            document.getElementById('budgetTotalSummary').textContent = totalBudget > 0 ? `${totalSpent.toFixed(2)}€ / ${totalBudget}€` : 'Sin presupuestos';
         }
 
         function setBudget(cat) {
             const input = document.getElementById(`budget-${cat}`);
             const value = parseFloat(input.value);
-            if (isNaN(value) || value <= 0) {
-                delete budgets[cat];
-                showNotification('Presupuesto eliminado');
-            } else {
-                budgets[cat] = Math.round(value);
-                showNotification(`✓ Presupuesto: ${cat} = ${Math.round(value)}€/mes`);
-            }
-            saveBudgets();
-            renderBudgetList();
-            updateBudgetAlert();
+            if (isNaN(value) || value <= 0) { delete budgets[cat]; showNotification('Presupuesto eliminado'); }
+            else { budgets[cat] = Math.round(value); showNotification(`✓ Presupuesto: ${cat} = ${Math.round(value)}€/mes`); }
+            saveBudgets(); renderBudgetList(); updateBudgetAlert();
         }
-
-        function clearAllBudgets() {
-            if (!confirm('¿Eliminar todos los presupuestos?')) return;
-            budgets = {};
-            saveBudgets();
-            renderBudgetList();
-            updateBudgetAlert();
-            showNotification('Presupuestos eliminados');
-        }
+        function clearAllBudgets() { if (!confirm('¿Eliminar todos los presupuestos?')) return; budgets = {}; saveBudgets(); renderBudgetList(); updateBudgetAlert(); showNotification('Presupuestos eliminados'); }
 
         function updateBudgetAlert() {
             const alertEl = document.getElementById('budgetAlert');
@@ -814,31 +702,36 @@
                 const spent = monthExpenses[cat] || 0;
                 const pct = (spent / budgets[cat]) * 100;
                 if (pct >= 100) { dangerCount++; names.push(cat); }
-                else if (pct >= 80) { warningCount++; }
+                else if (pct >= 80) warningCount++;
             }
-            if (dangerCount > 0) {
-                alertEl.className = 'budget-alert show danger';
-                document.getElementById('budgetAlertIcon').textContent = '🚨';
-                document.getElementById('budgetAlertText').textContent =
-                    `Presupuesto superado: ${names.join(', ')}`;
-            } else if (warningCount > 0) {
-                alertEl.className = 'budget-alert show warning';
-                document.getElementById('budgetAlertIcon').textContent = '⚠️';
-                document.getElementById('budgetAlertText').textContent =
-                    `${warningCount} categoría(s) al 80% del presupuesto`;
-            } else {
-                alertEl.className = 'budget-alert';
-            }
+            if (dangerCount > 0) { alertEl.className = 'budget-alert show danger'; document.getElementById('budgetAlertIcon').textContent = '🚨'; document.getElementById('budgetAlertText').textContent = `Presupuesto superado: ${names.join(', ')}`; }
+            else if (warningCount > 0) { alertEl.className = 'budget-alert show warning'; document.getElementById('budgetAlertIcon').textContent = '⚠️'; document.getElementById('budgetAlertText').textContent = `${warningCount} categoría(s) al 80% del presupuesto`; }
+            else alertEl.className = 'budget-alert';
         }
 
-        // ===== LISTA DE LA COMPRA =====
+        // ===== LISTA DE LA COMPRA CON HISTORIAL =====
+        function openShoppingModalDirect() {
+            // Abre directamente SIN abrir el menú
+            if (isShopModalOpen) return;
+            isShopModalOpen = true;
+            currentShopTab = 'list';
+            document.getElementById('shopModalOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('shopTabList').classList.add('active');
+            document.getElementById('shopTabHistory').classList.remove('active');
+            renderShoppingTab();
+        }
+
         function openShoppingModal() {
             if (isShopModalOpen) return;
             isShopModalOpen = true;
+            currentShopTab = 'list';
             toggleMenu();
             document.getElementById('shopModalOverlay').classList.add('active');
             document.body.style.overflow = 'hidden';
-            renderShoppingList();
+            document.getElementById('shopTabList').classList.add('active');
+            document.getElementById('shopTabHistory').classList.remove('active');
+            renderShoppingTab();
         }
 
         function closeShoppingModal() {
@@ -848,91 +741,171 @@
             document.body.style.overflow = '';
         }
 
+        function switchShopTab(tab) {
+            currentShopTab = tab;
+            document.getElementById('shopTabList').classList.toggle('active', tab === 'list');
+            document.getElementById('shopTabHistory').classList.toggle('active', tab === 'history');
+            renderShoppingTab();
+        }
+
+        function renderShoppingTab() {
+            if (currentShopTab === 'list') renderShoppingList();
+            else renderShoppingHistory();
+        }
+
         async function handleShopImage(event) {
             const file = event.target.files[0];
             if (!file) return;
             if (file.size > 10 * 1024 * 1024) { showNotification('Imagen muy grande (máx 10MB)', true); return; }
-            document.getElementById('shopImagePreview').innerHTML = '<div class="shop-image-pending">⏳ Subiendo imagen...</div>';
+            const preview = document.getElementById('shopImagePreview');
+            if (!preview) return;
+            preview.innerHTML = '<div class="shop-image-pending">⏳ Subiendo imagen...</div>';
             try {
                 pendingShopImage = await uploadImageToCloudinary(file);
-                document.getElementById('shopImagePreview').innerHTML =
-                    `<div class="attachment-preview"><img src="${pendingShopImage}" style="max-height:80px"><button class="remove-attachment" onclick="removeShopImage()">✕ Quitar</button></div>`;
+                preview.innerHTML = `<div class="attachment-preview"><img src="${pendingShopImage}" style="max-height:80px"><button class="remove-attachment" onclick="removeShopImage()">✕ Quitar</button></div>`;
                 showNotification('✓ Imagen lista');
-            } catch (e) {
-                document.getElementById('shopImagePreview').innerHTML = '';
-                showNotification('Error al subir imagen', true);
-            }
+            } catch (e) { preview.innerHTML = ''; showNotification('Error al subir imagen', true); }
         }
 
-        function removeShopImage() {
-            pendingShopImage = null;
-            document.getElementById('shopImageInput').value = '';
-            document.getElementById('shopImagePreview').innerHTML = '';
-        }
+        function removeShopImage() { pendingShopImage = null; document.getElementById('shopImageCamera').value = ''; document.getElementById('shopImageGallery').value = ''; const p = document.getElementById('shopImagePreview'); if (p) p.innerHTML = ''; }
 
         function addShopItem() {
             const name = document.getElementById('shopName').value.trim();
             const qty = parseInt(document.getElementById('shopQty').value) || 1;
             const price = parseFloat(document.getElementById('shopPrice').value) || 0;
             if (!name) { showNotification('Escribe un producto', true); return; }
-            shoppingList.push({
-                id: Date.now(),
-                name: name,
-                qty: qty,
-                price: price,
-                done: false,
-                image: pendingShopImage
-            });
+            shoppingList.push({ id: Date.now(), name, qty, price, done: false, image: pendingShopImage, addedAt: new Date().toISOString() });
             document.getElementById('shopName').value = '';
             document.getElementById('shopQty').value = '1';
             document.getElementById('shopPrice').value = '';
             removeShopImage();
             saveShoppingList();
-            renderShoppingList();
+            renderShoppingTab();
             showNotification('✓ Añadido a la lista');
         }
 
         function toggleShopItem(id) {
             const item = shoppingList.find(x => x.id === id);
-            if (item) { item.done = !item.done; saveShoppingList(); renderShoppingList(); }
+            if (item) { item.done = !item.done; saveShoppingList(); renderShoppingTab(); }
         }
 
         function deleteShopItem(id) {
             shoppingList = shoppingList.filter(x => x.id !== id);
             saveShoppingList();
-            renderShoppingList();
+            renderShoppingTab();
         }
 
         function renderShoppingList() {
-            const container = document.getElementById('shopList');
-            if (shoppingList.length === 0) {
-                container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🛒</div><div>Lista vacía</div><div style="font-size:11px;margin-top:4px;">Añade productos arriba</div></div>`;
-                document.getElementById('shopTotal').textContent = '0,00€';
-                updateCartBadge();
-                return;
-            }
-            container.innerHTML = shoppingList.map(item => `
-                <div class="shop-item ${item.done ? 'done' : ''}">
-                    <div class="shop-checkbox ${item.done ? 'checked' : ''}" onclick="toggleShopItem(${item.id})">${item.done ? '✓' : ''}</div>
-                    <div class="shop-item-info">
-                        <div class="shop-item-name">${escapeHtml(item.name)}</div>
-                        <div class="shop-item-details">${item.qty} ud${item.image ? ' 📷' : ''}</div>
-                    </div>
-                    ${item.image ? `<img src="${item.image}" class="shop-item-thumb" onclick="window.open('${item.image}')">` : ''}
-                    <div class="shop-item-price">${(item.qty * item.price).toFixed(2)}€</div>
-                    <button class="action-btn delete" onclick="deleteShopItem(${item.id})">🗑️</button>
+            const container = document.getElementById('shopTabContent');
+            let html = `
+                <div class="shop-add-row">
+                    <input type="text" class="name-input" id="shopName" placeholder="Producto" maxlength="30">
+                    <input type="number" class="qty-input" id="shopQty" placeholder="Ud" min="1" value="1">
+                    <input type="number" class="price-input" id="shopPrice" placeholder="€" step="0.01" min="0">
                 </div>
-            `).join('');
-            const total = shoppingList.filter(i => !i.done).reduce((s, i) => s + i.qty * i.price, 0);
-            document.getElementById('shopTotal').textContent = total.toLocaleString('es-ES', {minimumFractionDigits: 2}) + '€';
+                <div class="file-input-wrapper" style="margin-bottom: 12px;">
+                    <label onclick="showImageChoice('shop')">📷 Foto del producto (opcional)</label>
+                </div>
+                <div id="shopImagePreview"></div>
+                <button class="submit-btn" onclick="addShopItem()" style="margin-bottom: 16px;">+ AÑADIR A LA LISTA</button>
+            `;
+
+            if (shoppingList.length === 0) {
+                html += `<div class="empty-state"><div class="empty-state-icon">🛒</div><div>Lista vacía</div><div style="font-size:11px;margin-top:4px;">Añade productos arriba</div></div>`;
+            } else {
+                html += shoppingList.map(item => `
+                    <div class="shop-item ${item.done ? 'done' : ''}">
+                        <div class="shop-checkbox ${item.done ? 'checked' : ''}" onclick="toggleShopItem(${item.id})">${item.done ? '✓' : ''}</div>
+                        <div class="shop-item-info">
+                            <div class="shop-item-name">${escapeHtml(item.name)}</div>
+                            <div class="shop-item-details">${item.qty} ud${item.image ? ' 📷' : ''}</div>
+                        </div>
+                        ${item.image ? `<img src="${item.image}" class="shop-item-thumb" onclick="window.open('${item.image}')">` : ''}
+                        <div class="shop-item-price">${(item.qty * item.price).toFixed(2)}€</div>
+                        <button class="action-btn delete" onclick="deleteShopItem(${item.id})">🗑️</button>
+                    </div>
+                `).join('');
+            }
+
+            const pending = shoppingList.filter(i => !i.done);
+            const total = pending.reduce((s, i) => s + i.qty * i.price, 0);
+            html += `<div class="shop-total"><span class="label">TOTAL ESTIMADO (${pending.length} pendientes)</span><span class="value">${total.toLocaleString('es-ES', {minimumFractionDigits: 2})}€</span></div>`;
+            html += `<div class="shop-actions">
+                <button class="shop-register-btn" onclick="registerShoppingAsExpense()">💳 Registrar como gasto</button>
+                <button class="shop-clear-btn" onclick="clearShoppingList()">🗑️ Vaciar</button>
+            </div>`;
+
+            container.innerHTML = html;
             updateCartBadge();
         }
 
-        function updateCartBadge() {
-            const badge = document.getElementById('cartBadge');
-            const pending = shoppingList.filter(i => !i.done).length;
-            badge.textContent = pending;
-            badge.className = pending > 0 ? 'cart-badge show' : 'cart-badge';
+        function renderShoppingHistory() {
+            const container = document.getElementById('shopTabContent');
+            const searchInput = document.getElementById('shopSearch');
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+
+            let filtered = shoppingHistory;
+            if (searchTerm) filtered = shoppingHistory.filter(h => h.name.toLowerCase().includes(searchTerm));
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <input type="text" class="shop-search" id="shopSearch" placeholder="🔍 Buscar en el historial..." oninput="renderShoppingHistory()">
+                    <div class="empty-state"><div class="empty-state-icon">📜</div><div>${searchTerm ? 'Sin resultados' : 'Historial vacío'}</div><div style="font-size:11px;margin-top:4px;">Los productos comprados aparecerán aquí</div></div>
+                `;
+                return;
+            }
+
+            // Agrupar por fecha
+            const groups = {};
+            filtered.forEach(item => {
+                const date = item.purchasedAt ? new Date(item.purchasedAt).toLocaleDateString('es-ES') : 'Antiguo';
+                if (!groups[date]) groups[date] = [];
+                groups[date].push(item);
+            });
+
+            let html = `<input type="text" class="shop-search" id="shopSearch" placeholder="🔍 Buscar en el historial..." value="${escapeHtml(searchTerm)}" oninput="renderShoppingHistory()">`;
+
+            for (let date in groups) {
+                html += `<div class="shop-history-group"><div class="shop-history-group-title">📅 ${date}</div>`;
+                html += groups[date].map(item => `
+                    <div class="shop-item">
+                        <div class="shop-item-info" style="flex:1;">
+                            <div class="shop-item-name">${escapeHtml(item.name)}</div>
+                            <div class="shop-item-details">${item.qty} ud · ${(item.qty * item.price).toFixed(2)}€${item.image ? ' 📷' : ''}<div class="shop-history-date">${item.purchasedAt ? new Date(item.purchasedAt).toLocaleString('es-ES', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}) : ''}</div></div>
+                        </div>
+                        ${item.image ? `<img src="${item.image}" class="shop-item-thumb" onclick="window.open('${item.image}')">` : ''}
+                        <button class="shop-readd-btn" onclick="reAddFromHistory(${item.id})">↩️ Añadir</button>
+                        <button class="action-btn delete" onclick="deleteHistoryItem(${item.id})">🗑️</button>
+                    </div>
+                `).join('');
+                html += `</div>`;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function reAddFromHistory(id) {
+            const item = shoppingHistory.find(x => x.id === id);
+            if (!item) return;
+            shoppingList.push({
+                id: Date.now(),
+                name: item.name,
+                qty: item.qty,
+                price: item.price,
+                done: false,
+                image: item.image || null,
+                addedAt: new Date().toISOString()
+            });
+            saveShoppingList();
+            showNotification(`✓ "${item.name}" añadido a la lista`);
+            switchShopTab('list');
+        }
+
+        function deleteHistoryItem(id) {
+            shoppingHistory = shoppingHistory.filter(x => x.id !== id);
+            saveShoppingList();
+            renderShoppingTab();
+            showNotification('Eliminado del historial');
         }
 
         function registerShoppingAsExpense() {
@@ -951,11 +924,18 @@
                 imageUrl: null
             };
             transactions.unshift(transaction);
+
+            // Mover al historial
+            const now = new Date().toISOString();
+            doneItems.forEach(item => {
+                shoppingHistory.unshift({ ...item, purchasedAt: now });
+            });
             shoppingList = shoppingList.filter(i => !i.done);
+
             saveTransactions();
             saveShoppingList();
             updateUI();
-            renderShoppingList();
+            renderShoppingTab();
             showNotification(`✓ Gasto registrado: ${total.toFixed(2)}€`);
         }
 
@@ -963,27 +943,31 @@
             if (!confirm('¿Vaciar toda la lista de la compra?')) return;
             shoppingList = [];
             saveShoppingList();
-            renderShoppingList();
+            renderShoppingTab();
             showNotification('Lista vaciada');
         }
 
-        // ===== GUARDADO LOCAL =====
-        function saveBudgets() {
-            try { localStorage.setItem('nexus_budgets', JSON.stringify(budgets)); } catch (e) {}
-            saveToCloud();
+        function updateCartBadge() {
+            const badge = document.getElementById('cartBadge');
+            const pending = shoppingList.filter(i => !i.done).length;
+            badge.textContent = pending;
+            badge.className = pending > 0 ? 'cart-badge show' : 'cart-badge';
         }
-        function loadBudgets() {
-            try { const s = localStorage.getItem('nexus_budgets'); if (s) budgets = JSON.parse(s); } catch (e) {}
-        }
+
+        function saveBudgets() { try { localStorage.setItem('nexus_budgets', JSON.stringify(budgets)); } catch (e) {} saveToCloud(); }
+        function loadBudgets() { try { const s = localStorage.getItem('nexus_budgets'); if (s) budgets = JSON.parse(s); } catch (e) {} }
         function saveShoppingList() {
-            try { localStorage.setItem('nexus_shopping', JSON.stringify(shoppingList)); } catch (e) {}
+            try {
+                localStorage.setItem('nexus_shopping', JSON.stringify(shoppingList));
+                localStorage.setItem('nexus_shopping_history', JSON.stringify(shoppingHistory));
+            } catch (e) {}
             saveToCloud();
         }
         function loadShoppingList() {
             try { const s = localStorage.getItem('nexus_shopping'); if (s) shoppingList = JSON.parse(s); } catch (e) {}
+            try { const s = localStorage.getItem('nexus_shopping_history'); if (s) shoppingHistory = JSON.parse(s); } catch (e) {}
         }
 
-        // ===== MODAL DE CONFIGURACIÓN =====
         function saveConfig() {
             const token = document.getElementById('tokenInput').value.trim();
             const gistId = document.getElementById('gistIdInput').value.trim();
@@ -997,14 +981,8 @@
             loadFromCloud().then(success => { if (success) { updateCategoriesSelect(); updateUI(); } });
             showNotification('✓ Configuración guardada');
         }
-        function showConfigModal() {
-            toggleMenu();
-            document.getElementById('tokenInput').value = GITHUB_TOKEN;
-            document.getElementById('gistIdInput').value = GIST_ID;
-            document.getElementById('configModal').style.display = 'flex';
-        }
+        function showConfigModal() { toggleMenu(); document.getElementById('tokenInput').value = GITHUB_TOKEN; document.getElementById('gistIdInput').value = GIST_ID; document.getElementById('configModal').style.display = 'flex'; }
 
-        // ===== INICIALIZACIÓN =====
         document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('date').valueAsDate = new Date();
             loadCategoriesLocal();
@@ -1019,18 +997,15 @@
                 document.getElementById('configModal').style.display = 'none';
                 updateSyncStatus('☁️ Conectando...', 'online');
                 const success = await loadFromCloud();
-                if (success) { updateCategoriesSelect(); updateUI(); }
+                if (success) { updateCategoriesSelect(); updateUI(); updateCartBadge(); }
             } else {
                 document.getElementById('configModal').style.display = 'flex';
             }
         });
 
-        // ===== SINCRONIZACIÓN (incluye budgets y shopping) =====
         async function loadFromCloud() {
             try {
-                const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
-                });
+                const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, { headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' } });
                 if (!response.ok) throw new Error(`Error ${response.status}`);
                 const data = await response.json();
                 const fileContent = data.files[GIST_FILENAME]?.content;
@@ -1039,11 +1014,7 @@
                     const cloudLastUpdate = parsed.lastUpdate ? new Date(parsed.lastUpdate) : null;
                     const localLastUpdateStr = localStorage.getItem('nexus_last_sync');
                     const localLastUpdate = localLastUpdateStr ? new Date(localLastUpdateStr) : null;
-                    if (localLastUpdate && cloudLastUpdate && localLastUpdate > cloudLastUpdate) {
-                        await saveToCloudImmediate();
-                        updateSyncStatus('☁️ Locales más recientes, subiendo...', 'online');
-                        return false;
-                    }
+                    if (localLastUpdate && cloudLastUpdate && localLastUpdate > cloudLastUpdate) { await saveToCloudImmediate(); updateSyncStatus('☁️ Locales más recientes, subiendo...', 'online'); return false; }
                     let dataUpdated = false;
                     if (parsed.transactions && parsed.transactions.length > 0) { transactions = parsed.transactions; saveTransactionsLocal(); dataUpdated = true; }
                     if (parsed.categories && Object.keys(parsed.categories).length > 0) {
@@ -1059,93 +1030,41 @@
                         saveCategoriesLocal(); dataUpdated = true;
                     }
                     if (parsed.budgets) { budgets = parsed.budgets; localStorage.setItem('nexus_budgets', JSON.stringify(budgets)); dataUpdated = true; }
-                    if (parsed.shoppingList) { shoppingList = parsed.shoppingList; localStorage.setItem('nexus_shopping', JSON.stringify(shoppingList)); updateCartBadge(); dataUpdated = true; }
+                    if (parsed.shoppingList) { shoppingList = parsed.shoppingList; localStorage.setItem('nexus_shopping', JSON.stringify(shoppingList)); dataUpdated = true; }
+                    if (parsed.shoppingHistory) { shoppingHistory = parsed.shoppingHistory; localStorage.setItem('nexus_shopping_history', JSON.stringify(shoppingHistory)); dataUpdated = true; }
                     localStorage.setItem('nexus_last_sync', new Date().toISOString());
                     if (dataUpdated) { updateSyncStatus('☁️ Sincronizado: ' + new Date().toLocaleTimeString(), 'online'); showNotification('☁️ Datos cargados desde la nube'); }
                     else updateSyncStatus('☁️ Nube vacía, usando locales', 'online');
                     return dataUpdated;
                 }
-            } catch (e) {
-                console.log('Error al cargar desde la nube:', e);
-                updateSyncStatus('❌ Error: ' + e.message, 'offline');
-                showNotification('⚠️ Usando datos locales', true);
-                return false;
-            }
+            } catch (e) { console.log('Error al cargar desde la nube:', e); updateSyncStatus('❌ Error: ' + e.message, 'offline'); showNotification('⚠️ Usando datos locales', true); return false; }
         }
 
-        async function saveToCloud() {
-            if (!cloudSyncEnabled) return;
-            clearTimeout(saveTimeout);
-            saveTimeout = setTimeout(() => saveToCloudImmediate(), 1000);
-        }
-
+        async function saveToCloud() { if (!cloudSyncEnabled) return; clearTimeout(saveTimeout); saveTimeout = setTimeout(() => saveToCloudImmediate(), 1000); }
         async function saveToCloudImmediate() {
             if (!cloudSyncEnabled) return;
             try {
                 const syncTime = new Date().toISOString();
-                const data = { transactions, categories, budgets, shoppingList, lastUpdate: syncTime };
-                const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-                    method: 'PATCH',
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ files: { [GIST_FILENAME]: { content: JSON.stringify(data, null, 2) } } })
-                });
+                const data = { transactions, categories, budgets, shoppingList, shoppingHistory, lastUpdate: syncTime };
+                const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, { method: 'PATCH', headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' }, body: JSON.stringify({ files: { [GIST_FILENAME]: { content: JSON.stringify(data, null, 2) } } }) });
                 if (!response.ok) throw new Error(`Error ${response.status}`);
                 localStorage.setItem('nexus_last_sync', syncTime);
                 updateSyncStatus('☁️ Guardado: ' + new Date().toLocaleTimeString(), 'online');
-            } catch (e) {
-                console.log('Error al guardar en la nube:', e);
-                updateSyncStatus('❌ Error al guardar', 'offline');
-            }
+            } catch (e) { console.log('Error al guardar en la nube:', e); updateSyncStatus('❌ Error al guardar', 'offline'); }
         }
 
-        function updateSyncStatus(text, type) {
-            const el = document.getElementById('syncStatus');
-            if (el) { el.textContent = text; el.className = 'sync-status ' + type; }
-        }
+        function updateSyncStatus(text, type) { const el = document.getElementById('syncStatus'); if (el) { el.textContent = text; el.className = 'sync-status ' + type; } }
+        async function syncNow() { toggleMenu(); if (!cloudSyncEnabled) { showConfigModal(); return; } showNotification('🔄 Sincronizando...'); updateSyncStatus('🔄 Sincronizando...', 'online'); await saveToCloudImmediate(); await new Promise(r => setTimeout(r, 500)); await loadFromCloud(); updateCategoriesSelect(); updateUI(); updateCartBadge(); }
 
-        async function syncNow() {
-            toggleMenu();
-            if (!cloudSyncEnabled) { showConfigModal(); return; }
-            showNotification('🔄 Sincronizando...');
-            updateSyncStatus('🔄 Sincronizando...', 'online');
-            await saveToCloudImmediate();
-            await new Promise(r => setTimeout(r, 500));
-            await loadFromCloud();
-            updateCategoriesSelect(); updateUI(); updateCartBadge();
-        }
-
-        // ===== FUNCIONES LOCALES =====
-        function loadCategoriesLocal() {
-            try { const stored = localStorage.getItem('nexus_categories'); if (stored) categories = JSON.parse(stored); else categories = JSON.parse(JSON.stringify(defaultCategories)); }
-            catch (e) { categories = JSON.parse(JSON.stringify(defaultCategories)); }
-        }
+        function loadCategoriesLocal() { try { const stored = localStorage.getItem('nexus_categories'); if (stored) categories = JSON.parse(stored); else categories = JSON.parse(JSON.stringify(defaultCategories)); } catch (e) { categories = JSON.parse(JSON.stringify(defaultCategories)); } }
         function saveCategoriesLocal() { try { localStorage.setItem('nexus_categories', JSON.stringify(categories)); } catch (e) {} }
         function loadFromStorage() { try { const stored = localStorage.getItem('nexus_transactions'); if (stored) transactions = JSON.parse(stored); } catch (e) {} }
         function saveTransactionsLocal() { try { localStorage.setItem('nexus_transactions', JSON.stringify(transactions)); } catch (e) {} }
-        function toggleMenu() {
-            document.getElementById('sideMenu').classList.toggle('active');
-            document.getElementById('menuOverlay').classList.toggle('active');
-        }
+        function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('menuOverlay').classList.toggle('active'); }
 
-        // ===== MODAL DE CATEGORÍAS =====
-        function openCategoriesModal() {
-            if (isCatModalOpen) return;
-            isCatModalOpen = true; toggleMenu();
-            document.getElementById('catModalOverlay').classList.add('active');
-            document.body.style.overflow = 'hidden'; selectCatTab('income');
-        }
-        function closeCategoriesModal() {
-            if (!isCatModalOpen) return;
-            isCatModalOpen = false;
-            document.getElementById('catModalOverlay').classList.remove('active');
-            document.body.style.overflow = ''; updateCategoriesSelect(); updateUI();
-        }
-        function selectCatTab(type) {
-            currentCatTab = type;
-            document.getElementById('catTabIncome').classList.toggle('active', type === 'income');
-            document.getElementById('catTabExpense').classList.toggle('active', type === 'expense');
-            renderCatList();
-        }
+        function openCategoriesModal() { if (isCatModalOpen) return; isCatModalOpen = true; toggleMenu(); document.getElementById('catModalOverlay').classList.add('active'); document.body.style.overflow = 'hidden'; selectCatTab('income'); }
+        function closeCategoriesModal() { if (!isCatModalOpen) return; isCatModalOpen = false; document.getElementById('catModalOverlay').classList.remove('active'); document.body.style.overflow = ''; updateCategoriesSelect(); updateUI(); }
+        function selectCatTab(type) { currentCatTab = type; document.getElementById('catTabIncome').classList.toggle('active', type === 'income'); document.getElementById('catTabExpense').classList.toggle('active', type === 'expense'); renderCatList(); }
         function renderCatList() {
             const list = document.getElementById('catList');
             const cats = categories[currentCatTab];
@@ -1197,68 +1116,17 @@
             if (data.expense) for (let cat in data.expense) { if (!categories.expense[cat]) { categories.expense[cat] = data.expense[cat]; added++; } else { data.expense[cat].forEach(sub => { if (!categories.expense[cat].includes(sub)) categories.expense[cat].push(sub); }); updated++; } }
             saveCategories(); renderCatList(); showNotification(`✓ ${added} nuevas, ${updated} actualizadas`);
         }
-        function exportCategoriesJSON() {
-            const data = JSON.stringify(categories, null, 2);
-            const blob = new Blob([data], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = `categorias-nexus-${new Date().toISOString().split('T')[0]}.json`; a.click();
-            URL.revokeObjectURL(url); showNotification('✓ Categorías exportadas');
-        }
-        function handleImportCategories(event) {
-            const file = event.target.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => { try { const data = JSON.parse(e.target.result); importCategoriesFromObject(data); if (cloudSyncEnabled) { showNotification('✓ Importado, sincronizando...'); setTimeout(() => saveToCloudImmediate(), 500); } } catch (err) { showNotification('Error al leer', true); } };
-            reader.readAsText(file); event.target.value = '';
-        }
+        function exportCategoriesJSON() { const data = JSON.stringify(categories, null, 2); const blob = new Blob([data], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `categorias-nexus-${new Date().toISOString().split('T')[0]}.json`; a.click(); URL.revokeObjectURL(url); showNotification('✓ Categorías exportadas'); }
+        function handleImportCategories(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const data = JSON.parse(e.target.result); importCategoriesFromObject(data); if (cloudSyncEnabled) { showNotification('✓ Importado, sincronizando...'); setTimeout(() => saveToCloudImmediate(), 500); } } catch (err) { showNotification('Error al leer', true); } }; reader.readAsText(file); event.target.value = ''; }
         function resetCategoriesToDefault() { if (!confirm('¿Restaurar categorías por defecto?')) return; categories = JSON.parse(JSON.stringify(defaultCategories)); saveCategories(); renderCatList(); showNotification('✓ Categorías restauradas'); }
 
-        function updateCategoriesSelect() {
-            const select = document.getElementById('category');
-            select.innerHTML = '<option value="">Seleccionar categoría</option>';
-            for (let cat in categories[currentType]) select.innerHTML += `<option value="${cat}">${cat}</option>`;
-        }
-        function updateSubcategories() {
-            const category = document.getElementById('category').value;
-            const select = document.getElementById('subcategory');
-            select.innerHTML = '<option value="">Seleccionar subcategoría</option>';
-            if (category && categories[currentType][category]) categories[currentType][category].forEach(sub => { select.innerHTML += `<option value="${sub}">${sub}</option>`; });
-        }
-        function selectType(type) {
-            currentType = type;
-            document.getElementById('btnIncome').classList.toggle('active', type === 'income');
-            document.getElementById('btnExpense').classList.toggle('active', type === 'expense');
-            updateCategoriesSelect();
-            document.getElementById('subcategory').innerHTML = '<option value="">Seleccionar subcategoría</option>';
-        }
+        function updateCategoriesSelect() { const select = document.getElementById('category'); select.innerHTML = '<option value="">Seleccionar categoría</option>'; for (let cat in categories[currentType]) select.innerHTML += `<option value="${cat}">${cat}</option>`; }
+        function updateSubcategories() { const category = document.getElementById('category').value; const select = document.getElementById('subcategory'); select.innerHTML = '<option value="">Seleccionar subcategoría</option>'; if (category && categories[currentType][category]) categories[currentType][category].forEach(sub => { select.innerHTML += `<option value="${sub}">${sub}</option>`; }); }
+        function selectType(type) { currentType = type; document.getElementById('btnIncome').classList.toggle('active', type === 'income'); document.getElementById('btnExpense').classList.toggle('active', type === 'expense'); updateCategoriesSelect(); document.getElementById('subcategory').innerHTML = '<option value="">Seleccionar subcategoría</option>'; }
 
-        function openModal() {
-            if (isModalOpen) return;
-            isModalOpen = true; editingTransactionId = null; pendingImageUrl = null;
-            document.getElementById('modalTitle').textContent = 'NUEVA TRANSACCIÓN';
-            document.getElementById('submitBtn').textContent = 'AGREGAR TRANSACCIÓN';
-            document.getElementById('modalOverlay').classList.add('active');
-            document.getElementById('date').valueAsDate = new Date();
-            document.body.style.overflow = 'hidden'; resetForm();
-        }
-        function closeModal() {
-            if (!isModalOpen) return;
-            isModalOpen = false; editingTransactionId = null; pendingImageUrl = null;
-            document.getElementById('modalOverlay').classList.remove('active');
-            document.body.style.overflow = ''; resetForm();
-        }
-        function resetForm() {
-            document.getElementById('amount').value = '';
-            document.getElementById('description').value = '';
-            document.getElementById('category').value = '';
-            document.getElementById('subcategory').value = '';
-            document.getElementById('voiceResult').classList.remove('show');
-            document.getElementById('imageUrlInput').value = '';
-            document.getElementById('imageInput').value = '';
-            document.getElementById('imagePreview').innerHTML = '';
-            document.getElementById('uploadProgress').classList.remove('active');
-            pendingImageUrl = null; selectType('expense');
-        }
+        function openModal() { if (isModalOpen) return; isModalOpen = true; editingTransactionId = null; pendingImageUrl = null; document.getElementById('modalTitle').textContent = 'NUEVA TRANSACCIÓN'; document.getElementById('submitBtn').textContent = 'AGREGAR TRANSACCIÓN'; document.getElementById('modalOverlay').classList.add('active'); document.getElementById('date').valueAsDate = new Date(); document.body.style.overflow = 'hidden'; resetForm(); }
+        function closeModal() { if (!isModalOpen) return; isModalOpen = false; editingTransactionId = null; pendingImageUrl = null; document.getElementById('modalOverlay').classList.remove('active'); document.body.style.overflow = ''; resetForm(); }
+        function resetForm() { document.getElementById('amount').value = ''; document.getElementById('description').value = ''; document.getElementById('category').value = ''; document.getElementById('subcategory').value = ''; document.getElementById('voiceResult').classList.remove('show'); document.getElementById('imageUrlInput').value = ''; document.getElementById('transactionImageCamera').value = ''; document.getElementById('transactionImageGallery').value = ''; document.getElementById('imagePreview').innerHTML = ''; document.getElementById('uploadProgress').classList.remove('active'); pendingImageUrl = null; selectType('expense'); }
 
         async function saveTransaction() {
             const amount = parseFloat(document.getElementById('amount').value);
@@ -1272,15 +1140,8 @@
             if (!category) { showNotification('Categoría', true); return; }
             const finalImageUrl = pendingImageUrl || imageUrlManual || null;
             const transactionData = { type: currentType, amount, description, category, subcategory: subcategory || category, date: date || new Date().toISOString().split('T')[0], imageUrl: finalImageUrl };
-            if (editingTransactionId) {
-                const idx = transactions.findIndex(t => t.id === editingTransactionId);
-                if (idx !== -1) transactions[idx] = { ...transactions[idx], ...transactionData };
-                showNotification('✓ Transacción actualizada');
-            } else {
-                transactionData.id = Date.now();
-                transactions.unshift(transactionData);
-                showNotification('✓ Transacción agregada');
-            }
+            if (editingTransactionId) { const idx = transactions.findIndex(t => t.id === editingTransactionId); if (idx !== -1) transactions[idx] = { ...transactions[idx], ...transactionData }; showNotification('✓ Transacción actualizada'); }
+            else { transactionData.id = Date.now(); transactions.unshift(transactionData); showNotification('✓ Transacción agregada'); }
             saveTransactions(); updateUI(); closeModal();
         }
 
@@ -1306,12 +1167,7 @@
             isModalOpen = true; document.body.style.overflow = 'hidden';
         }
 
-        function deleteTransaction(id) {
-            if (!confirm('¿Eliminar?')) return;
-            transactions = transactions.filter(t => t.id !== id);
-            saveTransactions(); updateUI(); showNotification('Eliminada');
-        }
-
+        function deleteTransaction(id) { if (!confirm('¿Eliminar?')) return; transactions = transactions.filter(t => t.id !== id); saveTransactions(); updateUI(); showNotification('Eliminada'); }
         function saveTransactions() { saveTransactionsLocal(); saveToCloud(); }
         function saveCategories() { saveCategoriesLocal(); saveToCloud(); }
 
@@ -1369,13 +1225,7 @@
             document.getElementById('listModalTitle').textContent = title;
             let content = `<div class="list-total ${totalClass}">Total: ${sign}$${total.toLocaleString('es-ES', {minimumFractionDigits: 2})}</div>`;
             if (filtered.length === 0) content += `<div class="empty-state"><div class="empty-state-icon">📭</div><div>Sin ${type === 'income' ? 'ingresos' : 'gastos'} este mes</div></div>`;
-            else content += filtered.map(t => `
-                <div class="activity-item">
-                    <div class="activity-info"><h4>${escapeHtml(t.description)}</h4><span>${escapeHtml(t.category)} ${t.subcategory !== t.category ? '→ ' + escapeHtml(t.subcategory) : ''} • ${formatDate(t.date)}</span></div>
-                    <div class="activity-amount ${colorClass}">${sign}$${t.amount.toLocaleString('es-ES', {minimumFractionDigits: 2})}</div>
-                    <div class="action-btns"><button class="action-btn edit" onclick="editTransaction(${t.id})">✏️</button><button class="action-btn delete" onclick="deleteTransaction(${t.id}); showMonthList('${type}');">🗑️</button></div>
-                </div>`).join('');
-            // Resumen de presupuestos solo en gastos
+            else content += filtered.map(t => `<div class="activity-item"><div class="activity-info"><h4>${escapeHtml(t.description)}</h4><span>${escapeHtml(t.category)} ${t.subcategory !== t.category ? '→ ' + escapeHtml(t.subcategory) : ''} • ${formatDate(t.date)}</span></div><div class="activity-amount ${colorClass}">${sign}$${t.amount.toLocaleString('es-ES', {minimumFractionDigits: 2})}</div><div class="action-btns"><button class="action-btn edit" onclick="editTransaction(${t.id})">✏️</button><button class="action-btn delete" onclick="deleteTransaction(${t.id}); showMonthList('${type}');">🗑️</button></div></div>`).join('');
             if (type === 'expense' && Object.keys(budgets).length > 0) {
                 const monthExpenses = getMonthExpensesByCategory();
                 content += `<div class="budget-section-title">💰 PRESUPUESTOS DEL MES</div>`;
@@ -1385,12 +1235,7 @@
                     const percent = Math.min(Math.round((spent / limit) * 100), 999);
                     const status = percent >= 100 ? 'danger' : percent >= 80 ? 'warning' : 'ok';
                     const barWidth = Math.min((spent / limit) * 100, 100);
-                    content += `
-                        <div class="budget-item">
-                            <div class="budget-item-top"><span class="budget-cat-name">${escapeHtml(cat)}</span><span class="budget-percent ${status}">${percent}%</span></div>
-                            <div class="budget-bar"><div class="budget-bar-fill ${status}" style="width:${barWidth}%"></div></div>
-                            <div class="budget-values">${spent.toFixed(2)}€ de ${limit}€</div>
-                        </div>`;
+                    content += `<div class="budget-item"><div class="budget-item-top"><span class="budget-cat-name">${escapeHtml(cat)}</span><span class="budget-percent ${status}">${percent}%</span></div><div class="budget-bar"><div class="budget-bar-fill ${status}" style="width:${barWidth}%"></div></div><div class="budget-values">${spent.toFixed(2)}€ de ${limit}€</div></div>`;
                 }
             }
             document.getElementById('listModalContent').innerHTML = content;
@@ -1413,11 +1258,7 @@
                     const dayExpense = items.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
                     const dayBalance = dayIncome - dayExpense;
                     content += `<div class="day-group"><div class="day-header"><span>📅 ${formatDateFull(date)}</span><span class="day-total">${dayIncome > 0 ? '+' + dayIncome.toFixed(2) : ''} ${dayExpense > 0 ? '-' + dayExpense.toFixed(2) : ''} = ${dayBalance >= 0 ? '+' : ''}${dayBalance.toFixed(2)}€</span></div>`;
-                    items.forEach(t => {
-                        const colorClass = t.type === 'income' ? 'positive' : 'negative';
-                        const sign = t.type === 'income' ? '+' : '-';
-                        content += `<div class="activity-item"><div class="activity-info"><h4>${escapeHtml(t.description)}</h4><span>${escapeHtml(t.category)} ${t.subcategory !== t.category ? '→ ' + escapeHtml(t.subcategory) : ''}</span></div><div class="activity-amount ${colorClass}">${sign}$${t.amount.toLocaleString('es-ES', {minimumFractionDigits: 2})}</div><div class="action-btns"><button class="action-btn edit" onclick="editTransaction(${t.id})">✏️</button><button class="action-btn delete" onclick="deleteTransaction(${t.id}); showAllTransactions();">🗑️</button></div></div>`;
-                    });
+                    items.forEach(t => { const colorClass = t.type === 'income' ? 'positive' : 'negative'; const sign = t.type === 'income' ? '+' : '-'; content += `<div class="activity-item"><div class="activity-info"><h4>${escapeHtml(t.description)}</h4><span>${escapeHtml(t.category)} ${t.subcategory !== t.category ? '→ ' + escapeHtml(t.subcategory) : ''}</span></div><div class="activity-amount ${colorClass}">${sign}$${t.amount.toLocaleString('es-ES', {minimumFractionDigits: 2})}</div><div class="action-btns"><button class="action-btn edit" onclick="editTransaction(${t.id})">✏️</button><button class="action-btn delete" onclick="deleteTransaction(${t.id}); showAllTransactions();">🗑️</button></div></div>`; });
                     content += `</div>`;
                 }
                 document.getElementById('allModalContent').innerHTML = content;
@@ -1455,101 +1296,30 @@
 
         function updateMiniCharts() {
             const incomeCtx = document.getElementById('incomeChart');
-            if (incomeCtx) {
-                const incomeData = transactions.filter(t => t.type === 'income').slice(-7).map(t => t.amount);
-                if (incomeMiniChart) { incomeMiniChart.destroy(); incomeMiniChart = null; }
-                incomeMiniChart = new Chart(incomeCtx, { type: 'line', data: { labels: incomeData.map((_, i) => i), datasets: [{ data: incomeData.length ? incomeData : [0,0,0,0,0,0,0], borderColor: '#00f0ff', borderWidth: 2, tension: 0.4, fill: false, pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false, min: 0 } }, layout: { padding: 0 }, animation: { duration: 0 } } });
-            }
+            if (incomeCtx) { const incomeData = transactions.filter(t => t.type === 'income').slice(-7).map(t => t.amount); if (incomeMiniChart) { incomeMiniChart.destroy(); incomeMiniChart = null; } incomeMiniChart = new Chart(incomeCtx, { type: 'line', data: { labels: incomeData.map((_, i) => i), datasets: [{ data: incomeData.length ? incomeData : [0,0,0,0,0,0,0], borderColor: '#00f0ff', borderWidth: 2, tension: 0.4, fill: false, pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false, min: 0 } }, layout: { padding: 0 }, animation: { duration: 0 } } }); }
             const expenseCtx = document.getElementById('expenseChart');
-            if (expenseCtx) {
-                const expenseData = transactions.filter(t => t.type === 'expense').slice(-7).map(t => t.amount);
-                if (expenseMiniChart) { expenseMiniChart.destroy(); expenseMiniChart = null; }
-                expenseMiniChart = new Chart(expenseCtx, { type: 'line', data: { labels: expenseData.map((_, i) => i), datasets: [{ data: expenseData.length ? expenseData : [0,0,0,0,0,0,0], borderColor: '#ff2d95', borderWidth: 2, tension: 0.4, fill: false, pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false, min: 0 } }, layout: { padding: 0 }, animation: { duration: 0 } } });
-            }
+            if (expenseCtx) { const expenseData = transactions.filter(t => t.type === 'expense').slice(-7).map(t => t.amount); if (expenseMiniChart) { expenseMiniChart.destroy(); expenseMiniChart = null; } expenseMiniChart = new Chart(expenseCtx, { type: 'line', data: { labels: expenseData.map((_, i) => i), datasets: [{ data: expenseData.length ? expenseData : [0,0,0,0,0,0,0], borderColor: '#ff2d95', borderWidth: 2, tension: 0.4, fill: false, pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false, min: 0 } }, layout: { padding: 0 }, animation: { duration: 0 } } }); }
         }
 
-        // ===== VOZ =====
-        function startVoice() {
-            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SR) { showNotification('Voz no disponible', true); return; }
-            const r = new SR(); r.lang = 'es-ES'; r.continuous = false; r.interimResults = false;
-            const voiceBtn = document.getElementById('voiceBtn'), voiceText = document.getElementById('voiceText'), voiceResult = document.getElementById('voiceResult');
-            voiceBtn.classList.add('listening'); voiceText.textContent = 'Escuchando...';
-            r.onresult = (e) => { const t = e.results[0][0].transcript; voiceResult.textContent = `🎤 "${t}"`; voiceResult.classList.add('show'); parseVoiceCommand(t); };
-            r.onerror = (e) => showNotification('Error: ' + e.error, true);
-            r.onend = () => { voiceBtn.classList.remove('listening'); voiceText.textContent = 'Dictar transacción completa'; };
-            r.start();
-        }
-        function parseVoiceCommand(text) {
-            const lower = text.toLowerCase();
-            if (lower.includes('gasto') || lower.includes('pagué') || lower.includes('compré') || lower.includes('gaste')) selectType('expense');
-            else if (lower.includes('ingreso') || lower.includes('cobré') || lower.includes('recibí') || lower.includes('salario')) selectType('income');
-            const m = text.match(/(\d+[.,]?\d*)/);
-            if (m) document.getElementById('amount').value = parseFloat(m[1].replace(',', '.'));
-            for (let cat in categories[currentType]) {
-                if (lower.includes(cat.toLowerCase())) {
-                    document.getElementById('category').value = cat; updateSubcategories();
-                    for (let sub of categories[currentType][cat]) { if (lower.includes(sub.toLowerCase())) { document.getElementById('subcategory').value = sub; break; } }
-                    break;
-                }
-            }
-            showNotification('✓ Monto, categoría y subcategoría detectados. Dicta la descripción con el 🎤 pequeño');
-        }
-        function startVoiceDescription() {
-            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SR) { showNotification('Voz no disponible', true); return; }
-            const r = new SR(); r.lang = 'es-ES'; r.continuous = false; r.interimResults = false;
-            const btn = document.getElementById('voiceDescBtn'), input = document.getElementById('description');
-            btn.classList.add('listening'); btn.textContent = '⏺️';
-            r.onresult = (e) => { input.value = e.results[0][0].transcript.substring(0, 50); showNotification('✓ Descripción dictada'); };
-            r.onerror = (e) => showNotification('Error: ' + e.error, true);
-            r.onend = () => { btn.classList.remove('listening'); btn.textContent = '🎤'; };
-            r.start();
-        }
+        function startVoice() { const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) { showNotification('Voz no disponible', true); return; } const r = new SR(); r.lang = 'es-ES'; r.continuous = false; r.interimResults = false; const voiceBtn = document.getElementById('voiceBtn'), voiceText = document.getElementById('voiceText'), voiceResult = document.getElementById('voiceResult'); voiceBtn.classList.add('listening'); voiceText.textContent = 'Escuchando...'; r.onresult = (e) => { const t = e.results[0][0].transcript; voiceResult.textContent = `🎤 "${t}"`; voiceResult.classList.add('show'); parseVoiceCommand(t); }; r.onerror = (e) => showNotification('Error: ' + e.error, true); r.onend = () => { voiceBtn.classList.remove('listening'); voiceText.textContent = 'Dictar transacción completa'; }; r.start(); }
+        function parseVoiceCommand(text) { const lower = text.toLowerCase(); if (lower.includes('gasto') || lower.includes('pagué') || lower.includes('compré') || lower.includes('gaste')) selectType('expense'); else if (lower.includes('ingreso') || lower.includes('cobré') || lower.includes('recibí') || lower.includes('salario')) selectType('income'); const m = text.match(/(\d+[.,]?\d*)/); if (m) document.getElementById('amount').value = parseFloat(m[1].replace(',', '.')); for (let cat in categories[currentType]) { if (lower.includes(cat.toLowerCase())) { document.getElementById('category').value = cat; updateSubcategories(); for (let sub of categories[currentType][cat]) { if (lower.includes(sub.toLowerCase())) { document.getElementById('subcategory').value = sub; break; } } break; } } showNotification('✓ Monto, categoría y subcategoría detectados. Dicta la descripción con el 🎤 pequeño'); }
+        function startVoiceDescription() { const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) { showNotification('Voz no disponible', true); return; } const r = new SR(); r.lang = 'es-ES'; r.continuous = false; r.interimResults = false; const btn = document.getElementById('voiceDescBtn'), input = document.getElementById('description'); btn.classList.add('listening'); btn.textContent = '⏺️'; r.onresult = (e) => { input.value = e.results[0][0].transcript.substring(0, 50); showNotification('✓ Descripción dictada'); }; r.onerror = (e) => showNotification('Error: ' + e.error, true); r.onend = () => { btn.classList.remove('listening'); btn.textContent = '🎤'; }; r.start(); }
 
         let notifTimeout;
-        function showNotification(message, isError = false) {
-            const notif = document.getElementById('notification');
-            clearTimeout(notifTimeout);
-            notif.textContent = message;
-            notif.className = 'notification show' + (isError ? ' error' : '');
-            notifTimeout = setTimeout(() => notif.classList.remove('show'), 3000);
-        }
+        function showNotification(message, isError = false) { const notif = document.getElementById('notification'); clearTimeout(notifTimeout); notif.textContent = message; notif.className = 'notification show' + (isError ? ' error' : ''); notifTimeout = setTimeout(() => notif.classList.remove('show'), 3000); }
 
-        function exportData() {
-            const data = JSON.stringify({ transactions, categories, budgets, shoppingList }, null, 2);
-            const blob = new Blob([data], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = `billetera-nexus-${new Date().toISOString().split('T')[0]}.json`; a.click();
-            URL.revokeObjectURL(url); toggleMenu(); showNotification('✓ Datos exportados');
-        }
+        function exportData() { const data = JSON.stringify({ transactions, categories, budgets, shoppingList, shoppingHistory }, null, 2); const blob = new Blob([data], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `billetera-nexus-${new Date().toISOString().split('T')[0]}.json`; a.click(); URL.revokeObjectURL(url); toggleMenu(); showNotification('✓ Datos exportados'); }
         function importData() { document.getElementById('importFile').click(); }
-        function handleImport(event) {
-            const file = event.target.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.transactions) { transactions = data.transactions; saveTransactions(); } if (data.categories) { categories = data.categories; saveCategories(); } if (data.budgets) { budgets = data.budgets; saveBudgets(); } if (data.shoppingList) { shoppingList = data.shoppingList; saveShoppingList(); } updateCategoriesSelect(); updateUI(); updateCartBadge(); showNotification('✓ Datos importados'); } catch (err) { showNotification('Error al leer', true); } };
-            reader.readAsText(file); toggleMenu();
-        }
-        function clearAllData() { if (!confirm('¿Borrar TODAS las transacciones?')) return; transactions = []; isDemoMode = false; document.getElementById('demoBanner').style.display = 'none'; saveTransactions(); updateUI(); toggleMenu(); showNotification('✓ Datos borrados'); }
+        function handleImport(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { const data = JSON.parse(e.target.result); if (data.transactions) { transactions = data.transactions; saveTransactions(); } if (data.categories) { categories = data.categories; saveCategories(); } if (data.budgets) { budgets = data.budgets; saveBudgets(); } if (data.shoppingList) { shoppingList = data.shoppingList; saveShoppingList(); } if (data.shoppingHistory) { shoppingHistory = data.shoppingHistory; saveShoppingList(); } updateCategoriesSelect(); updateUI(); updateCartBadge(); showNotification('✓ Datos importados'); } catch (err) { showNotification('Error al leer', true); } }; reader.readAsText(file); toggleMenu(); }
+        function clearAllData() { if (!confirm('¿Borrar TODAS las transacciones?')) return; transactions = []; shoppingList = []; shoppingHistory = []; isDemoMode = false; document.getElementById('demoBanner').style.display = 'none'; saveTransactions(); saveShoppingList(); updateUI(); updateCartBadge(); toggleMenu(); showNotification('✓ Datos borrados'); }
 
         function loadDemoData() {
             const today = new Date();
             const demoTransactions = [];
-            const descriptions = {
-                income: [{ cat: 'Salario', sub: 'Sueldo base', desc: 'Nómina mensual', amount: 2500 }, { cat: 'Freelance', sub: 'Desarrollo', desc: 'Proyecto web', amount: 800 }, { cat: 'Inversiones', sub: 'Dividendos', desc: 'Dividendos', amount: 150 }],
-                expense: [{ cat: 'Alimentación', sub: 'Supermercado', desc: 'Compra semanal', amount: 85.50 }, { cat: 'Transporte', sub: 'Gasolina', desc: 'Repostar', amount: 60 }, { cat: 'Vivienda', sub: 'Alquiler/Hipoteca', desc: 'Alquiler', amount: 750 }, { cat: 'Entretenimiento', sub: 'Streaming', desc: 'Netflix', amount: 25.99 }]
-            };
-            for (let i = 0; i < 7; i++) {
-                const date = new Date(today - i * 24 * 60 * 60 * 1000);
-                const dateStr = date.toISOString().split('T')[0];
-                if (i % 3 === 0) { const inc = descriptions.income[Math.floor(Math.random() * descriptions.income.length)]; demoTransactions.push({ id: Date.now() + i * 1000, type: 'income', amount: inc.amount, description: inc.desc, category: inc.cat, subcategory: inc.sub, date: dateStr }); }
-                const numExpenses = 1 + Math.floor(Math.random() * 2);
-                for (let j = 0; j < numExpenses; j++) { const exp = descriptions.expense[Math.floor(Math.random() * descriptions.expense.length)]; demoTransactions.push({ id: Date.now() + i * 1000 + j * 100, type: 'expense', amount: exp.amount * (0.8 + Math.random() * 0.4), description: exp.desc, category: exp.cat, subcategory: exp.sub, date: dateStr }); }
-            }
+            const descriptions = { income: [{ cat: 'Salario', sub: 'Sueldo base', desc: 'Nómina mensual', amount: 2500 }, { cat: 'Freelance', sub: 'Desarrollo', desc: 'Proyecto web', amount: 800 }, { cat: 'Inversiones', sub: 'Dividendos', desc: 'Dividendos', amount: 150 }], expense: [{ cat: 'Alimentación', sub: 'Supermercado', desc: 'Compra semanal', amount: 85.50 }, { cat: 'Transporte', sub: 'Gasolina', desc: 'Repostar', amount: 60 }, { cat: 'Vivienda', sub: 'Alquiler/Hipoteca', desc: 'Alquiler', amount: 750 }, { cat: 'Entretenimiento', sub: 'Streaming', desc: 'Netflix', amount: 25.99 }] };
+            for (let i = 0; i < 7; i++) { const date = new Date(today - i * 24 * 60 * 60 * 1000); const dateStr = date.toISOString().split('T')[0]; if (i % 3 === 0) { const inc = descriptions.income[Math.floor(Math.random() * descriptions.income.length)]; demoTransactions.push({ id: Date.now() + i * 1000, type: 'income', amount: inc.amount, description: inc.desc, category: inc.cat, subcategory: inc.sub, date: dateStr }); } const numExpenses = 1 + Math.floor(Math.random() * 2); for (let j = 0; j < numExpenses; j++) { const exp = descriptions.expense[Math.floor(Math.random() * descriptions.expense.length)]; demoTransactions.push({ id: Date.now() + i * 1000 + j * 100, type: 'expense', amount: exp.amount * (0.8 + Math.random() * 0.4), description: exp.desc, category: exp.cat, subcategory: exp.sub, date: dateStr }); } }
             transactions = demoTransactions.sort((a, b) => b.id - a.id);
-            isDemoMode = true;
-            document.getElementById('demoBanner').style.display = 'block';
+            isDemoMode = true; document.getElementById('demoBanner').style.display = 'block';
             saveTransactions(); updateUI(); toggleMenu(); showNotification('✓ Datos demo cargados');
         }
 
@@ -1559,23 +1329,11 @@
         document.getElementById('allModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeAllModal(); });
         document.getElementById('budgetModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeBudgetModal(); });
         document.getElementById('shopModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeShoppingModal(); });
+        document.getElementById('imageChoiceModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeImageChoice(); });
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (isModalOpen) closeModal();
-                if (isCatModalOpen) closeCategoriesModal();
-                if (isListModalOpen) closeListModal();
-                if (isAllModalOpen) closeAllModal();
-                if (isBudgetModalOpen) closeBudgetModal();
-                if (isShopModalOpen) closeShoppingModal();
-                if (editingCat || editingSub) cancelEdit();
-                const menu = document.getElementById('sideMenu');
-                if (menu.classList.contains('active')) toggleMenu();
-            }
-            if (e.key === 'Enter') {
-                if (editingCat) { const input = document.getElementById('catEditInput'); if (input && document.activeElement === input) saveCatEdit(editingCat); }
-                if (editingSub) { const input = document.getElementById('subEditInput'); if (input && document.activeElement === input) { const parts = editingSub.split('::'); saveSubEdit(parts[0], parseInt(parts[1])); } }
-            }
+            if (e.key === 'Escape') { if (isModalOpen) closeModal(); if (isCatModalOpen) closeCategoriesModal(); if (isListModalOpen) closeListModal(); if (isAllModalOpen) closeAllModal(); if (isBudgetModalOpen) closeBudgetModal(); if (isShopModalOpen) closeShoppingModal(); if (editingCat || editingSub) cancelEdit(); const menu = document.getElementById('sideMenu'); if (menu.classList.contains('active')) toggleMenu(); closeImageChoice(); }
+            if (e.key === 'Enter') { if (editingCat) { const input = document.getElementById('catEditInput'); if (input && document.activeElement === input) saveCatEdit(editingCat); } if (editingSub) { const input = document.getElementById('subEditInput'); if (input && document.activeElement === input) { const parts = editingSub.split('::'); saveSubEdit(parts[0], parseInt(parts[1])); } } }
         });
     </script>
 </body>
