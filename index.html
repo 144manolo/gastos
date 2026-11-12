@@ -241,7 +241,7 @@
         .shop-total .value { font-size: 20px; font-weight: 700; color: var(--neon-pink); }
         .shop-actions { display: flex; gap: 8px; margin-top: 12px; }
         .shop-actions button { flex: 1; padding: 12px; border-radius: 10px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; }
-        .shop-register-btn { background: linear-gradient(135deg, var(--neon-green), #00cc6e); color: #000; }
+        .shop-purchased-btn { background: linear-gradient(135deg, var(--neon-green), #00cc6e); color: #000; }
         .shop-clear-btn { background: transparent; border: 1px solid var(--neon-red); color: var(--neon-red); }
         .shop-image-pending { font-size: 11px; color: var(--neon-green); margin-top: 4px; }
         .shop-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
@@ -446,19 +446,24 @@
         </div>
     </div>
 
+    <!-- Modal de edición de producto de compra -->
+    <div class="modal-overlay" id="shopEditModalOverlay">
+        <div class="modal">
+            <div class="modal-header"><h3>✏️ EDITAR PRODUCTO</h3><button class="modal-close" onclick="closeShopEditModal()">✕</button></div>
+            <div class="form-group"><label>NOMBRE DEL PRODUCTO</label><input type="text" id="editShopName" placeholder="Producto" maxlength="30"></div>
+            <div class="form-group"><label>CANTIDAD</label><input type="number" id="editShopQty" placeholder="Ud" min="1"></div>
+            <div class="form-group"><label>PRECIO UNITARIO (€)</label><input type="number" id="editShopPrice" placeholder="0.00" step="0.01" min="0"></div>
+            <button class="submit-btn" onclick="saveShopItemEdit()">💾 GUARDAR CAMBIOS</button>
+        </div>
+    </div>
+
     <!-- Modal de elección de imagen -->
     <div class="image-choice-modal" id="imageChoiceModal">
         <div class="image-choice-box">
             <h4>📷 ¿Cómo quieres añadir la imagen?</h4>
             <div class="image-choice-btns">
-                <button class="image-choice-btn" onclick="chooseImageSource('camera')">
-                    <span class="icon">📸</span>
-                    <span>Hacer foto</span>
-                </button>
-                <button class="image-choice-btn" onclick="chooseImageSource('gallery')">
-                    <span class="icon">🖼️</span>
-                    <span>Galería</span>
-                </button>
+                <button class="image-choice-btn" onclick="chooseImageSource('camera')"><span class="icon">📸</span><span>Hacer foto</span></button>
+                <button class="image-choice-btn" onclick="chooseImageSource('gallery')"><span class="icon">🖼️</span><span>Galería</span></button>
             </div>
             <button class="image-choice-cancel" onclick="closeImageChoice()">Cancelar</button>
         </div>
@@ -521,10 +526,13 @@
         let isAllModalOpen = false;
         let isBudgetModalOpen = false;
         let isShopModalOpen = false;
+        let isShopEditModalOpen = false;
         let isDemoMode = false;
         let editingCat = null;
         let editingSub = null;
         let editingTransactionId = null;
+        let editingShopItemId = null;
+        let editingShopItemSource = null; // 'list' o 'history'
         let saveTimeout = null;
         let cloudSyncEnabled = false;
         let chartExpanded = false;
@@ -709,9 +717,8 @@
             else alertEl.className = 'budget-alert';
         }
 
-        // ===== LISTA DE LA COMPRA CON HISTORIAL =====
+        // ===== LISTA DE LA COMPRA CON HISTORIAL Y EDICIÓN =====
         function openShoppingModalDirect() {
-            // Abre directamente SIN abrir el menú
             if (isShopModalOpen) return;
             isShopModalOpen = true;
             currentShopTab = 'list';
@@ -795,6 +802,67 @@
             renderShoppingTab();
         }
 
+        function deleteHistoryItem(id) {
+            shoppingHistory = shoppingHistory.filter(x => x.id !== id);
+            saveShoppingList();
+            renderShoppingTab();
+            showNotification('Eliminado del historial');
+        }
+
+        // ===== EDICIÓN DE PRODUCTOS =====
+        function openShopEditModal(id, source) {
+            const item = source === 'list' ? shoppingList.find(x => x.id === id) : shoppingHistory.find(x => x.id === id);
+            if (!item) return;
+            editingShopItemId = id;
+            editingShopItemSource = source;
+            document.getElementById('editShopName').value = item.name;
+            document.getElementById('editShopQty').value = item.qty;
+            document.getElementById('editShopPrice').value = item.price;
+            document.getElementById('shopEditModalOverlay').classList.add('active');
+        }
+
+        function closeShopEditModal() {
+            if (!isShopEditModalOpen) return;
+            isShopEditModalOpen = false;
+            document.getElementById('shopEditModalOverlay').classList.remove('active');
+        }
+
+        function saveShopItemEdit() {
+            const name = document.getElementById('editShopName').value.trim();
+            const qty = parseInt(document.getElementById('editShopQty').value) || 1;
+            const price = parseFloat(document.getElementById('editShopPrice').value) || 0;
+            if (!name) { showNotification('Escribe un nombre', true); return; }
+
+            const list = editingShopItemSource === 'list' ? shoppingList : shoppingHistory;
+            const item = list.find(x => x.id === editingShopItemId);
+            if (item) {
+                item.name = name;
+                item.qty = qty;
+                item.price = price;
+                saveShoppingList();
+                renderShoppingTab();
+                closeShopEditModal();
+                showNotification('✓ Producto actualizado');
+            }
+        }
+
+        function reAddFromHistory(id) {
+            const item = shoppingHistory.find(x => x.id === id);
+            if (!item) return;
+            shoppingList.push({
+                id: Date.now(),
+                name: item.name,
+                qty: item.qty,
+                price: item.price,
+                done: false,
+                image: item.image || null,
+                addedAt: new Date().toISOString()
+            });
+            saveShoppingList();
+            showNotification(`✓ "${item.name}" añadido a la lista`);
+            switchShopTab('list');
+        }
+
         function renderShoppingList() {
             const container = document.getElementById('shopTabContent');
             let html = `
@@ -822,7 +890,10 @@
                         </div>
                         ${item.image ? `<img src="${item.image}" class="shop-item-thumb" onclick="window.open('${item.image}')">` : ''}
                         <div class="shop-item-price">${(item.qty * item.price).toFixed(2)}€</div>
-                        <button class="action-btn delete" onclick="deleteShopItem(${item.id})">🗑️</button>
+                        <div class="action-btns">
+                            <button class="action-btn edit" onclick="openShopEditModal(${item.id}, 'list')">✏️</button>
+                            <button class="action-btn delete" onclick="deleteShopItem(${item.id})">🗑️</button>
+                        </div>
                     </div>
                 `).join('');
             }
@@ -831,7 +902,7 @@
             const total = pending.reduce((s, i) => s + i.qty * i.price, 0);
             html += `<div class="shop-total"><span class="label">TOTAL ESTIMADO (${pending.length} pendientes)</span><span class="value">${total.toLocaleString('es-ES', {minimumFractionDigits: 2})}€</span></div>`;
             html += `<div class="shop-actions">
-                <button class="shop-register-btn" onclick="registerShoppingAsExpense()">💳 COMPRADO </button>
+                <button class="shop-purchased-btn" onclick="markAsPurchased()">✅ Marcar como comprado</button>
                 <button class="shop-clear-btn" onclick="clearShoppingList()">🗑️ Vaciar</button>
             </div>`;
 
@@ -855,7 +926,6 @@
                 return;
             }
 
-            // Agrupar por fecha
             const groups = {};
             filtered.forEach(item => {
                 const date = item.purchasedAt ? new Date(item.purchasedAt).toLocaleDateString('es-ES') : 'Antiguo';
@@ -874,8 +944,11 @@
                             <div class="shop-item-details">${item.qty} ud · ${(item.qty * item.price).toFixed(2)}€${item.image ? ' 📷' : ''}<div class="shop-history-date">${item.purchasedAt ? new Date(item.purchasedAt).toLocaleString('es-ES', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}) : ''}</div></div>
                         </div>
                         ${item.image ? `<img src="${item.image}" class="shop-item-thumb" onclick="window.open('${item.image}')">` : ''}
-                        <button class="shop-readd-btn" onclick="reAddFromHistory(${item.id})">↩️ Añadir</button>
-                        <button class="action-btn delete" onclick="deleteHistoryItem(${item.id})">🗑️</button>
+                        <div class="action-btns">
+                            <button class="action-btn edit" onclick="openShopEditModal(${item.id}, 'history')">✏️</button>
+                            <button class="shop-readd-btn" onclick="reAddFromHistory(${item.id})">↩️</button>
+                            <button class="action-btn delete" onclick="deleteHistoryItem(${item.id})">🗑️</button>
+                        </div>
                     </div>
                 `).join('');
                 html += `</div>`;
@@ -884,59 +957,18 @@
             container.innerHTML = html;
         }
 
-        function reAddFromHistory(id) {
-            const item = shoppingHistory.find(x => x.id === id);
-            if (!item) return;
-            shoppingList.push({
-                id: Date.now(),
-                name: item.name,
-                qty: item.qty,
-                price: item.price,
-                done: false,
-                image: item.image || null,
-                addedAt: new Date().toISOString()
-            });
-            saveShoppingList();
-            showNotification(`✓ "${item.name}" añadido a la lista`);
-            switchShopTab('list');
-        }
-
-        function deleteHistoryItem(id) {
-            shoppingHistory = shoppingHistory.filter(x => x.id !== id);
-            saveShoppingList();
-            renderShoppingTab();
-            showNotification('Eliminado del historial');
-        }
-
-        function registerShoppingAsExpense() {
+        // Marca los productos como comprados y los mueve al historial (SIN crear transacción)
+        function markAsPurchased() {
             const doneItems = shoppingList.filter(i => i.done);
-            if (doneItems.length === 0) { showNotification('Marca los productos comprados primero', true); return; }
-            const total = doneItems.reduce((s, i) => s + i.qty * i.price, 0);
-            const names = doneItems.map(i => i.name).join(', ');
-            const transaction = {
-                id: Date.now(),
-                type: 'expense',
-                amount: total,
-                description: names.substring(0, 50),
-                category: 'Alimentación',
-                subcategory: 'Supermercado',
-                date: new Date().toISOString().split('T')[0],
-                imageUrl: null
-            };
-            transactions.unshift(transaction);
-
-            // Mover al historial
+            if (doneItems.length === 0) { showNotification('Marca los productos comprados primero (pulsa el ✓)', true); return; }
             const now = new Date().toISOString();
             doneItems.forEach(item => {
                 shoppingHistory.unshift({ ...item, purchasedAt: now });
             });
             shoppingList = shoppingList.filter(i => !i.done);
-
-            saveTransactions();
             saveShoppingList();
-            updateUI();
             renderShoppingTab();
-            showNotification(`✓ Gasto registrado: ${total.toFixed(2)}€`);
+            showNotification(`✓ ${doneItems.length} producto(s) movido(s) al historial`);
         }
 
         function clearShoppingList() {
@@ -1329,11 +1361,27 @@
         document.getElementById('allModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeAllModal(); });
         document.getElementById('budgetModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeBudgetModal(); });
         document.getElementById('shopModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeShoppingModal(); });
+        document.getElementById('shopEditModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeShopEditModal(); });
         document.getElementById('imageChoiceModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeImageChoice(); });
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') { if (isModalOpen) closeModal(); if (isCatModalOpen) closeCategoriesModal(); if (isListModalOpen) closeListModal(); if (isAllModalOpen) closeAllModal(); if (isBudgetModalOpen) closeBudgetModal(); if (isShopModalOpen) closeShoppingModal(); if (editingCat || editingSub) cancelEdit(); const menu = document.getElementById('sideMenu'); if (menu.classList.contains('active')) toggleMenu(); closeImageChoice(); }
-            if (e.key === 'Enter') { if (editingCat) { const input = document.getElementById('catEditInput'); if (input && document.activeElement === input) saveCatEdit(editingCat); } if (editingSub) { const input = document.getElementById('subEditInput'); if (input && document.activeElement === input) { const parts = editingSub.split('::'); saveSubEdit(parts[0], parseInt(parts[1])); } } }
+            if (e.key === 'Escape') {
+                if (isModalOpen) closeModal();
+                if (isCatModalOpen) closeCategoriesModal();
+                if (isListModalOpen) closeListModal();
+                if (isAllModalOpen) closeAllModal();
+                if (isBudgetModalOpen) closeBudgetModal();
+                if (isShopModalOpen) closeShoppingModal();
+                if (isShopEditModalOpen) closeShopEditModal();
+                if (editingCat || editingSub) cancelEdit();
+                const menu = document.getElementById('sideMenu');
+                if (menu.classList.contains('active')) toggleMenu();
+                closeImageChoice();
+            }
+            if (e.key === 'Enter') {
+                if (editingCat) { const input = document.getElementById('catEditInput'); if (input && document.activeElement === input) saveCatEdit(editingCat); }
+                if (editingSub) { const input = document.getElementById('subEditInput'); if (input && document.activeElement === input) { const parts = editingSub.split('::'); saveSubEdit(parts[0], parseInt(parts[1])); } }
+            }
         });
     </script>
 </body>
