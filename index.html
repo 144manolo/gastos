@@ -263,8 +263,25 @@
         .image-choice-btn:active { background: rgba(0, 240, 255, 0.1); border-color: var(--neon-blue); }
         .image-choice-btn .icon { font-size: 28px; }
         .image-choice-cancel { width: 100%; margin-top: 12px; padding: 12px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: transparent; color: var(--text-secondary); font-size: 14px; cursor: pointer; }
-        /* Inputs file ocultos pero accesibles */
         .hidden-file-input { position: fixed; top: -1000px; left: -1000px; width: 1px; height: 1px; opacity: 0; }
+        
+        /* ===== MODAL DE VISUALIZACIÓN DE TRANSACCIÓN ===== */
+        .view-modal-image { width: 100%; max-height: 300px; object-fit: contain; border-radius: 12px; margin-bottom: 16px; background: rgba(0,0,0,0.3); }
+        .view-detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .view-detail-label { color: var(--text-secondary); font-size: 12px; }
+        .view-detail-value { font-size: 14px; font-weight: 500; text-align: right; }
+        .view-modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+        .view-modal-actions button { flex: 1; padding: 12px; border-radius: 10px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .view-edit-btn { background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); color: white; }
+        .view-delete-btn { background: transparent; border: 1px solid var(--neon-red); color: var(--neon-red); }
+        
+        /* ===== URL PREVIEW ===== */
+        .url-preview-container { margin-top: 8px; border-radius: 10px; overflow: hidden; border: 1px solid rgba(0, 240, 255, 0.2); }
+        .url-preview-container img { width: 100%; max-height: 200px; object-fit: cover; display: block; }
+        .url-preview-info { padding: 8px 12px; background: rgba(0, 240, 255, 0.05); font-size: 11px; color: var(--neon-blue); display: flex; justify-content: space-between; align-items: center; }
+        .url-preview-info a { color: var(--neon-blue); text-decoration: none; word-break: break-all; }
+        .url-error { padding: 8px 12px; background: rgba(255, 71, 87, 0.1); border: 1px solid var(--neon-red); border-radius: 8px; font-size: 11px; color: var(--neon-red); margin-top: 8px; }
+        
         @media (max-width: 430px) { .app-container { padding: 16px 12px 100px; } }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
@@ -339,7 +356,7 @@
         </div>
 
         <div class="activity-card">
-            <div class="activity-title">ACTIVIDAD RECIENTE <span style="font-size:10px;opacity:0.6;">(pulsa para editar)</span></div>
+            <div class="activity-title">ACTIVIDAD RECIENTE <span style="font-size:10px;opacity:0.6;">(pulsa para ver detalles)</span></div>
             <div id="activityList"><div class="empty-state"><div class="empty-state-icon">💳</div><div>Sin transacciones aún</div><div style="font-size: 11px; margin-top: 4px;">Agrega tu primera transacción</div></div></div>
         </div>
     </div>
@@ -376,10 +393,30 @@
                 </div>
                 <div id="imagePreview"></div>
                 <div class="upload-progress" id="uploadProgress"><span id="uploadText">Subiendo imagen...</span><div class="upload-progress-bar"><div class="upload-progress-fill" id="uploadProgressFill"></div></div></div>
-                <div class="form-group" style="margin-top: 10px;"><label style="font-size: 11px;">O pega URL de imagen:</label><input type="text" id="imageUrlInput" placeholder="https://..." style="font-size: 13px; padding: 10px;"></div>
+                <div class="form-group" style="margin-top: 10px;">
+                    <label style="font-size: 11px;">O pega URL de imagen (incluido Google Drive):</label>
+                    <input type="text" id="imageUrlInput" placeholder="https://..." style="font-size: 13px; padding: 10px;" oninput="handleUrlPreview()">
+                    <div id="urlPreviewContainer"></div>
+                </div>
             </div>
             <div class="form-group"><label>FECHA</label><input type="date" id="date"></div>
             <button class="submit-btn" id="submitBtn" onclick="saveTransaction()">AGREGAR TRANSACCIÓN</button>
+        </div>
+    </div>
+
+    <!-- Modal de visualización de transacción -->
+    <div class="modal-overlay" id="viewModalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="viewModalTitle">DETALLES</h3>
+                <button class="modal-close" onclick="closeViewModal()">✕</button>
+            </div>
+            <div id="viewModalImageContainer"></div>
+            <div id="viewModalContent"></div>
+            <div class="view-modal-actions">
+                <button class="view-edit-btn" id="viewEditBtn">✏️ Editar</button>
+                <button class="view-delete-btn" id="viewDeleteBtn">🗑️ Eliminar</button>
+            </div>
         </div>
     </div>
 
@@ -484,7 +521,6 @@
     <div class="notification" id="notification"></div>
     <input type="file" id="importFile" accept=".json" style="display: none" onchange="handleImport(event)">
     <input type="file" id="importCatFile" accept=".json" style="display: none" onchange="handleImportCategories(event)">
-    <!-- Inputs file para cámara y galería -->
     <input type="file" id="fileCamera" accept="image/*" capture="environment" class="hidden-file-input" onchange="handleFileSelected(event)">
     <input type="file" id="fileGallery" accept="image/*" class="hidden-file-input" onchange="handleFileSelected(event)">
 
@@ -537,6 +573,7 @@
         let isAllModalOpen = false;
         let isBudgetModalOpen = false;
         let isShopModalOpen = false;
+        let isViewModalOpen = false;
         let isDemoMode = false;
         let editingCat = null;
         let editingSub = null;
@@ -550,11 +587,102 @@
         let pendingShopImage = null;
         let currentImageTarget = null;
         let currentFileMode = null;
+        let viewingTransactionId = null;
 
         let balanceVisible = false;
         let realBalance = 0;
         let realIncome = 0;
         let realExpense = 0;
+
+        // ===== CONVERSIÓN DE URLS DE GOOGLE DRIVE =====
+        function convertToImageUrl(url) {
+            if (!url) return null;
+            url = url.trim();
+            
+            // Google Drive: https://drive.google.com/file/d/FILE_ID/view
+            const driveMatch1 = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+            if (driveMatch1) {
+                return `https://lh3.googleusercontent.com/d/${driveMatch1[1]}`;
+            }
+            
+            // Google Drive: https://drive.google.com/open?id=FILE_ID
+            const driveMatch2 = url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
+            if (driveMatch2) {
+                return `https://lh3.googleusercontent.com/d/${driveMatch2[1]}`;
+            }
+            
+            // Google Drive: https://drive.google.com/uc?id=FILE_ID
+            const driveMatch3 = url.match(/drive\.google\.com\/uc\?.*id=([a-zA-Z0-9_-]+)/);
+            if (driveMatch3) {
+                return `https://lh3.googleusercontent.com/d/${driveMatch3[1]}`;
+            }
+            
+            // Google Drive short: https://drive.google.com/uc?export=view&id=FILE_ID
+            const driveMatch4 = url.match(/drive\.google\.com\/uc\?.*export=view&id=([a-zA-Z0-9_-]+)/);
+            if (driveMatch4) {
+                return `https://lh3.googleusercontent.com/d/${driveMatch4[1]}`;
+            }
+            
+            // Si ya es una URL de imagen directa, devolverla
+            if (url.match(/\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?.*)?$/i)) {
+                return url;
+            }
+            
+            // Si es una URL de Cloudinary, devolverla
+            if (url.includes('res.cloudinary.com')) {
+                return url;
+            }
+            
+            // Si es una URL de Imgur, asegurar formato directo
+            if (url.includes('imgur.com')) {
+                return url.replace('imgur.com/', 'i.imgur.com/').replace(/\/[a-z]+$/, '.png');
+            }
+            
+            // Por defecto, devolver la URL tal cual (puede ser una URL directa de imagen)
+            return url;
+        }
+
+        function isGoogleDriveUrl(url) {
+            return url && url.includes('drive.google.com');
+        }
+
+        // ===== PREVIEW DE URL =====
+        function handleUrlPreview() {
+            const url = document.getElementById('imageUrlInput').value.trim();
+            const container = document.getElementById('urlPreviewContainer');
+            
+            if (!url) {
+                container.innerHTML = '';
+                pendingImageUrl = null;
+                return;
+            }
+            
+            const imageUrl = convertToImageUrl(url);
+            
+            if (isGoogleDriveUrl(url)) {
+                container.innerHTML = `
+                    <div class="url-preview-container">
+                        <img src="${imageUrl}" alt="Preview" onerror="this.parentElement.innerHTML='<div class=\\'url-error\\'>⚠️ No se puede previsualizar. Asegúrate de que el archivo sea público en Google Drive.</div>'">
+                        <div class="url-preview-info">
+                            <span>📁 Google Drive</span>
+                            <a href="${url}" target="_blank">Abrir original</a>
+                        </div>
+                    </div>
+                `;
+                pendingImageUrl = imageUrl;
+            } else {
+                container.innerHTML = `
+                    <div class="url-preview-container">
+                        <img src="${imageUrl}" alt="Preview" onerror="this.parentElement.innerHTML='<div class=\\'url-error\\'>⚠️ No se puede previsualizar esta URL</div>'">
+                        <div class="url-preview-info">
+                            <span>🔗 URL de imagen</span>
+                            <a href="${url}" target="_blank">Abrir original</a>
+                        </div>
+                    </div>
+                `;
+                pendingImageUrl = imageUrl;
+            }
+        }
 
         function toggleBalanceVisibility() {
             balanceVisible = !balanceVisible;
@@ -580,7 +708,7 @@
             else { container.classList.add('collapsed'); toggle.classList.remove('expanded'); }
         }
 
-        // ===== SELECCIÓN DE IMAGEN - CORREGIDO =====
+        // ===== SELECCIÓN DE IMAGEN =====
         function showImageChoice(target) {
             currentImageTarget = target;
             document.getElementById('imageChoiceModal').classList.add('active');
@@ -588,59 +716,33 @@
 
         function closeImageChoice() {
             document.getElementById('imageChoiceModal').classList.remove('active');
-            // NO reseteamos currentImageTarget aquí, lo hacemos en chooseImageSource
         }
 
         function chooseImageSource(source) {
-            // IMPORTANTE: Guardar el target ANTES de cerrar el modal
             const target = currentImageTarget;
-            
-            // Cerrar el modal
             document.getElementById('imageChoiceModal').classList.remove('active');
             currentImageTarget = null;
-            
-            // Ahora sí asignar el modo de archivo
             currentFileMode = target;
             
-            console.log('Modo de archivo:', currentFileMode, 'Fuente:', source);
-            
             const input = source === 'camera' ? document.getElementById('fileCamera') : document.getElementById('fileGallery');
-            
-            // Resetear el valor para permitir seleccionar el mismo archivo otra vez
             input.value = '';
-            
-            // Pequeño delay para asegurar que el modal se cierre completamente
-            setTimeout(() => {
-                input.click();
-            }, 300);
+            setTimeout(() => input.click(), 300);
         }
 
-        // Manejador unificado para archivos seleccionados
         async function handleFileSelected(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             const mode = currentFileMode;
-            console.log('Archivo seleccionado, modo:', mode, 'archivo:', file.name, 'tamaño:', file.size);
-            
-            // Resetear inmediatamente para permitir seleccionar otro archivo
             event.target.value = '';
             currentFileMode = null;
 
-            if (mode === 'transaction') {
-                await processTransactionImage(file);
-            } else if (mode === 'shop') {
-                await processShopImage(file);
-            } else if (mode === 'shopEdit') {
-                await processShopEditImage(file);
-            } else {
-                console.error('Modo de archivo desconocido:', mode);
-                showNotification('Error: modo desconocido', true);
-            }
+            if (mode === 'transaction') await processTransactionImage(file);
+            else if (mode === 'shop') await processShopImage(file);
+            else if (mode === 'shopEdit') await processShopEditImage(file);
         }
 
         async function processTransactionImage(file) {
-            console.log('Procesando imagen de transacción...');
             if (file.size > 10 * 1024 * 1024) { showNotification('Imagen muy grande (máx 10MB)', true); return; }
             const progress = document.getElementById('uploadProgress');
             const preview = document.getElementById('imagePreview');
@@ -649,30 +751,20 @@
             document.getElementById('uploadProgressFill').style.width = '0%';
             document.getElementById('uploadText').textContent = 'Subiendo imagen...';
             submitBtn.disabled = true;
-            
-            // Mostrar preview local inmediatamente
             const reader = new FileReader();
             reader.onload = (e) => { preview.innerHTML = `<div class="attachment-preview"><img src="${e.target.result}" alt="Preview"></div>`; };
             reader.readAsDataURL(file);
-            
             try {
                 const imageUrl = await uploadImageToCloudinary(file, progress, document.getElementById('uploadProgressFill'), document.getElementById('uploadText'));
                 pendingImageUrl = imageUrl;
                 preview.innerHTML = `<div class="attachment-preview"><img src="${imageUrl}" alt="Imagen subida"><button class="remove-attachment" onclick="removeImage()">✕ Quitar</button></div>`;
                 progress.classList.remove('active');
                 showNotification('✓ Imagen subida a la nube');
-                console.log('Imagen subida:', imageUrl);
-            } catch (error) { 
-                progress.classList.remove('active'); 
-                showNotification('Error al subir imagen: ' + error.message, true); 
-                console.error('Error detallado:', error);
-            } finally { 
-                submitBtn.disabled = false; 
-            }
+            } catch (error) { progress.classList.remove('active'); showNotification('Error al subir imagen: ' + error.message, true); }
+            finally { submitBtn.disabled = false; }
         }
 
         async function processShopImage(file) {
-            console.log('Procesando imagen de lista de compra...');
             if (file.size > 10 * 1024 * 1024) { showNotification('Imagen muy grande (máx 10MB)', true); return; }
             const preview = document.getElementById('shopImagePreview');
             if (!preview) return;
@@ -681,12 +773,10 @@
                 pendingShopImage = await uploadImageToCloudinary(file);
                 preview.innerHTML = `<div class="attachment-preview"><img src="${pendingShopImage}" style="max-height:80px"><button class="remove-attachment" onclick="removeShopImage()">✕ Quitar</button></div>`;
                 showNotification('✓ Imagen lista');
-                console.log('Imagen de lista subida:', pendingShopImage);
-            } catch (e) { preview.innerHTML = ''; showNotification('Error al subir imagen: ' + e.message, true); console.error(e); }
+            } catch (e) { preview.innerHTML = ''; showNotification('Error al subir imagen', true); }
         }
 
         async function processShopEditImage(file) {
-            console.log('Procesando imagen de edición de producto...');
             if (file.size > 10 * 1024 * 1024) { showNotification('Imagen muy grande (máx 10MB)', true); return; }
             const preview = document.getElementById('editShopImagePreview');
             if (!preview) return;
@@ -695,23 +785,17 @@
                 pendingShopImage = await uploadImageToCloudinary(file);
                 preview.innerHTML = `<div class="attachment-preview"><img src="${pendingShopImage}" style="max-height:80px"><button class="remove-attachment" onclick="removeShopEditImage()">✕ Quitar</button></div>`;
                 showNotification('✓ Imagen lista');
-                console.log('Imagen de edición subida:', pendingShopImage);
-            } catch (e) { preview.innerHTML = ''; showNotification('Error al subir imagen: ' + e.message, true); console.error(e); }
+            } catch (e) { preview.innerHTML = ''; showNotification('Error al subir imagen', true); }
         }
 
-        // ===== CLOUDINARY =====
         async function uploadImageToCloudinary(file, progressEl, fillEl, textEl) {
             return new Promise((resolve, reject) => {
                 const formData = new FormData();
                 formData.append('file', file);
                 formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
                 formData.append('folder', 'Billetera');
-                
-                console.log('Subiendo a Cloudinary:', file.name, file.size, 'bytes');
-                
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', CLOUDINARY_UPLOAD_URL, true);
-                
                 if (progressEl && fillEl && textEl) {
                     xhr.upload.onprogress = (e) => {
                         if (e.lengthComputable) {
@@ -721,16 +805,7 @@
                         }
                     };
                 }
-                
-                xhr.onload = () => { 
-                    console.log('Respuesta de Cloudinary:', xhr.status, xhr.responseText);
-                    if (xhr.status === 200) {
-                        const response = JSON.parse(xhr.responseText);
-                        resolve(response.secure_url);
-                    } else {
-                        reject(new Error('Error al subir: ' + xhr.status + ' - ' + xhr.responseText));
-                    }
-                };
+                xhr.onload = () => { if (xhr.status === 200) resolve(JSON.parse(xhr.responseText).secure_url); else reject(new Error('Error al subir: ' + xhr.status)); };
                 xhr.onerror = () => reject(new Error('Error de red'));
                 xhr.send(formData);
             });
@@ -742,10 +817,101 @@
             document.getElementById('fileGallery').value = '';
             document.getElementById('imagePreview').innerHTML = '';
             document.getElementById('uploadProgress').classList.remove('active');
+            document.getElementById('imageUrlInput').value = '';
+            document.getElementById('urlPreviewContainer').innerHTML = '';
         }
 
         function removeShopImage() { pendingShopImage = null; document.getElementById('fileCamera').value = ''; document.getElementById('fileGallery').value = ''; const p = document.getElementById('shopImagePreview'); if (p) p.innerHTML = ''; }
         function removeShopEditImage() { pendingShopImage = null; document.getElementById('fileCamera').value = ''; document.getElementById('fileGallery').value = ''; const p = document.getElementById('editShopImagePreview'); if (p) p.innerHTML = ''; }
+
+        // ===== MODAL DE VISUALIZACIÓN DE TRANSACCIÓN =====
+        function viewTransaction(id) {
+            const t = transactions.find(x => x.id === id);
+            if (!t) return;
+            viewingTransactionId = id;
+            
+            const typeLabel = t.type === 'income' ? '📈 INGRESO' : '📉 GASTO';
+            const typeColor = t.type === 'income' ? 'var(--neon-blue)' : 'var(--neon-pink)';
+            const sign = t.type === 'income' ? '+' : '-';
+            
+            document.getElementById('viewModalTitle').textContent = typeLabel;
+            
+            // Imagen
+            const imageContainer = document.getElementById('viewModalImageContainer');
+            if (t.imageUrl) {
+                const displayUrl = convertToImageUrl(t.imageUrl);
+                imageContainer.innerHTML = `
+                    <img src="${displayUrl}" class="view-modal-image" alt="Imagen" 
+                         onclick="window.open('${t.imageUrl}', '_blank')"
+                         onerror="this.style.display='none'">
+                `;
+            } else {
+                imageContainer.innerHTML = '';
+            }
+            
+            // Detalles
+            const dateFormatted = new Date(t.date + 'T00:00:00').toLocaleDateString('es-ES', { 
+                weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' 
+            });
+            
+            let content = `
+                <div class="view-detail-row">
+                    <span class="view-detail-label">💰 Monto</span>
+                    <span class="view-detail-value" style="color: ${typeColor}; font-size: 18px;">${sign}${t.amount.toLocaleString('es-ES', {minimumFractionDigits: 2})}€</span>
+                </div>
+                <div class="view-detail-row">
+                    <span class="view-detail-label">📝 Descripción</span>
+                    <span class="view-detail-value">${escapeHtml(t.description)}</span>
+                </div>
+                <div class="view-detail-row">
+                    <span class="view-detail-label">📂 Categoría</span>
+                    <span class="view-detail-value">${escapeHtml(t.category)}</span>
+                </div>
+                <div class="view-detail-row">
+                    <span class="view-detail-label">📁 Subcategoría</span>
+                    <span class="view-detail-value">${escapeHtml(t.subcategory || '-')}</span>
+                </div>
+                <div class="view-detail-row">
+                    <span class="view-detail-label">📅 Fecha</span>
+                    <span class="view-detail-value">${dateFormatted}</span>
+                </div>
+            `;
+            
+            if (t.imageUrl) {
+                content += `
+                    <div class="view-detail-row">
+                        <span class="view-detail-label">🔗 Imagen</span>
+                        <span class="view-detail-value"><a href="${t.imageUrl}" target="_blank" style="color: var(--neon-blue);">Ver imagen original</a></span>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('viewModalContent').innerHTML = content;
+            
+            // Botones de acción
+            document.getElementById('viewEditBtn').onclick = () => {
+                closeViewModal();
+                setTimeout(() => editTransaction(id), 300);
+            };
+            document.getElementById('viewDeleteBtn').onclick = () => {
+                if (confirm('¿Eliminar esta transacción?')) {
+                    deleteTransaction(id);
+                    closeViewModal();
+                }
+            };
+            
+            document.getElementById('viewModalOverlay').classList.add('active');
+            isViewModalOpen = true;
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeViewModal() {
+            if (!isViewModalOpen) return;
+            isViewModalOpen = false;
+            viewingTransactionId = null;
+            document.getElementById('viewModalOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
 
         // ===== PRESUPUESTOS =====
         function getMonthExpensesByCategory() {
@@ -895,7 +1061,6 @@
             showNotification('Eliminado del historial');
         }
 
-        // ===== EDICIÓN DE PRODUCTOS =====
         function openShopEditModal(id, source) {
             const item = source === 'list' ? shoppingList.find(x => x.id === id) : shoppingHistory.find(x => x.id === id);
             if (!item) return;
@@ -1263,7 +1428,21 @@
 
         function openModal() { if (isModalOpen) return; isModalOpen = true; editingTransactionId = null; pendingImageUrl = null; document.getElementById('modalTitle').textContent = 'NUEVA TRANSACCIÓN'; document.getElementById('submitBtn').textContent = 'AGREGAR TRANSACCIÓN'; document.getElementById('modalOverlay').classList.add('active'); document.getElementById('date').valueAsDate = new Date(); document.body.style.overflow = 'hidden'; resetForm(); }
         function closeModal() { if (!isModalOpen) return; isModalOpen = false; editingTransactionId = null; pendingImageUrl = null; document.getElementById('modalOverlay').classList.remove('active'); document.body.style.overflow = ''; resetForm(); }
-        function resetForm() { document.getElementById('amount').value = ''; document.getElementById('description').value = ''; document.getElementById('category').value = ''; document.getElementById('subcategory').value = ''; document.getElementById('voiceResult').classList.remove('show'); document.getElementById('imageUrlInput').value = ''; document.getElementById('fileCamera').value = ''; document.getElementById('fileGallery').value = ''; document.getElementById('imagePreview').innerHTML = ''; document.getElementById('uploadProgress').classList.remove('active'); pendingImageUrl = null; selectType('expense'); }
+        function resetForm() { 
+            document.getElementById('amount').value = ''; 
+            document.getElementById('description').value = ''; 
+            document.getElementById('category').value = ''; 
+            document.getElementById('subcategory').value = ''; 
+            document.getElementById('voiceResult').classList.remove('show'); 
+            document.getElementById('imageUrlInput').value = ''; 
+            document.getElementById('urlPreviewContainer').innerHTML = '';
+            document.getElementById('fileCamera').value = ''; 
+            document.getElementById('fileGallery').value = ''; 
+            document.getElementById('imagePreview').innerHTML = ''; 
+            document.getElementById('uploadProgress').classList.remove('active'); 
+            pendingImageUrl = null; 
+            selectType('expense'); 
+        }
 
         async function saveTransaction() {
             const amount = parseFloat(document.getElementById('amount').value);
@@ -1297,14 +1476,22 @@
             document.getElementById('date').value = t.date;
             document.getElementById('imageUrlInput').value = t.imageUrl || '';
             pendingImageUrl = t.imageUrl || null;
-            document.getElementById('imagePreview').innerHTML = t.imageUrl ? `<div class="attachment-preview"><img src="${t.imageUrl}" alt="Imagen"><button class="remove-attachment" onclick="removeImage()">✕ Quitar</button></div>` : '';
+            document.getElementById('imagePreview').innerHTML = t.imageUrl ? `<div class="attachment-preview"><img src="${convertToImageUrl(t.imageUrl)}" alt="Imagen"><button class="remove-attachment" onclick="removeImage()">✕ Quitar</button></div>` : '';
+            document.getElementById('urlPreviewContainer').innerHTML = '';
             if (isListModalOpen) closeListModal();
             if (isAllModalOpen) closeAllModal();
+            if (isViewModalOpen) closeViewModal();
             document.getElementById('modalOverlay').classList.add('active');
             isModalOpen = true; document.body.style.overflow = 'hidden';
         }
 
-        function deleteTransaction(id) { if (!confirm('¿Eliminar?')) return; transactions = transactions.filter(t => t.id !== id); saveTransactions(); updateUI(); showNotification('Eliminada'); }
+        function deleteTransaction(id) { 
+            if (!confirm('¿Eliminar?')) return; 
+            transactions = transactions.filter(t => t.id !== id); 
+            saveTransactions(); 
+            updateUI(); 
+            showNotification('Eliminada'); 
+        }
         function saveTransactions() { saveTransactionsLocal(); saveToCloud(); }
         function saveCategories() { saveCategoriesLocal(); saveToCloud(); }
 
@@ -1362,7 +1549,7 @@
             document.getElementById('listModalTitle').textContent = title;
             let content = `<div class="list-total ${totalClass}">Total: ${sign}${total.toLocaleString('es-ES', {minimumFractionDigits: 2})}€</div>`;
             if (filtered.length === 0) content += `<div class="empty-state"><div class="empty-state-icon">📭</div><div>Sin ${type === 'income' ? 'ingresos' : 'gastos'} este mes</div></div>`;
-            else content += filtered.map(t => `<div class="activity-item"><div class="activity-info"><h4>${escapeHtml(t.description)}</h4><span>${escapeHtml(t.category)} ${t.subcategory !== t.category ? '→ ' + escapeHtml(t.subcategory) : ''} • ${formatDate(t.date)}</span></div><div class="activity-amount ${colorClass}">${sign}${t.amount.toLocaleString('es-ES', {minimumFractionDigits: 2})}€</div><div class="action-btns"><button class="action-btn edit" onclick="editTransaction(${t.id})">✏️</button><button class="action-btn delete" onclick="deleteTransaction(${t.id}); showMonthList('${type}');">🗑️</button></div></div>`).join('');
+            else content += filtered.map(t => `<div class="activity-item" onclick="viewTransaction(${t.id})"><div class="activity-info"><h4>${escapeHtml(t.description)}</h4><span>${escapeHtml(t.category)} ${t.subcategory !== t.category ? '→ ' + escapeHtml(t.subcategory) : ''} • ${formatDate(t.date)}</span></div><div class="activity-amount ${colorClass}">${sign}${t.amount.toLocaleString('es-ES', {minimumFractionDigits: 2})}€</div><div class="action-btns" onclick="event.stopPropagation()"><button class="action-btn edit" onclick="editTransaction(${t.id})">✏️</button><button class="action-btn delete" onclick="deleteTransaction(${t.id}); showMonthList('${type}');">🗑️</button></div></div>`).join('');
             if (type === 'expense' && Object.keys(budgets).length > 0) {
                 const monthExpenses = getMonthExpensesByCategory();
                 content += `<div class="budget-section-title">💰 PRESUPUESTOS DEL MES</div>`;
@@ -1395,7 +1582,7 @@
                     const dayExpense = items.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
                     const dayBalance = dayIncome - dayExpense;
                     content += `<div class="day-group"><div class="day-header"><span>📅 ${formatDateFull(date)}</span><span class="day-total">${dayIncome > 0 ? '+' + dayIncome.toFixed(2) : ''}€ ${dayExpense > 0 ? '-' + dayExpense.toFixed(2) : ''}€ = ${dayBalance >= 0 ? '+' : ''}${dayBalance.toFixed(2)}€</span></div>`;
-                    items.forEach(t => { const colorClass = t.type === 'income' ? 'positive' : 'negative'; const sign = t.type === 'income' ? '+' : '-'; content += `<div class="activity-item"><div class="activity-info"><h4>${escapeHtml(t.description)}</h4><span>${escapeHtml(t.category)} ${t.subcategory !== t.category ? '→ ' + escapeHtml(t.subcategory) : ''}</span></div><div class="activity-amount ${colorClass}">${sign}${t.amount.toLocaleString('es-ES', {minimumFractionDigits: 2})}€</div><div class="action-btns"><button class="action-btn edit" onclick="editTransaction(${t.id})">✏️</button><button class="action-btn delete" onclick="deleteTransaction(${t.id}); showAllTransactions();">🗑️</button></div></div>`; });
+                    items.forEach(t => { const colorClass = t.type === 'income' ? 'positive' : 'negative'; const sign = t.type === 'income' ? '+' : '-'; content += `<div class="activity-item" onclick="viewTransaction(${t.id})"><div class="activity-info"><h4>${escapeHtml(t.description)}</h4><span>${escapeHtml(t.category)} ${t.subcategory !== t.category ? '→ ' + escapeHtml(t.subcategory) : ''}</span></div><div class="activity-amount ${colorClass}">${sign}${t.amount.toLocaleString('es-ES', {minimumFractionDigits: 2})}€</div><div class="action-btns" onclick="event.stopPropagation()"><button class="action-btn edit" onclick="editTransaction(${t.id})">✏️</button><button class="action-btn delete" onclick="deleteTransaction(${t.id}); showAllTransactions();">🗑️</button></div></div>`; });
                     content += `</div>`;
                 }
                 document.getElementById('allModalContent').innerHTML = content;
@@ -1411,7 +1598,7 @@
             const recent = filtered.slice(0, 3);
             if (recent.length === 0) { list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">💳</div><div>Sin transacciones aún</div><div style="font-size: 11px; margin-top: 4px;">Agrega tu primera transacción</div></div>`; return; }
             list.innerHTML = recent.map(t => `
-                <div class="activity-item" onclick="editTransaction(${t.id})">
+                <div class="activity-item" onclick="viewTransaction(${t.id})">
                     <div class="activity-info">
                         <h4>${escapeHtml(t.description)}</h4>
                         <span>${escapeHtml(t.category)} ${t.subcategory !== t.category ? '→ ' + escapeHtml(t.subcategory) : ''} • ${formatDate(t.date)}</span>
@@ -1428,7 +1615,6 @@
         function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
         function formatDate(dateStr) { const date = new Date(dateStr + 'T00:00:00'); return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }); }
 
-        // ===== GRÁFICO MENSUAL (30 días) =====
         function updateCharts(filtered) {
             const ctx = document.getElementById('mainChart').getContext('2d');
             const days = [], incomeData = [], expenseData = [];
@@ -1499,6 +1685,7 @@
         document.getElementById('budgetModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeBudgetModal(); });
         document.getElementById('shopModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeShoppingModal(); });
         document.getElementById('shopEditModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeShopEditModal(); });
+        document.getElementById('viewModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeViewModal(); });
         document.getElementById('imageChoiceModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeImageChoice(); });
 
         document.addEventListener('keydown', (e) => {
@@ -1509,6 +1696,7 @@
                 if (isAllModalOpen) closeAllModal();
                 if (isBudgetModalOpen) closeBudgetModal();
                 if (isShopModalOpen) closeShoppingModal();
+                if (isViewModalOpen) closeViewModal();
                 closeShopEditModal();
                 if (editingCat || editingSub) cancelEdit();
                 const menu = document.getElementById('sideMenu');
