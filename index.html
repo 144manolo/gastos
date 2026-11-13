@@ -263,6 +263,8 @@
         .image-choice-btn:active { background: rgba(0, 240, 255, 0.1); border-color: var(--neon-blue); }
         .image-choice-btn .icon { font-size: 28px; }
         .image-choice-cancel { width: 100%; margin-top: 12px; padding: 12px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: transparent; color: var(--text-secondary); font-size: 14px; cursor: pointer; }
+        /* Inputs file ocultos pero accesibles */
+        .hidden-file-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
         @media (max-width: 430px) { .app-container { padding: 16px 12px 100px; } }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
@@ -304,10 +306,7 @@
             <div class="menu-btn" onclick="toggleMenu()"><span></span><span></span><span></span><span class="menu-label">MENÚ</span></div>
             <div class="app-title"><h1>CONTABILIDAD</h1><h2>MFB</h2></div>
             <div class="header-right">
-                <div class="cart-btn" onclick="openShoppingModalDirect()">
-                    🛒
-                    <span class="cart-badge" id="cartBadge">0</span>
-                </div>
+                <div class="cart-btn" onclick="openShoppingModalDirect()">🛒<span class="cart-badge" id="cartBadge">0</span></div>
                 <div class="avatar" onclick="showNotification('Perfil - Próximamente')">👤</div>
             </div>
         </div>
@@ -327,7 +326,7 @@
         </div>
 
         <div class="chart-card">
-            <div class="chart-header" onclick="toggleChart()"><h4>📊 GRÁFICO SEMANAL</h4><span class="chart-toggle" id="chartToggle">▼</span></div>
+            <div class="chart-header" onclick="toggleChart()"><h4>📊 GRÁFICO MENSUAL</h4><span class="chart-toggle" id="chartToggle">▼</span></div>
             <div class="chart-container collapsed" id="chartContainer"><canvas id="mainChart"></canvas></div>
         </div>
 
@@ -472,10 +471,9 @@
     <div class="notification" id="notification"></div>
     <input type="file" id="importFile" accept=".json" style="display: none" onchange="handleImport(event)">
     <input type="file" id="importCatFile" accept=".json" style="display: none" onchange="handleImportCategories(event)">
-    <input type="file" id="transactionImageCamera" accept="image/*" capture="environment" style="display: none" onchange="handleImageUpload(event)">
-    <input type="file" id="transactionImageGallery" accept="image/*" style="display: none" onchange="handleImageUpload(event)">
-    <input type="file" id="shopImageCamera" accept="image/*" capture="environment" style="display: none" onchange="handleShopImage(event)">
-    <input type="file" id="shopImageGallery" accept="image/*" style="display: none" onchange="handleShopImage(event)">
+    <!-- Inputs file ocultos pero accesibles para cámara/galería -->
+    <input type="file" id="fileCamera" accept="image/*" capture="environment" class="hidden-file-input" onchange="handleFileSelected(event)">
+    <input type="file" id="fileGallery" accept="image/*" class="hidden-file-input" onchange="handleFileSelected(event)">
 
     <script>
         // ===== CONFIGURACIÓN =====
@@ -532,13 +530,14 @@
         let editingSub = null;
         let editingTransactionId = null;
         let editingShopItemId = null;
-        let editingShopItemSource = null; // 'list' o 'history'
+        let editingShopItemSource = null;
         let saveTimeout = null;
         let cloudSyncEnabled = false;
         let chartExpanded = false;
         let pendingImageUrl = null;
         let pendingShopImage = null;
         let currentImageTarget = null;
+        let currentFileMode = null; // 'transaction' o 'shop'
 
         let balanceVisible = false;
         let realBalance = 0;
@@ -569,7 +568,7 @@
             else { container.classList.add('collapsed'); toggle.classList.remove('expanded'); }
         }
 
-        // ===== SELECCIÓN DE IMAGEN (cámara o galería) =====
+        // ===== SELECCIÓN DE IMAGEN CORREGIDA =====
         function showImageChoice(target) {
             currentImageTarget = target;
             document.getElementById('imageChoiceModal').classList.add('active');
@@ -577,16 +576,78 @@
         function closeImageChoice() {
             document.getElementById('imageChoiceModal').classList.remove('active');
             currentImageTarget = null;
+            currentFileMode = null;
         }
+
         function chooseImageSource(source) {
             closeImageChoice();
-            if (currentImageTarget === 'transaction') {
-                if (source === 'camera') document.getElementById('transactionImageCamera').click();
-                else document.getElementById('transactionImageGallery').click();
-            } else if (currentImageTarget === 'shop') {
-                if (source === 'camera') document.getElementById('shopImageCamera').click();
-                else document.getElementById('shopImageGallery').click();
+            currentFileMode = currentImageTarget; // 'transaction' o 'shop'
+
+            const input = source === 'camera' ? document.getElementById('fileCamera') : document.getElementById('fileGallery');
+
+            // Resetear el valor para permitir seleccionar el mismo archivo
+            input.value = '';
+
+            // Usar showPicker() si está disponible (más confiable en móviles)
+            if (typeof input.showPicker === 'function') {
+                try {
+                    input.showPicker();
+                } catch (e) {
+                    input.click();
+                }
+            } else {
+                input.click();
             }
+        }
+
+        // Manejador unificado para archivos seleccionados
+        async function handleFileSelected(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (currentFileMode === 'transaction') {
+                await processTransactionImage(file);
+            } else if (currentFileMode === 'shop') {
+                await processShopImage(file);
+            }
+
+            // Resetear para la próxima vez
+            event.target.value = '';
+            currentFileMode = null;
+        }
+
+        async function processTransactionImage(file) {
+            if (file.size > 10 * 1024 * 1024) { showNotification('Imagen muy grande (máx 10MB)', true); return; }
+            const progress = document.getElementById('uploadProgress');
+            const preview = document.getElementById('imagePreview');
+            const submitBtn = document.getElementById('submitBtn');
+            progress.classList.add('active');
+            document.getElementById('uploadProgressFill').style.width = '0%';
+            document.getElementById('uploadText').textContent = 'Subiendo imagen...';
+            submitBtn.disabled = true;
+            const reader = new FileReader();
+            reader.onload = (e) => { preview.innerHTML = `<div class="attachment-preview"><img src="${e.target.result}" alt="Preview"></div>`; };
+            reader.readAsDataURL(file);
+            try {
+                const imageUrl = await uploadImageToCloudinary(file, progress, document.getElementById('uploadProgressFill'), document.getElementById('uploadText'));
+                pendingImageUrl = imageUrl;
+                preview.innerHTML = `<div class="attachment-preview"><img src="${imageUrl}" alt="Imagen subida"><button class="remove-attachment" onclick="removeImage()">✕ Quitar</button></div>`;
+                progress.classList.remove('active');
+                showNotification('✓ Imagen subida a la nube');
+            } catch (error) { progress.classList.remove('active'); showNotification('Error al subir imagen', true); }
+            finally { submitBtn.disabled = false; }
+        }
+
+        async function processShopImage(file) {
+            if (file.size > 10 * 1024 * 1024) { showNotification('Imagen muy grande (máx 10MB)', true); return; }
+            const preview = document.getElementById('shopImagePreview');
+            if (!preview) return;
+            preview.innerHTML = '<div class="shop-image-pending">⏳ Subiendo imagen...</div>';
+            try {
+                pendingShopImage = await uploadImageToCloudinary(file);
+                preview.innerHTML = `<div class="attachment-preview"><img src="${pendingShopImage}" style="max-height:80px"><button class="remove-attachment" onclick="removeShopImage()">✕ Quitar</button></div>`;
+                showNotification('✓ Imagen lista');
+            } catch (e) { preview.innerHTML = ''; showNotification('Error al subir imagen', true); }
         }
 
         // ===== CLOUDINARY =====
@@ -613,34 +674,10 @@
             });
         }
 
-        async function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            if (file.size > 10 * 1024 * 1024) { showNotification('Imagen muy grande (máx 10MB)', true); return; }
-            const progress = document.getElementById('uploadProgress');
-            const preview = document.getElementById('imagePreview');
-            const submitBtn = document.getElementById('submitBtn');
-            progress.classList.add('active');
-            document.getElementById('uploadProgressFill').style.width = '0%';
-            document.getElementById('uploadText').textContent = 'Subiendo imagen...';
-            submitBtn.disabled = true;
-            const reader = new FileReader();
-            reader.onload = (e) => { preview.innerHTML = `<div class="attachment-preview"><img src="${e.target.result}" alt="Preview"></div>`; };
-            reader.readAsDataURL(file);
-            try {
-                const imageUrl = await uploadImageToCloudinary(file, progress, document.getElementById('uploadProgressFill'), document.getElementById('uploadText'));
-                pendingImageUrl = imageUrl;
-                preview.innerHTML = `<div class="attachment-preview"><img src="${imageUrl}" alt="Imagen subida"><button class="remove-attachment" onclick="removeImage()">✕ Quitar</button></div>`;
-                progress.classList.remove('active');
-                showNotification('✓ Imagen subida a la nube');
-            } catch (error) { progress.classList.remove('active'); showNotification('Error al subir imagen', true); }
-            finally { submitBtn.disabled = false; }
-        }
-
         function removeImage() {
             pendingImageUrl = null;
-            document.getElementById('transactionImageCamera').value = '';
-            document.getElementById('transactionImageGallery').value = '';
+            document.getElementById('fileCamera').value = '';
+            document.getElementById('fileGallery').value = '';
             document.getElementById('imagePreview').innerHTML = '';
             document.getElementById('uploadProgress').classList.remove('active');
         }
@@ -717,7 +754,7 @@
             else alertEl.className = 'budget-alert';
         }
 
-        // ===== LISTA DE LA COMPRA CON HISTORIAL Y EDICIÓN =====
+        // ===== LISTA DE LA COMPRA =====
         function openShoppingModalDirect() {
             if (isShopModalOpen) return;
             isShopModalOpen = true;
@@ -760,21 +797,7 @@
             else renderShoppingHistory();
         }
 
-        async function handleShopImage(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            if (file.size > 10 * 1024 * 1024) { showNotification('Imagen muy grande (máx 10MB)', true); return; }
-            const preview = document.getElementById('shopImagePreview');
-            if (!preview) return;
-            preview.innerHTML = '<div class="shop-image-pending">⏳ Subiendo imagen...</div>';
-            try {
-                pendingShopImage = await uploadImageToCloudinary(file);
-                preview.innerHTML = `<div class="attachment-preview"><img src="${pendingShopImage}" style="max-height:80px"><button class="remove-attachment" onclick="removeShopImage()">✕ Quitar</button></div>`;
-                showNotification('✓ Imagen lista');
-            } catch (e) { preview.innerHTML = ''; showNotification('Error al subir imagen', true); }
-        }
-
-        function removeShopImage() { pendingShopImage = null; document.getElementById('shopImageCamera').value = ''; document.getElementById('shopImageGallery').value = ''; const p = document.getElementById('shopImagePreview'); if (p) p.innerHTML = ''; }
+        function removeShopImage() { pendingShopImage = null; document.getElementById('fileCamera').value = ''; document.getElementById('fileGallery').value = ''; const p = document.getElementById('shopImagePreview'); if (p) p.innerHTML = ''; }
 
         function addShopItem() {
             const name = document.getElementById('shopName').value.trim();
@@ -822,9 +845,9 @@
         }
 
         function closeShopEditModal() {
-            if (!isShopEditModalOpen) return;
-            isShopEditModalOpen = false;
             document.getElementById('shopEditModalOverlay').classList.remove('active');
+            editingShopItemId = null;
+            editingShopItemSource = null;
         }
 
         function saveShopItemEdit() {
@@ -957,7 +980,6 @@
             container.innerHTML = html;
         }
 
-        // Marca los productos como comprados y los mueve al historial (SIN crear transacción)
         function markAsPurchased() {
             const doneItems = shoppingList.filter(i => i.done);
             if (doneItems.length === 0) { showNotification('Marca los productos comprados primero (pulsa el ✓)', true); return; }
@@ -1158,7 +1180,7 @@
 
         function openModal() { if (isModalOpen) return; isModalOpen = true; editingTransactionId = null; pendingImageUrl = null; document.getElementById('modalTitle').textContent = 'NUEVA TRANSACCIÓN'; document.getElementById('submitBtn').textContent = 'AGREGAR TRANSACCIÓN'; document.getElementById('modalOverlay').classList.add('active'); document.getElementById('date').valueAsDate = new Date(); document.body.style.overflow = 'hidden'; resetForm(); }
         function closeModal() { if (!isModalOpen) return; isModalOpen = false; editingTransactionId = null; pendingImageUrl = null; document.getElementById('modalOverlay').classList.remove('active'); document.body.style.overflow = ''; resetForm(); }
-        function resetForm() { document.getElementById('amount').value = ''; document.getElementById('description').value = ''; document.getElementById('category').value = ''; document.getElementById('subcategory').value = ''; document.getElementById('voiceResult').classList.remove('show'); document.getElementById('imageUrlInput').value = ''; document.getElementById('transactionImageCamera').value = ''; document.getElementById('transactionImageGallery').value = ''; document.getElementById('imagePreview').innerHTML = ''; document.getElementById('uploadProgress').classList.remove('active'); pendingImageUrl = null; selectType('expense'); }
+        function resetForm() { document.getElementById('amount').value = ''; document.getElementById('description').value = ''; document.getElementById('category').value = ''; document.getElementById('subcategory').value = ''; document.getElementById('voiceResult').classList.remove('show'); document.getElementById('imageUrlInput').value = ''; document.getElementById('fileCamera').value = ''; document.getElementById('fileGallery').value = ''; document.getElementById('imagePreview').innerHTML = ''; document.getElementById('uploadProgress').classList.remove('active'); pendingImageUrl = null; selectType('expense'); }
 
         async function saveTransaction() {
             const amount = parseFloat(document.getElementById('amount').value);
@@ -1311,19 +1333,52 @@
         function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
         function formatDate(dateStr) { const date = new Date(dateStr + 'T00:00:00'); return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }); }
 
+        // ===== GRÁFICO MENSUAL (30 días) =====
         function updateCharts(filtered) {
             const ctx = document.getElementById('mainChart').getContext('2d');
             const days = [], incomeData = [], expenseData = [];
             const now = new Date();
-            for (let i = 6; i >= 0; i--) {
-                const date = new Date(now - i * 24 * 60 * 60 * 1000);
+            // Mostrar últimos 30 días
+            for (let i = 29; i >= 0; i--) {
+                const date = new Date(now);
+                date.setDate(now.getDate() - i);
                 const dateStr = date.toISOString().split('T')[0];
-                days.push(date.toLocaleDateString('es-ES', { weekday: 'short' }));
+                // Etiqueta compacta: solo día del mes
+                days.push(date.getDate().toString().padStart(2, '0'));
                 incomeData.push(filtered.filter(t => t.date === dateStr && t.type === 'income').reduce((s, t) => s + t.amount, 0));
                 expenseData.push(filtered.filter(t => t.date === dateStr && t.type === 'expense').reduce((s, t) => s + t.amount, 0));
             }
             if (mainChart) mainChart.destroy();
-            mainChart = new Chart(ctx, { type: 'line', data: { labels: days, datasets: [{ label: 'Ingresos', data: incomeData, borderColor: '#00f0ff', backgroundColor: 'rgba(0, 240, 255, 0.1)', borderWidth: 2, tension: 0.4, fill: true, pointBackgroundColor: '#00f0ff', pointRadius: 4 }, { label: 'Gastos', data: expenseData, borderColor: '#b026ff', backgroundColor: 'rgba(176, 38, 255, 0.1)', borderWidth: 2, tension: 0.4, fill: true, pointBackgroundColor: '#b026ff', pointRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#8892a4', font: { size: 11 } } } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8892a4', font: { size: 10 } } }, y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8892a4', font: { size: 10 }, callback: v => '$' + v } } } } });
+            mainChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: days,
+                    datasets: [
+                        { label: 'Ingresos', data: incomeData, borderColor: '#00f0ff', backgroundColor: 'rgba(0, 240, 255, 0.1)', borderWidth: 2, tension: 0.4, fill: true, pointBackgroundColor: '#00f0ff', pointRadius: 3 },
+                        { label: 'Gastos', data: expenseData, borderColor: '#b026ff', backgroundColor: 'rgba(176, 38, 255, 0.1)', borderWidth: 2, tension: 0.4, fill: true, pointBackgroundColor: '#b026ff', pointRadius: 3 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#8892a4', font: { size: 11 } } } },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: {
+                                color: '#8892a4',
+                                font: { size: 9 },
+                                maxTicksLimit: 10,
+                                maxRotation: 0
+                            }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#8892a4', font: { size: 10 }, callback: v => '$' + v }
+                        }
+                    }
+                }
+            });
         }
 
         function updateMiniCharts() {
@@ -1349,7 +1404,7 @@
             const today = new Date();
             const demoTransactions = [];
             const descriptions = { income: [{ cat: 'Salario', sub: 'Sueldo base', desc: 'Nómina mensual', amount: 2500 }, { cat: 'Freelance', sub: 'Desarrollo', desc: 'Proyecto web', amount: 800 }, { cat: 'Inversiones', sub: 'Dividendos', desc: 'Dividendos', amount: 150 }], expense: [{ cat: 'Alimentación', sub: 'Supermercado', desc: 'Compra semanal', amount: 85.50 }, { cat: 'Transporte', sub: 'Gasolina', desc: 'Repostar', amount: 60 }, { cat: 'Vivienda', sub: 'Alquiler/Hipoteca', desc: 'Alquiler', amount: 750 }, { cat: 'Entretenimiento', sub: 'Streaming', desc: 'Netflix', amount: 25.99 }] };
-            for (let i = 0; i < 7; i++) { const date = new Date(today - i * 24 * 60 * 60 * 1000); const dateStr = date.toISOString().split('T')[0]; if (i % 3 === 0) { const inc = descriptions.income[Math.floor(Math.random() * descriptions.income.length)]; demoTransactions.push({ id: Date.now() + i * 1000, type: 'income', amount: inc.amount, description: inc.desc, category: inc.cat, subcategory: inc.sub, date: dateStr }); } const numExpenses = 1 + Math.floor(Math.random() * 2); for (let j = 0; j < numExpenses; j++) { const exp = descriptions.expense[Math.floor(Math.random() * descriptions.expense.length)]; demoTransactions.push({ id: Date.now() + i * 1000 + j * 100, type: 'expense', amount: exp.amount * (0.8 + Math.random() * 0.4), description: exp.desc, category: exp.cat, subcategory: exp.sub, date: dateStr }); } }
+            for (let i = 0; i < 30; i++) { const date = new Date(today); date.setDate(today.getDate() - i); const dateStr = date.toISOString().split('T')[0]; if (i % 5 === 0) { const inc = descriptions.income[Math.floor(Math.random() * descriptions.income.length)]; demoTransactions.push({ id: Date.now() + i * 1000, type: 'income', amount: inc.amount, description: inc.desc, category: inc.cat, subcategory: inc.sub, date: dateStr }); } if (i % 2 === 0) { const exp = descriptions.expense[Math.floor(Math.random() * descriptions.expense.length)]; demoTransactions.push({ id: Date.now() + i * 1000 + 500, type: 'expense', amount: exp.amount * (0.8 + Math.random() * 0.4), description: exp.desc, category: exp.cat, subcategory: exp.sub, date: dateStr }); } }
             transactions = demoTransactions.sort((a, b) => b.id - a.id);
             isDemoMode = true; document.getElementById('demoBanner').style.display = 'block';
             saveTransactions(); updateUI(); toggleMenu(); showNotification('✓ Datos demo cargados');
@@ -1372,7 +1427,7 @@
                 if (isAllModalOpen) closeAllModal();
                 if (isBudgetModalOpen) closeBudgetModal();
                 if (isShopModalOpen) closeShoppingModal();
-                if (isShopEditModalOpen) closeShopEditModal();
+                closeShopEditModal();
                 if (editingCat || editingSub) cancelEdit();
                 const menu = document.getElementById('sideMenu');
                 if (menu.classList.contains('active')) toggleMenu();
