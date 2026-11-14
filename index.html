@@ -853,72 +853,76 @@
 
         // ===== MODAL DE VISUALIZACIÓN =====
         function viewTransaction(id) {
-            const t = transactions.find(x => x.id === id);
-            if (!t) return;
-            viewingTransactionId = id;
-            
-            const typeLabel = t.type === 'income' ? '📈 INGRESO' : '📉 GASTO';
-            const typeColor = t.type === 'income' ? 'var(--neon-blue)' : 'var(--neon-pink)';
-            const sign = t.type === 'income' ? '+' : '-';
-            
-            document.getElementById('viewModalTitle').textContent = typeLabel;
-            
-            const imageContainer = document.getElementById('viewModalImageContainer');
-            if (t.imageUrl) {
-                const displayUrl = convertToImageUrl(t.imageUrl);
-                imageContainer.innerHTML = `<img src="${displayUrl}" class="view-modal-image" alt="Imagen" onclick="window.open('${t.imageUrl}', '_blank')" onerror="this.style.display='none'">`;
-            } else {
-                imageContainer.innerHTML = '';
-            }
-            
-            const dateFormatted = new Date(t.date + 'T00:00:00').toLocaleDateString('es-ES', { 
-                weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' 
-            });
-            
-            let content = `
-                <div class="view-detail-row">
-                    <span class="view-detail-label">💰 Monto</span>
-                    <span class="view-detail-value" style="color: ${typeColor}; font-size: 18px;">${sign}${t.amount.toLocaleString('es-ES', {minimumFractionDigits: 2})}€</span>
-                </div>
-                <div class="view-detail-row">
-                    <span class="view-detail-label">📝 Descripción</span>
-                    <span class="view-detail-value">${escapeHtml(t.description)}</span>
-                </div>
-                <div class="view-detail-row">
-                    <span class="view-detail-label">📂 Categoría</span>
-                    <span class="view-detail-value">${escapeHtml(t.category)}</span>
-                </div>
-                <div class="view-detail-row">
-                    <span class="view-detail-label">📁 Subcategoría</span>
-                    <span class="view-detail-value">${escapeHtml(t.subcategory || '-')}</span>
-                </div>
-                <div class="view-detail-row">
-                    <span class="view-detail-label">📅 Fecha</span>
-                    <span class="view-detail-value">${dateFormatted}</span>
-                </div>
-            `;
-            
-            if (t.imageUrl) {
-                content += `<div class="view-detail-row"><span class="view-detail-label">🔗 Imagen</span><span class="view-detail-value"><a href="${t.imageUrl}" target="_blank" style="color: var(--neon-blue);">Ver imagen original</a></span></div>`;
-            }
-            
-            document.getElementById('viewModalContent').innerHTML = content;
-            
-            document.getElementById('viewEditBtn').onclick = () => {
-                closeViewModal();
-                setTimeout(() => editTransaction(id), 300);
-            };
-            document.getElementById('viewDeleteBtn').onclick = () => {
-                if (confirm('¿Eliminar esta transacción?')) {
-                    deleteTransaction(id);
-                    closeViewModal();
-                }
-            };
-            
-            document.getElementById('viewModalOverlay').classList.add('active');
-            isViewModalOpen = true;
-            document.body.style.overflow = 'hidden';
+    const t = transactions.find(x => x.id === id);
+    if (!t) return;
+    viewingTransactionId = id;
+    
+    // Cerrar modales de listado que puedan estar abiertos
+    if (isListModalOpen) closeListModal();
+    if (isAllModalOpen) closeAllModal();
+    
+    const typeLabel = t.type === 'income' ? '📈 INGRESO' : '📉 GASTO';
+    const typeColor = t.type === 'income' ? 'var(--neon-blue)' : 'var(--neon-pink)';
+    const sign = t.type === 'income' ? '+' : '-';
+    
+    document.getElementById('viewModalTitle').textContent = typeLabel;
+    
+    const imageContainer = document.getElementById('viewModalImageContainer');
+    if (t.imageUrl) {
+        const displayUrl = convertToImageUrl(t.imageUrl);
+        imageContainer.innerHTML = `<img src="${displayUrl}" class="view-modal-image" alt="Imagen" onclick="window.open('${t.imageUrl}', '_blank')" onerror="this.style.display='none'">`;
+    } else {
+        imageContainer.innerHTML = '';
+    }
+    
+    const dateFormatted = new Date(t.date + 'T00:00:00').toLocaleDateString('es-ES', { 
+        weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' 
+    });
+    
+    let content = `
+        <div class="view-detail-row">
+            <span class="view-detail-label">💰 Monto</span>
+            <span class="view-detail-value" style="color: ${typeColor}; font-size: 18px;">${sign}${t.amount.toLocaleString('es-ES', {minimumFractionDigits: 2})}€</span>
+        </div>
+        <div class="view-detail-row">
+            <span class="view-detail-label">📝 Descripción</span>
+            <span class="view-detail-value">${escapeHtml(t.description)}</span>
+        </div>
+        <div class="view-detail-row">
+            <span class="view-detail-label">📂 Categoría</span>
+            <span class="view-detail-value">${escapeHtml(t.category)}</span>
+        </div>
+        <div class="view-detail-row">
+            <span class="view-detail-label">📁 Subcategoría</span>
+            <span class="view-detail-value">${escapeHtml(t.subcategory || '-')}</span>
+        </div>
+        <div class="view-detail-row">
+            <span class="view-detail-label">📅 Fecha</span>
+            <span class="view-detail-value">${dateFormatted}</span>
+        </div>
+    `;
+    
+    if (t.imageUrl) {
+        content += `<div class="view-detail-row"><span class="view-detail-label">🔗 Imagen</span><span class="view-detail-value"><a href="${t.imageUrl}" target="_blank" style="color: var(--neon-blue);">Ver imagen original</a></span></div>`;
+    }
+    
+    document.getElementById('viewModalContent').innerHTML = content;
+    
+    document.getElementById('viewEditBtn').onclick = () => {
+        closeViewModal();
+        setTimeout(() => editTransaction(id), 300);
+    };
+    document.getElementById('viewDeleteBtn').onclick = () => {
+        if (confirm('¿Eliminar esta transacción?')) {
+            deleteTransaction(id);
+            closeViewModal();
         }
+    };
+    
+    document.getElementById('viewModalOverlay').classList.add('active');
+    isViewModalOpen = true;
+    document.body.style.overflow = 'hidden';
+}
 
         function closeViewModal() {
             if (!isViewModalOpen) return;
