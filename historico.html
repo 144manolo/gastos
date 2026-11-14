@@ -27,6 +27,56 @@
         .filter-row select, .filter-row input { flex: 1; min-width: 100px; padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 13px; outline: none; }
         .filter-row select:focus, .filter-row input:focus { border-color: var(--neon-blue); }
         .filter-row select option { background: var(--bg-card); }
+        
+        /* ===== MULTI-SELECT PERSONALIZADO ===== */
+        .multi-select { position: relative; width: 100%; margin-bottom: 10px; }
+        .multi-select-header { 
+            padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); 
+            background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 13px;
+            cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+            min-height: 42px; user-select: none;
+        }
+        .multi-select-header:active { background: rgba(0, 240, 255, 0.1); }
+        .multi-select-header .arrow { transition: transform 0.3s; font-size: 10px; }
+        .multi-select-header.open .arrow { transform: rotate(180deg); }
+        .multi-select-dropdown { 
+            display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 100;
+            background: var(--bg-card); border: 1px solid var(--border-glow); border-radius: 8px;
+            margin-top: 4px; max-height: 250px; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        .multi-select-dropdown.open { display: block; }
+        .multi-select-search { 
+            width: 100%; padding: 8px 12px; border: none; border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: transparent; color: var(--text-primary); font-size: 13px; outline: none;
+        }
+        .multi-select-search:focus { border-bottom-color: var(--neon-blue); }
+        .multi-select-actions { 
+            display: flex; gap: 4px; padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .multi-select-actions button { 
+            flex: 1; padding: 6px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.03); color: var(--text-secondary); font-size: 11px;
+            cursor: pointer;
+        }
+        .multi-select-actions button:active { background: rgba(0, 240, 255, 0.1); color: var(--neon-blue); }
+        .multi-select-option { 
+            display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+            cursor: pointer; transition: background 0.2s; border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+        .multi-select-option:last-child { border-bottom: none; }
+        .multi-select-option:active { background: rgba(0, 240, 255, 0.05); }
+        .multi-select-option input[type="checkbox"] { 
+            width: 18px; height: 18px; accent-color: var(--neon-blue); cursor: pointer;
+        }
+        .multi-select-option label { 
+            flex: 1; font-size: 13px; cursor: pointer; color: var(--text-primary);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .multi-select-option .count { 
+            font-size: 10px; color: var(--text-secondary); background: rgba(255,255,255,0.05);
+            padding: 2px 6px; border-radius: 10px;
+        }
+        
         .summary-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
         .summary-card { background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 14px; text-align: center; }
         .summary-card .label { font-size: 10px; color: var(--text-secondary); letter-spacing: 1px; margin-bottom: 6px; }
@@ -65,6 +115,13 @@
         .day-group { margin-bottom: 20px; }
         .day-header { font-size: 12px; color: var(--neon-blue); letter-spacing: 1px; padding: 8px 0; border-bottom: 1px solid rgba(0, 240, 255, 0.2); margin-bottom: 8px; font-weight: 600; display: flex; justify-content: space-between; }
         .day-total { color: var(--text-secondary); font-weight: 400; }
+        .active-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .active-filter-tag { 
+            padding: 4px 10px; border-radius: 12px; background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--neon-blue); color: var(--neon-blue); font-size: 11px;
+            display: flex; align-items: center; gap: 4px;
+        }
+        .active-filter-tag .remove { cursor: pointer; font-weight: bold; }
         @media (max-width: 430px) { .app-container { padding: 16px 12px 100px; } }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
@@ -85,6 +142,7 @@
         <!-- Filtros -->
         <div class="filter-section">
             <h3>🔍 FILTROS</h3>
+            
             <div class="filter-row">
                 <select id="filterYear" onchange="applyFilters()">
                     <option value="">Todos los años</option>
@@ -110,17 +168,45 @@
                     <option value="11">Diciembre</option>
                 </select>
             </div>
-            <div class="filter-row">
-                <select id="filterCategory" onchange="applyFilters()">
-                    <option value="">Todas las categorías</option>
-                </select>
-                <select id="filterSubcategory" onchange="applyFilters()">
-                    <option value="">Todas las subcategorías</option>
-                </select>
+
+            <!-- Multi-select Categorías -->
+            <div class="multi-select" id="categoryMultiSelect">
+                <div class="multi-select-header" onclick="toggleMultiSelect('category')">
+                    <span id="categoryHeader">Todas las categorías</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="multi-select-dropdown" id="categoryDropdown">
+                    <input type="text" class="multi-select-search" placeholder="🔍 Buscar categoría..." oninput="filterMultiSelectOptions('category', this.value)">
+                    <div class="multi-select-actions">
+                        <button onclick="selectAllOptions('category')">✓ Todas</button>
+                        <button onclick="deselectAllOptions('category')">✕ Ninguna</button>
+                    </div>
+                    <div id="categoryOptions"></div>
+                </div>
             </div>
+
+            <!-- Multi-select Subcategorías -->
+            <div class="multi-select" id="subcategoryMultiSelect">
+                <div class="multi-select-header" onclick="toggleMultiSelect('subcategory')">
+                    <span id="subcategoryHeader">Todas las subcategorías</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="multi-select-dropdown" id="subcategoryDropdown">
+                    <input type="text" class="multi-select-search" placeholder="🔍 Buscar subcategoría..." oninput="filterMultiSelectOptions('subcategory', this.value)">
+                    <div class="multi-select-actions">
+                        <button onclick="selectAllOptions('subcategory')">✓ Todas</button>
+                        <button onclick="deselectAllOptions('subcategory')">✕ Ninguna</button>
+                    </div>
+                    <div id="subcategoryOptions"></div>
+                </div>
+            </div>
+
             <div class="filter-row">
                 <input type="text" id="filterDescription" placeholder="Buscar por descripción..." oninput="applyFilters()">
             </div>
+
+            <!-- Filtros activos -->
+            <div id="activeFilters" class="active-filters"></div>
         </div>
 
         <!-- Resumen -->
@@ -179,6 +265,12 @@
         let filteredTransactions = [];
         let categories = {};
         let mainChart = null;
+        
+        // Estado de los multi-select
+        let selectedCategories = new Set();
+        let selectedSubcategories = new Set();
+        let allCategoriesList = [];
+        let allSubcategoriesList = [];
 
         // ===== CONVERSIÓN DE URLS =====
         function convertToImageUrl(url) {
@@ -193,18 +285,179 @@
             return url;
         }
 
+        // ===== MULTI-SELECT =====
+        function toggleMultiSelect(type) {
+            const dropdown = document.getElementById(type + 'Dropdown');
+            const header = dropdown.previousElementSibling;
+            const isOpen = dropdown.classList.contains('open');
+            
+            // Cerrar todos los dropdowns
+            document.querySelectorAll('.multi-select-dropdown').forEach(d => d.classList.remove('open'));
+            document.querySelectorAll('.multi-select-header').forEach(h => h.classList.remove('open'));
+            
+            // Abrir el seleccionado si estaba cerrado
+            if (!isOpen) {
+                dropdown.classList.add('open');
+                header.classList.add('open');
+            }
+        }
+
+        function populateMultiSelectOptions() {
+            // Categorías
+            const catContainer = document.getElementById('categoryOptions');
+            catContainer.innerHTML = allCategoriesList.map(cat => `
+                <div class="multi-select-option" data-value="${escapeHtml(cat)}">
+                    <input type="checkbox" id="cat-${escapeHtml(cat)}" value="${escapeHtml(cat)}" 
+                           ${selectedCategories.has(cat) ? 'checked' : ''} 
+                           onchange="toggleCategorySelection('${escapeHtml(cat)}')">
+                    <label for="cat-${escapeHtml(cat)}">${escapeHtml(cat)}</label>
+                    <span class="count">${allTransactions.filter(t => t.category === cat).length}</span>
+                </div>
+            `).join('');
+            
+            // Subcategorías
+            const subContainer = document.getElementById('subcategoryOptions');
+            subContainer.innerHTML = allSubcategoriesList.map(sub => `
+                <div class="multi-select-option" data-value="${escapeHtml(sub)}">
+                    <input type="checkbox" id="sub-${escapeHtml(sub)}" value="${escapeHtml(sub)}"
+                           ${selectedSubcategories.has(sub) ? 'checked' : ''}
+                           onchange="toggleSubcategorySelection('${escapeHtml(sub)}')">
+                    <label for="sub-${escapeHtml(sub)}">${escapeHtml(sub)}</label>
+                    <span class="count">${allTransactions.filter(t => t.subcategory === sub).length}</span>
+                </div>
+            `).join('');
+        }
+
+        function toggleCategorySelection(cat) {
+            if (selectedCategories.has(cat)) {
+                selectedCategories.delete(cat);
+            } else {
+                selectedCategories.add(cat);
+            }
+            updateMultiSelectHeader('category');
+            applyFilters();
+        }
+
+        function toggleSubcategorySelection(sub) {
+            if (selectedSubcategories.has(sub)) {
+                selectedSubcategories.delete(sub);
+            } else {
+                selectedSubcategories.add(sub);
+            }
+            updateMultiSelectHeader('subcategory');
+            applyFilters();
+        }
+
+        function selectAllOptions(type) {
+            const list = type === 'category' ? allCategoriesList : allSubcategoriesList;
+            const set = type === 'category' ? selectedCategories : selectedSubcategories;
+            list.forEach(item => set.add(item));
+            
+            // Actualizar checkboxes visibles
+            document.querySelectorAll(`#${type}Options input[type="checkbox"]`).forEach(cb => {
+                cb.checked = true;
+            });
+            
+            updateMultiSelectHeader(type);
+            applyFilters();
+        }
+
+        function deselectAllOptions(type) {
+            const set = type === 'category' ? selectedCategories : selectedSubcategories;
+            set.clear();
+            
+            document.querySelectorAll(`#${type}Options input[type="checkbox"]`).forEach(cb => {
+                cb.checked = false;
+            });
+            
+            updateMultiSelectHeader(type);
+            applyFilters();
+        }
+
+        function updateMultiSelectHeader(type) {
+            const set = type === 'category' ? selectedCategories : selectedSubcategories;
+            const header = document.getElementById(type + 'Header');
+            
+            if (set.size === 0) {
+                header.textContent = type === 'category' ? 'Todas las categorías' : 'Todas las subcategorías';
+            } else if (set.size === 1) {
+                header.textContent = Array.from(set)[0];
+            } else {
+                header.textContent = `${set.size} seleccionadas`;
+            }
+            
+            // Actualizar checkboxes en el DOM
+            document.querySelectorAll(`#${type}Options input[type="checkbox"]`).forEach(cb => {
+                cb.checked = set.has(cb.value);
+            });
+        }
+
+        function filterMultiSelectOptions(type, searchTerm) {
+            const options = document.querySelectorAll(`#${type}Options .multi-select-option`);
+            const term = searchTerm.toLowerCase();
+            
+            options.forEach(opt => {
+                const value = opt.dataset.value.toLowerCase();
+                opt.style.display = value.includes(term) ? 'flex' : 'none';
+            });
+        }
+
+        function updateActiveFilters() {
+            const container = document.getElementById('activeFilters');
+            const tags = [];
+            
+            selectedCategories.forEach(cat => {
+                tags.push(`<span class="active-filter-tag">${escapeHtml(cat)} <span class="remove" onclick="removeCategoryFilter('${escapeHtml(cat)}')">✕</span></span>`);
+            });
+            
+            selectedSubcategories.forEach(sub => {
+                tags.push(`<span class="active-filter-tag">${escapeHtml(sub)} <span class="remove" onclick="removeSubcategoryFilter('${escapeHtml(sub)}')">✕</span></span>`);
+            });
+            
+            container.innerHTML = tags.join('');
+        }
+
+        function removeCategoryFilter(cat) {
+            selectedCategories.delete(cat);
+            updateMultiSelectHeader('category');
+            applyFilters();
+        }
+
+        function removeSubcategoryFilter(sub) {
+            selectedSubcategories.delete(sub);
+            updateMultiSelectHeader('subcategory');
+            applyFilters();
+        }
+
+        // Cerrar dropdowns al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.multi-select')) {
+                document.querySelectorAll('.multi-select-dropdown').forEach(d => d.classList.remove('open'));
+                document.querySelectorAll('.multi-select-header').forEach(h => h.classList.remove('open'));
+            }
+        });
+
         // ===== CARGA DE DATOS =====
         async function loadData() {
             try {
-                let data;
                 const response = await fetch(JSON_URL);
                 if (!response.ok) throw new Error(`Error ${response.status}`);
-                data = await response.json();
+                const data = await response.json();
                 
                 allTransactions = data.transactions || [];
                 categories = data.categories || {};
                 
-                populateCategoryFilters();
+                // Extraer listas únicas
+                const catSet = new Set();
+                const subSet = new Set();
+                allTransactions.forEach(t => {
+                    if (t.category) catSet.add(t.category);
+                    if (t.subcategory) subSet.add(t.subcategory);
+                });
+                allCategoriesList = Array.from(catSet).sort();
+                allSubcategoriesList = Array.from(subSet).sort();
+                
+                populateMultiSelectOptions();
                 applyFilters();
             } catch (error) {
                 console.error('Error al cargar datos:', error);
@@ -218,30 +471,9 @@
             }
         }
 
-        function populateCategoryFilters() {
-            const catSelect = document.getElementById('filterCategory');
-            const subSelect = document.getElementById('filterSubcategory');
-            
-            const allCats = new Set();
-            const allSubs = new Set();
-            
-            allTransactions.forEach(t => {
-                if (t.category) allCats.add(t.category);
-                if (t.subcategory) allSubs.add(t.subcategory);
-            });
-            
-            catSelect.innerHTML = '<option value="">Todas las categorías</option>' + 
-                Array.from(allCats).sort().map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-            
-            subSelect.innerHTML = '<option value="">Todas las subcategorías</option>' + 
-                Array.from(allSubs).sort().map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
-        }
-
         function applyFilters() {
             const year = document.getElementById('filterYear').value;
             const month = document.getElementById('filterMonth').value;
-            const category = document.getElementById('filterCategory').value;
-            const subcategory = document.getElementById('filterSubcategory').value;
             const description = document.getElementById('filterDescription').value.toLowerCase();
             
             filteredTransactions = allTransactions.filter(t => {
@@ -249,8 +481,14 @@
                 
                 if (year && date.getFullYear() !== parseInt(year)) return false;
                 if (month !== '' && date.getMonth() !== parseInt(month)) return false;
-                if (category && t.category !== category) return false;
-                if (subcategory && t.subcategory !== subcategory) return false;
+                
+                // Filtro de categorías (OR: cualquiera de las seleccionadas)
+                if (selectedCategories.size > 0 && !selectedCategories.has(t.category)) return false;
+                
+                // Filtro de subcategorías (OR: cualquiera de las seleccionadas)
+                if (selectedSubcategories.size > 0 && !selectedSubcategories.has(t.subcategory)) return false;
+                
+                // Filtro de descripción
                 if (description) {
                     const searchIn = `${t.description} ${t.category} ${t.subcategory}`.toLowerCase();
                     if (!searchIn.includes(description)) return false;
@@ -264,6 +502,7 @@
             updateSummary();
             updateChart();
             renderTransactions();
+            updateActiveFilters();
         }
 
         function updateSummary() {
