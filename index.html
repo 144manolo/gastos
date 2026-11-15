@@ -1196,7 +1196,16 @@
             else alertEl.className = 'budget-alert';
         }
 
-        function openShoppingModalDirect() { if (isShopModalOpen) return; isShopModalOpen = true; document.getElementById('shopModalOverlay').classList.add('active'); document.body.style.overflow = 'hidden'; document.getElementById('shopTabList').classList.add('active'); document.getElementById('shopTabHistory').classList.remove('active'); renderShoppingTab(); }
+function openShoppingModalDirect() { 
+    if (isShopModalOpen) return; 
+    isShopModalOpen = true; 
+    currentShopTab = 'list'; // ← AÑADIR ESTA LÍNEA
+    document.getElementById('shopModalOverlay').classList.add('active'); 
+    document.body.style.overflow = 'hidden'; 
+    document.getElementById('shopTabList').classList.add('active'); 
+    document.getElementById('shopTabHistory').classList.remove('active'); 
+    renderShoppingTab(); 
+}    
         function openShoppingModal() { if (isShopModalOpen) return; isShopModalOpen = true; toggleMenu(); document.getElementById('shopModalOverlay').classList.add('active'); document.body.style.overflow = 'hidden'; document.getElementById('shopTabList').classList.add('active'); document.getElementById('shopTabHistory').classList.remove('active'); renderShoppingTab(); }
         function closeShoppingModal() { if (!isShopModalOpen) return; isShopModalOpen = false; document.getElementById('shopModalOverlay').classList.remove('active'); document.body.style.overflow = ''; }
 
