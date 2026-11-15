@@ -41,7 +41,8 @@
         .toggle-balance:active { transform: scale(0.9); }
         .balance-amount { font-size: 42px; font-weight: 700; color: var(--text-primary); text-shadow: 0 0 20px rgba(0, 240, 255, 0.3); letter-spacing: -1px; }
         .month-selector { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; padding: 10px; background: rgba(0, 240, 255, 0.05); border-radius: 12px; border: 1px solid rgba(0, 240, 255, 0.2); }
-        .month-selector select { padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 14px; font-weight: 600; outline: none; cursor: pointer; }
+        .month-selector select { padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: var(--bg-card); color: var(--text-primary); font-size: 14px; font-weight: 600; outline: none; cursor: pointer; -webkit-appearance: none; appearance: none; }
+        .month-selector select option { background: var(--bg-card); color: var(--text-primary); }
         .month-selector button { width: 32px; height: 32px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--neon-blue); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .budget-alert { display: none; padding: 10px 14px; border-radius: 10px; margin-bottom: 16px; font-size: 12px; font-weight: 600; cursor: pointer; -webkit-tap-highlight-color: transparent; }
         .budget-alert.show { display: flex; align-items: center; gap: 8px; }
