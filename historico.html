@@ -24,58 +24,22 @@
         .filter-section { background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 14px; padding: 16px; margin-bottom: 16px; }
         .filter-section h3 { font-size: 13px; color: var(--neon-blue); letter-spacing: 1px; margin-bottom: 12px; }
         .filter-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
-        .filter-row select, .filter-row input { flex: 1; min-width: 100px; padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 13px; outline: none; }
-        .filter-row select:focus, .filter-row input:focus { border-color: var(--neon-blue); }
-        .filter-row select option { background: var(--bg-card); }
+        .filter-row input { flex: 1; min-width: 100px; padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 13px; outline: none; }
+        .filter-row input:focus { border-color: var(--neon-blue); }
         
-        /* ===== MULTI-SELECT PERSONALIZADO ===== */
-        .multi-select { position: relative; width: 100%; margin-bottom: 10px; }
-        .multi-select-header { 
-            padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); 
-            background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 13px;
-            cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-            min-height: 42px; user-select: none;
-        }
-        .multi-select-header:active { background: rgba(0, 240, 255, 0.1); }
-        .multi-select-header .arrow { transition: transform 0.3s; font-size: 10px; }
-        .multi-select-header.open .arrow { transform: rotate(180deg); }
-        .multi-select-dropdown { 
-            display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 100;
-            background: var(--bg-card); border: 1px solid var(--border-glow); border-radius: 8px;
-            margin-top: 4px; max-height: 250px; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-        .multi-select-dropdown.open { display: block; }
-        .multi-select-search { 
-            width: 100%; padding: 8px 12px; border: none; border-bottom: 1px solid rgba(255,255,255,0.1);
-            background: transparent; color: var(--text-primary); font-size: 13px; outline: none;
-        }
-        .multi-select-search:focus { border-bottom-color: var(--neon-blue); }
-        .multi-select-actions { 
-            display: flex; gap: 4px; padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .multi-select-actions button { 
-            flex: 1; padding: 6px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.03); color: var(--text-secondary); font-size: 11px;
-            cursor: pointer;
-        }
-        .multi-select-actions button:active { background: rgba(0, 240, 255, 0.1); color: var(--neon-blue); }
-        .multi-select-option { 
-            display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-            cursor: pointer; transition: background 0.2s; border-bottom: 1px solid rgba(255,255,255,0.03);
-        }
-        .multi-select-option:last-child { border-bottom: none; }
-        .multi-select-option:active { background: rgba(0, 240, 255, 0.05); }
-        .multi-select-option input[type="checkbox"] { 
-            width: 18px; height: 18px; accent-color: var(--neon-blue); cursor: pointer;
-        }
-        .multi-select-option label { 
-            flex: 1; font-size: 13px; cursor: pointer; color: var(--text-primary);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .multi-select-option .count { 
-            font-size: 10px; color: var(--text-secondary); background: rgba(255,255,255,0.05);
-            padding: 2px 6px; border-radius: 10px;
-        }
+        /* ===== SCROLL HORIZONTAL PARA AÑOS Y MESES ===== */
+        .scroll-selector { margin-bottom: 12px; }
+        .scroll-selector-label { font-size: 11px; color: var(--text-secondary); letter-spacing: 1px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+        .scroll-selector-label .icon { font-size: 14px; }
+        .scroll-container { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 8px; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
+        .scroll-container::-webkit-scrollbar { height: 4px; }
+        .scroll-container::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 2px; }
+        .scroll-container::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 2px; }
+        .scroll-chip { flex-shrink: 0; padding: 10px 16px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.03); color: var(--text-secondary); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; -webkit-tap-highlight-color: transparent; white-space: nowrap; }
+        .scroll-chip:active { transform: scale(0.95); }
+        .scroll-chip.active { border-color: var(--neon-blue); color: var(--neon-blue); background: rgba(0, 240, 255, 0.1); box-shadow: 0 0 10px rgba(0, 240, 255, 0.2); }
+        .scroll-chip.all { border-color: var(--neon-purple); color: var(--neon-purple); background: rgba(176, 38, 255, 0.1); }
+        .scroll-chip.all.active { border-color: var(--neon-purple); color: var(--neon-purple); background: rgba(176, 38, 255, 0.2); box-shadow: 0 0 10px rgba(176, 38, 255, 0.3); }
         
         .summary-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
         .summary-card { background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 14px; text-align: center; }
@@ -115,13 +79,6 @@
         .day-group { margin-bottom: 20px; }
         .day-header { font-size: 12px; color: var(--neon-blue); letter-spacing: 1px; padding: 8px 0; border-bottom: 1px solid rgba(0, 240, 255, 0.2); margin-bottom: 8px; font-weight: 600; display: flex; justify-content: space-between; }
         .day-total { color: var(--text-secondary); font-weight: 400; }
-        .active-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-        .active-filter-tag { 
-            padding: 4px 10px; border-radius: 12px; background: rgba(0, 240, 255, 0.1);
-            border: 1px solid var(--neon-blue); color: var(--neon-blue); font-size: 11px;
-            display: flex; align-items: center; gap: 4px;
-        }
-        .active-filter-tag .remove { cursor: pointer; font-weight: bold; }
         @media (max-width: 430px) { .app-container { padding: 16px 12px 100px; } }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
@@ -139,74 +96,47 @@
             <div style="width: 48px;"></div>
         </div>
 
-        <!-- Filtros -->
+        <!-- Filtros con scroll horizontal -->
         <div class="filter-section">
             <h3>🔍 FILTROS</h3>
             
+            <!-- Selector de años con scroll horizontal -->
+            <div class="scroll-selector">
+                <div class="scroll-selector-label"><span class="icon">📅</span> AÑO</div>
+                <div class="scroll-container" id="yearScroll">
+                    <div class="scroll-chip all active" data-value="" onclick="selectYear('', this)">Todos</div>
+                    <div class="scroll-chip" data-value="2022" onclick="selectYear('2022', this)">2022</div>
+                    <div class="scroll-chip" data-value="2023" onclick="selectYear('2023', this)">2023</div>
+                    <div class="scroll-chip" data-value="2024" onclick="selectYear('2024', this)">2024</div>
+                    <div class="scroll-chip" data-value="2025" onclick="selectYear('2025', this)">2025</div>
+                    <div class="scroll-chip" data-value="2026" onclick="selectYear('2026', this)">2026</div>
+                </div>
+            </div>
+
+            <!-- Selector de meses con scroll horizontal -->
+            <div class="scroll-selector">
+                <div class="scroll-selector-label"><span class="icon">🗓️</span> MES</div>
+                <div class="scroll-container" id="monthScroll">
+                    <div class="scroll-chip all active" data-value="" onclick="selectMonth('', this)">Todos</div>
+                    <div class="scroll-chip" data-value="0" onclick="selectMonth('0', this)">Enero</div>
+                    <div class="scroll-chip" data-value="1" onclick="selectMonth('1', this)">Febrero</div>
+                    <div class="scroll-chip" data-value="2" onclick="selectMonth('2', this)">Marzo</div>
+                    <div class="scroll-chip" data-value="3" onclick="selectMonth('3', this)">Abril</div>
+                    <div class="scroll-chip" data-value="4" onclick="selectMonth('4', this)">Mayo</div>
+                    <div class="scroll-chip" data-value="5" onclick="selectMonth('5', this)">Junio</div>
+                    <div class="scroll-chip" data-value="6" onclick="selectMonth('6', this)">Julio</div>
+                    <div class="scroll-chip" data-value="7" onclick="selectMonth('7', this)">Agosto</div>
+                    <div class="scroll-chip" data-value="8" onclick="selectMonth('8', this)">Septiembre</div>
+                    <div class="scroll-chip" data-value="9" onclick="selectMonth('9', this)">Octubre</div>
+                    <div class="scroll-chip" data-value="10" onclick="selectMonth('10', this)">Noviembre</div>
+                    <div class="scroll-chip" data-value="11" onclick="selectMonth('11', this)">Diciembre</div>
+                </div>
+            </div>
+
+            <!-- Buscador de descripción -->
             <div class="filter-row">
-                <select id="filterYear" onchange="applyFilters()">
-                    <option value="">Todos los años</option>
-                    <option value="2022">2022</option>
-                    <option value="2023">2023</option>
-                    <option value="2024">2024</option>
-                    <option value="2025">2025</option>
-                    <option value="2026">2026</option>
-                </select>
-                <select id="filterMonth" onchange="applyFilters()">
-                    <option value="">Todos los meses</option>
-                    <option value="0">Enero</option>
-                    <option value="1">Febrero</option>
-                    <option value="2">Marzo</option>
-                    <option value="3">Abril</option>
-                    <option value="4">Mayo</option>
-                    <option value="5">Junio</option>
-                    <option value="6">Julio</option>
-                    <option value="7">Agosto</option>
-                    <option value="8">Septiembre</option>
-                    <option value="9">Octubre</option>
-                    <option value="10">Noviembre</option>
-                    <option value="11">Diciembre</option>
-                </select>
+                <input type="text" id="filterDescription" placeholder="🔍 Buscar por descripción, categoría o subcategoría..." oninput="applyFilters()">
             </div>
-
-            <!-- Multi-select Categorías -->
-            <div class="multi-select" id="categoryMultiSelect">
-                <div class="multi-select-header" onclick="toggleMultiSelect('category')">
-                    <span id="categoryHeader">Todas las categorías</span>
-                    <span class="arrow">▼</span>
-                </div>
-                <div class="multi-select-dropdown" id="categoryDropdown">
-                    <input type="text" class="multi-select-search" placeholder="🔍 Buscar categoría..." oninput="filterMultiSelectOptions('category', this.value)">
-                    <div class="multi-select-actions">
-                        <button onclick="selectAllOptions('category')">✓ Todas</button>
-                        <button onclick="deselectAllOptions('category')">✕ Ninguna</button>
-                    </div>
-                    <div id="categoryOptions"></div>
-                </div>
-            </div>
-
-            <!-- Multi-select Subcategorías -->
-            <div class="multi-select" id="subcategoryMultiSelect">
-                <div class="multi-select-header" onclick="toggleMultiSelect('subcategory')">
-                    <span id="subcategoryHeader">Todas las subcategorías</span>
-                    <span class="arrow">▼</span>
-                </div>
-                <div class="multi-select-dropdown" id="subcategoryDropdown">
-                    <input type="text" class="multi-select-search" placeholder="🔍 Buscar subcategoría..." oninput="filterMultiSelectOptions('subcategory', this.value)">
-                    <div class="multi-select-actions">
-                        <button onclick="selectAllOptions('subcategory')">✓ Todas</button>
-                        <button onclick="deselectAllOptions('subcategory')">✕ Ninguna</button>
-                    </div>
-                    <div id="subcategoryOptions"></div>
-                </div>
-            </div>
-
-            <div class="filter-row">
-                <input type="text" id="filterDescription" placeholder="Buscar por descripción..." oninput="applyFilters()">
-            </div>
-
-            <!-- Filtros activos -->
-            <div id="activeFilters" class="active-filters"></div>
         </div>
 
         <!-- Resumen -->
@@ -234,7 +164,7 @@
 
         <!-- Lista de transacciones -->
         <div class="transactions-list">
-            <h3 id="transactionsTitle">TRANSACCIONES</h3>
+            <h3>TRANSACCIONES</h3>
             <div id="resultsCount" class="results-count"></div>
             <div id="transactionsContainer">
                 <div class="empty-state">
@@ -258,21 +188,14 @@
     </div>
 
     <script>
-        // ===== CONFIGURACIÓN =====
         const JSON_URL = 'datos-2022-2026.json';
 
         let allTransactions = [];
         let filteredTransactions = [];
-        let categories = {};
         let mainChart = null;
-        
-        // Estado de los multi-select
-        let selectedCategories = new Set();
-        let selectedSubcategories = new Set();
-        let allCategoriesList = [];
-        let allSubcategoriesList = [];
+        let selectedYear = '';
+        let selectedMonth = '';
 
-        // ===== CONVERSIÓN DE URLS =====
         function convertToImageUrl(url) {
             if (!url) return null;
             url = url.trim();
@@ -285,179 +208,29 @@
             return url;
         }
 
-        // ===== MULTI-SELECT =====
-        function toggleMultiSelect(type) {
-            const dropdown = document.getElementById(type + 'Dropdown');
-            const header = dropdown.previousElementSibling;
-            const isOpen = dropdown.classList.contains('open');
-            
-            // Cerrar todos los dropdowns
-            document.querySelectorAll('.multi-select-dropdown').forEach(d => d.classList.remove('open'));
-            document.querySelectorAll('.multi-select-header').forEach(h => h.classList.remove('open'));
-            
-            // Abrir el seleccionado si estaba cerrado
-            if (!isOpen) {
-                dropdown.classList.add('open');
-                header.classList.add('open');
-            }
-        }
-
-        function populateMultiSelectOptions() {
-            // Categorías
-            const catContainer = document.getElementById('categoryOptions');
-            catContainer.innerHTML = allCategoriesList.map(cat => `
-                <div class="multi-select-option" data-value="${escapeHtml(cat)}">
-                    <input type="checkbox" id="cat-${escapeHtml(cat)}" value="${escapeHtml(cat)}" 
-                           ${selectedCategories.has(cat) ? 'checked' : ''} 
-                           onchange="toggleCategorySelection('${escapeHtml(cat)}')">
-                    <label for="cat-${escapeHtml(cat)}">${escapeHtml(cat)}</label>
-                    <span class="count">${allTransactions.filter(t => t.category === cat).length}</span>
-                </div>
-            `).join('');
-            
-            // Subcategorías
-            const subContainer = document.getElementById('subcategoryOptions');
-            subContainer.innerHTML = allSubcategoriesList.map(sub => `
-                <div class="multi-select-option" data-value="${escapeHtml(sub)}">
-                    <input type="checkbox" id="sub-${escapeHtml(sub)}" value="${escapeHtml(sub)}"
-                           ${selectedSubcategories.has(sub) ? 'checked' : ''}
-                           onchange="toggleSubcategorySelection('${escapeHtml(sub)}')">
-                    <label for="sub-${escapeHtml(sub)}">${escapeHtml(sub)}</label>
-                    <span class="count">${allTransactions.filter(t => t.subcategory === sub).length}</span>
-                </div>
-            `).join('');
-        }
-
-        function toggleCategorySelection(cat) {
-            if (selectedCategories.has(cat)) {
-                selectedCategories.delete(cat);
-            } else {
-                selectedCategories.add(cat);
-            }
-            updateMultiSelectHeader('category');
+        function selectYear(year, element) {
+            selectedYear = year;
+            document.querySelectorAll('#yearScroll .scroll-chip').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+            // Scroll al chip seleccionado
+            element.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
             applyFilters();
         }
 
-        function toggleSubcategorySelection(sub) {
-            if (selectedSubcategories.has(sub)) {
-                selectedSubcategories.delete(sub);
-            } else {
-                selectedSubcategories.add(sub);
-            }
-            updateMultiSelectHeader('subcategory');
+        function selectMonth(month, element) {
+            selectedMonth = month;
+            document.querySelectorAll('#monthScroll .scroll-chip').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+            element.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
             applyFilters();
         }
 
-        function selectAllOptions(type) {
-            const list = type === 'category' ? allCategoriesList : allSubcategoriesList;
-            const set = type === 'category' ? selectedCategories : selectedSubcategories;
-            list.forEach(item => set.add(item));
-            
-            // Actualizar checkboxes visibles
-            document.querySelectorAll(`#${type}Options input[type="checkbox"]`).forEach(cb => {
-                cb.checked = true;
-            });
-            
-            updateMultiSelectHeader(type);
-            applyFilters();
-        }
-
-        function deselectAllOptions(type) {
-            const set = type === 'category' ? selectedCategories : selectedSubcategories;
-            set.clear();
-            
-            document.querySelectorAll(`#${type}Options input[type="checkbox"]`).forEach(cb => {
-                cb.checked = false;
-            });
-            
-            updateMultiSelectHeader(type);
-            applyFilters();
-        }
-
-        function updateMultiSelectHeader(type) {
-            const set = type === 'category' ? selectedCategories : selectedSubcategories;
-            const header = document.getElementById(type + 'Header');
-            
-            if (set.size === 0) {
-                header.textContent = type === 'category' ? 'Todas las categorías' : 'Todas las subcategorías';
-            } else if (set.size === 1) {
-                header.textContent = Array.from(set)[0];
-            } else {
-                header.textContent = `${set.size} seleccionadas`;
-            }
-            
-            // Actualizar checkboxes en el DOM
-            document.querySelectorAll(`#${type}Options input[type="checkbox"]`).forEach(cb => {
-                cb.checked = set.has(cb.value);
-            });
-        }
-
-        function filterMultiSelectOptions(type, searchTerm) {
-            const options = document.querySelectorAll(`#${type}Options .multi-select-option`);
-            const term = searchTerm.toLowerCase();
-            
-            options.forEach(opt => {
-                const value = opt.dataset.value.toLowerCase();
-                opt.style.display = value.includes(term) ? 'flex' : 'none';
-            });
-        }
-
-        function updateActiveFilters() {
-            const container = document.getElementById('activeFilters');
-            const tags = [];
-            
-            selectedCategories.forEach(cat => {
-                tags.push(`<span class="active-filter-tag">${escapeHtml(cat)} <span class="remove" onclick="removeCategoryFilter('${escapeHtml(cat)}')">✕</span></span>`);
-            });
-            
-            selectedSubcategories.forEach(sub => {
-                tags.push(`<span class="active-filter-tag">${escapeHtml(sub)} <span class="remove" onclick="removeSubcategoryFilter('${escapeHtml(sub)}')">✕</span></span>`);
-            });
-            
-            container.innerHTML = tags.join('');
-        }
-
-        function removeCategoryFilter(cat) {
-            selectedCategories.delete(cat);
-            updateMultiSelectHeader('category');
-            applyFilters();
-        }
-
-        function removeSubcategoryFilter(sub) {
-            selectedSubcategories.delete(sub);
-            updateMultiSelectHeader('subcategory');
-            applyFilters();
-        }
-
-        // Cerrar dropdowns al hacer clic fuera
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.multi-select')) {
-                document.querySelectorAll('.multi-select-dropdown').forEach(d => d.classList.remove('open'));
-                document.querySelectorAll('.multi-select-header').forEach(h => h.classList.remove('open'));
-            }
-        });
-
-        // ===== CARGA DE DATOS =====
         async function loadData() {
             try {
                 const response = await fetch(JSON_URL);
                 if (!response.ok) throw new Error(`Error ${response.status}`);
                 const data = await response.json();
-                
                 allTransactions = data.transactions || [];
-                categories = data.categories || {};
-                
-                // Extraer listas únicas
-                const catSet = new Set();
-                const subSet = new Set();
-                allTransactions.forEach(t => {
-                    if (t.category) catSet.add(t.category);
-                    if (t.subcategory) subSet.add(t.subcategory);
-                });
-                allCategoriesList = Array.from(catSet).sort();
-                allSubcategoriesList = Array.from(subSet).sort();
-                
-                populateMultiSelectOptions();
                 applyFilters();
             } catch (error) {
                 console.error('Error al cargar datos:', error);
@@ -472,28 +245,16 @@
         }
 
         function applyFilters() {
-            const year = document.getElementById('filterYear').value;
-            const month = document.getElementById('filterMonth').value;
             const description = document.getElementById('filterDescription').value.toLowerCase();
             
             filteredTransactions = allTransactions.filter(t => {
                 const date = new Date(t.date + 'T00:00:00');
-                
-                if (year && date.getFullYear() !== parseInt(year)) return false;
-                if (month !== '' && date.getMonth() !== parseInt(month)) return false;
-                
-                // Filtro de categorías (OR: cualquiera de las seleccionadas)
-                if (selectedCategories.size > 0 && !selectedCategories.has(t.category)) return false;
-                
-                // Filtro de subcategorías (OR: cualquiera de las seleccionadas)
-                if (selectedSubcategories.size > 0 && !selectedSubcategories.has(t.subcategory)) return false;
-                
-                // Filtro de descripción
+                if (selectedYear && date.getFullYear() !== parseInt(selectedYear)) return false;
+                if (selectedMonth !== '' && date.getMonth() !== parseInt(selectedMonth)) return false;
                 if (description) {
                     const searchIn = `${t.description} ${t.category} ${t.subcategory}`.toLowerCase();
                     if (!searchIn.includes(description)) return false;
                 }
-                
                 return true;
             });
             
@@ -502,14 +263,12 @@
             updateSummary();
             updateChart();
             renderTransactions();
-            updateActiveFilters();
         }
 
         function updateSummary() {
             const totalIncome = filteredTransactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
             const totalExpense = filteredTransactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
             const balance = totalIncome - totalExpense;
-            
             document.getElementById('totalIncome').textContent = `${totalIncome.toLocaleString('es-ES', {minimumFractionDigits: 2})}€`;
             document.getElementById('totalExpense').textContent = `${totalExpense.toLocaleString('es-ES', {minimumFractionDigits: 2})}€`;
             document.getElementById('totalBalance').textContent = `${balance.toLocaleString('es-ES', {minimumFractionDigits: 2})}€`;
@@ -517,7 +276,6 @@
 
         function updateChart() {
             const ctx = document.getElementById('mainChart').getContext('2d');
-            
             const monthlyData = {};
             filteredTransactions.forEach(t => {
                 const date = new Date(t.date + 'T00:00:00');
@@ -526,28 +284,21 @@
                 if (t.type === 'income') monthlyData[key].income += t.amount;
                 else monthlyData[key].expense += t.amount;
             });
-            
             const labels = Object.keys(monthlyData).sort();
             const incomeData = labels.map(k => monthlyData[k].income);
             const expenseData = labels.map(k => monthlyData[k].expense);
-            
             if (mainChart) mainChart.destroy();
-            
             mainChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: labels.map(l => {
-                        const [y, m] = l.split('-');
-                        return `${m}/${y}`;
-                    }),
+                    labels: labels.map(l => { const [y, m] = l.split('-'); return `${m}/${y}`; }),
                     datasets: [
                         { label: 'Ingresos', data: incomeData, backgroundColor: 'rgba(0, 240, 255, 0.5)', borderColor: '#00f0ff', borderWidth: 2 },
                         { label: 'Gastos', data: expenseData, backgroundColor: 'rgba(255, 45, 149, 0.5)', borderColor: '#ff2d95', borderWidth: 2 }
                     ]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { labels: { color: '#8892a4', font: { size: 11 } } } },
                     scales: {
                         x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#8892a4', font: { size: 9 } } },
@@ -560,128 +311,60 @@
         function renderTransactions() {
             const container = document.getElementById('transactionsContainer');
             const countEl = document.getElementById('resultsCount');
-            
             countEl.textContent = `${filteredTransactions.length} de ${allTransactions.length} transacciones`;
-            
             if (filteredTransactions.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">🔍</div>
-                        <div>Sin resultados</div>
-                        <div style="font-size: 11px; margin-top: 8px;">Prueba a cambiar los filtros</div>
-                    </div>
-                `;
+                container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🔍</div><div>Sin resultados</div><div style="font-size: 11px; margin-top: 8px;">Prueba a cambiar los filtros</div></div>`;
                 return;
             }
-            
             const groups = {};
-            filteredTransactions.forEach(t => {
-                if (!groups[t.date]) groups[t.date] = [];
-                groups[t.date].push(t);
-            });
-            
+            filteredTransactions.forEach(t => { if (!groups[t.date]) groups[t.date] = []; groups[t.date].push(t); });
             let html = '';
             for (let date in groups) {
                 const items = groups[date];
                 const dayIncome = items.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
                 const dayExpense = items.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
                 const dayBalance = dayIncome - dayExpense;
-                
-                html += `<div class="day-group">
-                    <div class="day-header">
-                        <span>📅 ${formatDateFull(date)}</span>
-                        <span class="day-total">${dayIncome > 0 ? '+' + dayIncome.toFixed(2) + '€' : ''} ${dayExpense > 0 ? '-' + dayExpense.toFixed(2) + '€' : ''} = ${dayBalance >= 0 ? '+' : ''}${dayBalance.toFixed(2)}€</span>
-                    </div>`;
-                
+                html += `<div class="day-group"><div class="day-header"><span>📅 ${formatDateFull(date)}</span><span class="day-total">${dayIncome > 0 ? '+' + dayIncome.toFixed(2) + '€' : ''} ${dayExpense > 0 ? '-' + dayExpense.toFixed(2) + '€' : ''} = ${dayBalance >= 0 ? '+' : ''}${dayBalance.toFixed(2)}€</span></div>`;
                 items.forEach(t => {
                     const colorClass = t.type === 'income' ? 'positive' : 'negative';
                     const sign = t.type === 'income' ? '+' : '-';
-                    html += `<div class="transaction-item" onclick="viewTransaction(${t.id})">
-                        <div class="transaction-info">
-                            <h4>${escapeHtml(t.description)}</h4>
-                            <span>${escapeHtml(t.category)} ${t.subcategory !== t.category ? '→ ' + escapeHtml(t.subcategory) : ''}</span>
-                        </div>
-                        <div class="transaction-amount ${colorClass}">${sign}${t.amount.toLocaleString('es-ES', {minimumFractionDigits: 2})}€</div>
-                    </div>`;
+                    html += `<div class="transaction-item" onclick="viewTransaction(${t.id})"><div class="transaction-info"><h4>${escapeHtml(t.description)}</h4><span>${escapeHtml(t.category)} ${t.subcategory !== t.category ? '→ ' + escapeHtml(t.subcategory) : ''}</span></div><div class="transaction-amount ${colorClass}">${sign}${t.amount.toLocaleString('es-ES', {minimumFractionDigits: 2})}€</div></div>`;
                 });
-                
                 html += `</div>`;
             }
-            
             container.innerHTML = html;
         }
 
         function viewTransaction(id) {
             const t = allTransactions.find(x => x.id === id);
             if (!t) return;
-            
             const typeLabel = t.type === 'income' ? '📈 INGRESO' : '📉 GASTO';
             const typeColor = t.type === 'income' ? 'var(--neon-blue)' : 'var(--neon-pink)';
             const sign = t.type === 'income' ? '+' : '-';
-            
             document.getElementById('viewModalTitle').textContent = typeLabel;
-            
             const imageContainer = document.getElementById('viewModalImageContainer');
             if (t.imageUrl) {
                 const displayUrl = convertToImageUrl(t.imageUrl);
                 imageContainer.innerHTML = `<img src="${displayUrl}" class="view-modal-image" alt="Imagen" onclick="window.open('${t.imageUrl}', '_blank')" onerror="this.style.display='none'">`;
-            } else {
-                imageContainer.innerHTML = '';
-            }
-            
-            const dateFormatted = new Date(t.date + 'T00:00:00').toLocaleDateString('es-ES', { 
-                weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' 
-            });
-            
+            } else { imageContainer.innerHTML = ''; }
+            const dateFormatted = new Date(t.date + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
             let content = `
-                <div class="view-detail-row">
-                    <span class="view-detail-label">💰 Monto</span>
-                    <span class="view-detail-value" style="color: ${typeColor}; font-size: 18px;">${sign}${t.amount.toLocaleString('es-ES', {minimumFractionDigits: 2})}€</span>
-                </div>
-                <div class="view-detail-row">
-                    <span class="view-detail-label">📝 Descripción</span>
-                    <span class="view-detail-value">${escapeHtml(t.description)}</span>
-                </div>
-                <div class="view-detail-row">
-                    <span class="view-detail-label">📂 Categoría</span>
-                    <span class="view-detail-value">${escapeHtml(t.category)}</span>
-                </div>
-                <div class="view-detail-row">
-                    <span class="view-detail-label">📁 Subcategoría</span>
-                    <span class="view-detail-value">${escapeHtml(t.subcategory || '-')}</span>
-                </div>
-                <div class="view-detail-row">
-                    <span class="view-detail-label">📅 Fecha</span>
-                    <span class="view-detail-value">${dateFormatted}</span>
-                </div>
+                <div class="view-detail-row"><span class="view-detail-label">💰 Monto</span><span class="view-detail-value" style="color: ${typeColor}; font-size: 18px;">${sign}${t.amount.toLocaleString('es-ES', {minimumFractionDigits: 2})}€</span></div>
+                <div class="view-detail-row"><span class="view-detail-label">📝 Descripción</span><span class="view-detail-value">${escapeHtml(t.description)}</span></div>
+                <div class="view-detail-row"><span class="view-detail-label">📂 Categoría</span><span class="view-detail-value">${escapeHtml(t.category)}</span></div>
+                <div class="view-detail-row"><span class="view-detail-label">📁 Subcategoría</span><span class="view-detail-value">${escapeHtml(t.subcategory || '-')}</span></div>
+                <div class="view-detail-row"><span class="view-detail-label">📅 Fecha</span><span class="view-detail-value">${dateFormatted}</span></div>
             `;
-            
-            if (t.imageUrl) {
-                content += `<div class="view-detail-row"><span class="view-detail-label">🔗 Imagen</span><span class="view-detail-value"><a href="${t.imageUrl}" target="_blank" style="color: var(--neon-blue);">Ver imagen original</a></span></div>`;
-            }
-            
+            if (t.imageUrl) { content += `<div class="view-detail-row"><span class="view-detail-label">🔗 Imagen</span><span class="view-detail-value"><a href="${t.imageUrl}" target="_blank" style="color: var(--neon-blue);">Ver imagen original</a></span></div>`; }
             document.getElementById('viewModalContent').innerHTML = content;
             document.getElementById('viewModalOverlay').classList.add('active');
         }
 
-        function closeViewModal() {
-            document.getElementById('viewModalOverlay').classList.remove('active');
-        }
+        function closeViewModal() { document.getElementById('viewModalOverlay').classList.remove('active'); }
+        function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        function formatDateFull(dateStr) { const date = new Date(dateStr + 'T00:00:00'); return date.toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }); }
 
-        function escapeHtml(text) { 
-            const div = document.createElement('div'); 
-            div.textContent = text; 
-            return div.innerHTML; 
-        }
-        
-        function formatDateFull(dateStr) { 
-            const date = new Date(dateStr + 'T00:00:00'); 
-            return date.toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }); 
-        }
-
-        document.getElementById('viewModalOverlay').addEventListener('click', (e) => { 
-            if (e.target === e.currentTarget) closeViewModal(); 
-        });
+        document.getElementById('viewModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeViewModal(); });
 
         loadData();
     </script>
