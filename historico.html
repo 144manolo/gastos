@@ -24,17 +24,42 @@
         .filter-section { background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 14px; padding: 16px; margin-bottom: 16px; }
         .filter-section h3 { font-size: 13px; color: var(--neon-blue); letter-spacing: 1px; margin-bottom: 12px; }
         
-        /* Selectores tipo dropdown con flechas */
-        .selector-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px; padding: 10px; background: rgba(0, 240, 255, 0.05); border-radius: 12px; border: 1px solid rgba(0, 240, 255, 0.2); }
-        .selector-row select { flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 14px; font-weight: 600; outline: none; cursor: pointer; text-align: center; }
-        .selector-row select:focus { border-color: var(--neon-blue); }
-        .selector-row select option { background: var(--bg-card); color: var(--text-primary); }
-        .selector-row button { width: 32px; height: 32px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--neon-blue); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .selector-row button:active { background: rgba(0, 240, 255, 0.2); }
+        /* Selectores compactos de año y mes */
+        .compact-selectors { display: flex; gap: 8px; margin-bottom: 12px; }
+        .compact-selector { flex: 1; display: flex; align-items: center; gap: 6px; background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 10px; padding: 6px 8px; }
+        .compact-selector button { width: 28px; height: 28px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--neon-blue); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .compact-selector button:active { background: rgba(0, 240, 255, 0.2); }
+        .compact-selector select { flex: 1; padding: 6px 8px; border-radius: 6px; border: none; background: transparent; color: var(--text-primary); font-size: 12px; font-weight: 600; outline: none; cursor: pointer; -webkit-appearance: none; appearance: none; text-align: center; }
+        .compact-selector select option { background: var(--bg-card); color: var(--text-primary); font-size: 13px; }
+        .compact-selector .selector-label { font-size: 9px; color: var(--text-secondary); text-align: center; margin-bottom: 2px; letter-spacing: 1px; }
+        
+        /* Multi-select personalizado */
+        .multi-select { position: relative; margin-bottom: 10px; }
+        .multi-select-header { padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; min-height: 36px; user-select: none; }
+        .multi-select-header:active { background: rgba(0, 240, 255, 0.1); }
+        .multi-select-header .arrow { transition: transform 0.3s; font-size: 10px; }
+        .multi-select-header.open .arrow { transform: rotate(180deg); }
+        .multi-select-dropdown { display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 100; background: var(--bg-card); border: 1px solid var(--border-glow); border-radius: 8px; margin-top: 4px; max-height: 200px; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        .multi-select-dropdown.open { display: block; }
+        .multi-select-search { width: 100%; padding: 6px 10px; border: none; border-bottom: 1px solid rgba(255,255,255,0.1); background: transparent; color: var(--text-primary); font-size: 12px; outline: none; }
+        .multi-select-search:focus { border-bottom-color: var(--neon-blue); }
+        .multi-select-actions { display: flex; gap: 4px; padding: 4px 6px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .multi-select-actions button { flex: 1; padding: 4px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: var(--text-secondary); font-size: 10px; cursor: pointer; }
+        .multi-select-actions button:active { background: rgba(0, 240, 255, 0.1); color: var(--neon-blue); }
+        .multi-select-option { display: flex; align-items: center; gap: 8px; padding: 8px 10px; cursor: pointer; transition: background 0.2s; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .multi-select-option:last-child { border-bottom: none; }
+        .multi-select-option:active { background: rgba(0, 240, 255, 0.05); }
+        .multi-select-option input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--neon-blue); cursor: pointer; }
+        .multi-select-option label { flex: 1; font-size: 12px; cursor: pointer; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .multi-select-option .count { font-size: 9px; color: var(--text-secondary); background: rgba(255,255,255,0.05); padding: 2px 5px; border-radius: 8px; }
         
         .filter-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
         .filter-row input { flex: 1; min-width: 100px; padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 13px; outline: none; }
         .filter-row input:focus { border-color: var(--neon-blue); }
+        
+        .active-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .active-filter-tag { padding: 4px 10px; border-radius: 12px; background: rgba(0, 240, 255, 0.1); border: 1px solid var(--neon-blue); color: var(--neon-blue); font-size: 11px; display: flex; align-items: center; gap: 4px; }
+        .active-filter-tag .remove { cursor: pointer; font-weight: bold; }
         
         .summary-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
         .summary-card { background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 14px; text-align: center; }
@@ -91,49 +116,86 @@
             <div style="width: 48px;"></div>
         </div>
 
-        <!-- Filtros con selectores tipo dropdown -->
+        <!-- Filtros compactos -->
         <div class="filter-section">
             <h3>🔍 FILTROS</h3>
             
-            <!-- Selector de AÑO -->
-            <div class="selector-row">
-                <button onclick="changeYear(-1)">◀</button>
-                <select id="filterYear" onchange="applyFilters()">
-                    <option value="">Todos los años</option>
-                    <option value="2022">2022</option>
-                    <option value="2023">2023</option>
-                    <option value="2024">2024</option>
-                    <option value="2025">2025</option>
-                    <option value="2026">2026</option>
-                </select>
-                <button onclick="changeYear(1)">▶</button>
+            <!-- Selectores compactos de año y mes -->
+            <div class="compact-selectors">
+                <div class="compact-selector">
+                    <div style="flex: 1;">
+                        <div class="selector-label">📅 AÑO</div>
+                        <select id="filterYear" onchange="applyFilters()">
+                            <option value="">Todos</option>
+                            <option value="2022">2022</option>
+                            <option value="2023">2023</option>
+                            <option value="2024">2024</option>
+                            <option value="2025">2025</option>
+                            <option value="2026">2026</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="compact-selector">
+                    <div style="flex: 1;">
+                        <div class="selector-label">🗓️ MES</div>
+                        <select id="filterMonth" onchange="applyFilters()">
+                            <option value="">Todos</option>
+                            <option value="0">Enero</option>
+                            <option value="1">Febrero</option>
+                            <option value="2">Marzo</option>
+                            <option value="3">Abril</option>
+                            <option value="4">Mayo</option>
+                            <option value="5">Junio</option>
+                            <option value="6">Julio</option>
+                            <option value="7">Agosto</option>
+                            <option value="8">Septiembre</option>
+                            <option value="9">Octubre</option>
+                            <option value="10">Noviembre</option>
+                            <option value="11">Diciembre</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
-            <!-- Selector de MES -->
-            <div class="selector-row">
-                <button onclick="changeMonth(-1)">◀</button>
-                <select id="filterMonth" onchange="applyFilters()">
-                    <option value="">Todos los meses</option>
-                    <option value="0">Enero</option>
-                    <option value="1">Febrero</option>
-                    <option value="2">Marzo</option>
-                    <option value="3">Abril</option>
-                    <option value="4">Mayo</option>
-                    <option value="5">Junio</option>
-                    <option value="6">Julio</option>
-                    <option value="7">Agosto</option>
-                    <option value="8">Septiembre</option>
-                    <option value="9">Octubre</option>
-                    <option value="10">Noviembre</option>
-                    <option value="11">Diciembre</option>
-                </select>
-                <button onclick="changeMonth(1)">▶</button>
+            <!-- Multi-select Categorías -->
+            <div class="multi-select" id="categoryMultiSelect">
+                <div class="multi-select-header" onclick="toggleMultiSelect('category')">
+                    <span id="categoryHeader">Todas las categorías</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="multi-select-dropdown" id="categoryDropdown">
+                    <input type="text" class="multi-select-search" placeholder="🔍 Buscar categoría..." oninput="filterMultiSelectOptions('category', this.value)">
+                    <div class="multi-select-actions">
+                        <button onclick="selectAllOptions('category')">✓ Todas</button>
+                        <button onclick="deselectAllOptions('category')">✕ Ninguna</button>
+                    </div>
+                    <div id="categoryOptions"></div>
+                </div>
             </div>
 
-            <!-- Buscador de descripción -->
+            <!-- Multi-select Subcategorías -->
+            <div class="multi-select" id="subcategoryMultiSelect">
+                <div class="multi-select-header" onclick="toggleMultiSelect('subcategory')">
+                    <span id="subcategoryHeader">Todas las subcategorías</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="multi-select-dropdown" id="subcategoryDropdown">
+                    <input type="text" class="multi-select-search" placeholder="🔍 Buscar subcategoría..." oninput="filterMultiSelectOptions('subcategory', this.value)">
+                    <div class="multi-select-actions">
+                        <button onclick="selectAllOptions('subcategory')">✓ Todas</button>
+                        <button onclick="deselectAllOptions('subcategory')">✕ Ninguna</button>
+                    </div>
+                    <div id="subcategoryOptions"></div>
+                </div>
+            </div>
+
+            <!-- Buscador de texto -->
             <div class="filter-row">
                 <input type="text" id="filterDescription" placeholder="🔍 Buscar por descripción, categoría o subcategoría..." oninput="applyFilters()">
             </div>
+
+            <!-- Filtros activos -->
+            <div id="activeFilters" class="active-filters"></div>
         </div>
 
         <!-- Resumen -->
@@ -190,11 +252,10 @@
         let allTransactions = [];
         let filteredTransactions = [];
         let mainChart = null;
-        let selectedYear = '';
-        let selectedMonth = '';
-
-        const YEARS = ['', '2022', '2023', '2024', '2025', '2026'];
-        const MONTHS = ['', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
+        let selectedCategories = new Set();
+        let selectedSubcategories = new Set();
+        let allCategoriesList = [];
+        let allSubcategoriesList = [];
 
         function convertToImageUrl(url) {
             if (!url) return null;
@@ -208,34 +269,120 @@
             return url;
         }
 
-        function changeYear(delta) {
-            const select = document.getElementById('filterYear');
-            const currentIndex = YEARS.indexOf(selectedYear);
-            let newIndex = currentIndex + delta;
-            if (newIndex < 0) newIndex = 0;
-            if (newIndex >= YEARS.length) newIndex = YEARS.length - 1;
-            selectedYear = YEARS[newIndex];
-            select.value = selectedYear;
+        // ===== MULTI-SELECT =====
+        function toggleMultiSelect(type) {
+            const dropdown = document.getElementById(type + 'Dropdown');
+            const header = dropdown.previousElementSibling;
+            const isOpen = dropdown.classList.contains('open');
+            document.querySelectorAll('.multi-select-dropdown').forEach(d => d.classList.remove('open'));
+            document.querySelectorAll('.multi-select-header').forEach(h => h.classList.remove('open'));
+            if (!isOpen) { dropdown.classList.add('open'); header.classList.add('open'); }
+        }
+
+        function populateMultiSelectOptions() {
+            const catContainer = document.getElementById('categoryOptions');
+            catContainer.innerHTML = allCategoriesList.map(cat => `
+                <div class="multi-select-option" data-value="${escapeHtml(cat)}">
+                    <input type="checkbox" id="cat-${escapeHtml(cat)}" value="${escapeHtml(cat)}" 
+                           ${selectedCategories.has(cat) ? 'checked' : ''} 
+                           onchange="toggleCategorySelection('${escapeHtml(cat)}')">
+                    <label for="cat-${escapeHtml(cat)}">${escapeHtml(cat)}</label>
+                    <span class="count">${allTransactions.filter(t => t.category === cat).length}</span>
+                </div>
+            `).join('');
+            
+            const subContainer = document.getElementById('subcategoryOptions');
+            subContainer.innerHTML = allSubcategoriesList.map(sub => `
+                <div class="multi-select-option" data-value="${escapeHtml(sub)}">
+                    <input type="checkbox" id="sub-${escapeHtml(sub)}" value="${escapeHtml(sub)}"
+                           ${selectedSubcategories.has(sub) ? 'checked' : ''}
+                           onchange="toggleSubcategorySelection('${escapeHtml(sub)}')">
+                    <label for="sub-${escapeHtml(sub)}">${escapeHtml(sub)}</label>
+                    <span class="count">${allTransactions.filter(t => t.subcategory === sub).length}</span>
+                </div>
+            `).join('');
+        }
+
+        function toggleCategorySelection(cat) {
+            if (selectedCategories.has(cat)) selectedCategories.delete(cat);
+            else selectedCategories.add(cat);
+            updateMultiSelectHeader('category');
             applyFilters();
         }
 
-        function changeMonth(delta) {
-            const select = document.getElementById('filterMonth');
-            const currentIndex = MONTHS.indexOf(selectedMonth);
-            let newIndex = currentIndex + delta;
-            if (newIndex < 0) newIndex = 0;
-            if (newIndex >= MONTHS.length) newIndex = MONTHS.length - 1;
-            selectedMonth = MONTHS[newIndex];
-            select.value = selectedMonth;
+        function toggleSubcategorySelection(sub) {
+            if (selectedSubcategories.has(sub)) selectedSubcategories.delete(sub);
+            else selectedSubcategories.add(sub);
+            updateMultiSelectHeader('subcategory');
             applyFilters();
         }
 
+        function selectAllOptions(type) {
+            const list = type === 'category' ? allCategoriesList : allSubcategoriesList;
+            const set = type === 'category' ? selectedCategories : selectedSubcategories;
+            list.forEach(item => set.add(item));
+            document.querySelectorAll(`#${type}Options input[type="checkbox"]`).forEach(cb => { cb.checked = true; });
+            updateMultiSelectHeader(type);
+            applyFilters();
+        }
+
+        function deselectAllOptions(type) {
+            const set = type === 'category' ? selectedCategories : selectedSubcategories;
+            set.clear();
+            document.querySelectorAll(`#${type}Options input[type="checkbox"]`).forEach(cb => { cb.checked = false; });
+            updateMultiSelectHeader(type);
+            applyFilters();
+        }
+
+        function updateMultiSelectHeader(type) {
+            const set = type === 'category' ? selectedCategories : selectedSubcategories;
+            const header = document.getElementById(type + 'Header');
+            if (set.size === 0) header.textContent = type === 'category' ? 'Todas las categorías' : 'Todas las subcategorías';
+            else if (set.size === 1) header.textContent = Array.from(set)[0];
+            else header.textContent = `${set.size} seleccionadas`;
+            document.querySelectorAll(`#${type}Options input[type="checkbox"]`).forEach(cb => { cb.checked = set.has(cb.value); });
+        }
+
+        function filterMultiSelectOptions(type, searchTerm) {
+            const options = document.querySelectorAll(`#${type}Options .multi-select-option`);
+            const term = searchTerm.toLowerCase();
+            options.forEach(opt => {
+                const value = opt.dataset.value.toLowerCase();
+                opt.style.display = value.includes(term) ? 'flex' : 'none';
+            });
+        }
+
+        function updateActiveFilters() {
+            const container = document.getElementById('activeFilters');
+            const tags = [];
+            selectedCategories.forEach(cat => { tags.push(`<span class="active-filter-tag">${escapeHtml(cat)} <span class="remove" onclick="removeCategoryFilter('${escapeHtml(cat)}')">✕</span></span>`); });
+            selectedSubcategories.forEach(sub => { tags.push(`<span class="active-filter-tag">${escapeHtml(sub)} <span class="remove" onclick="removeSubcategoryFilter('${escapeHtml(sub)}')">✕</span></span>`); });
+            container.innerHTML = tags.join('');
+        }
+
+        function removeCategoryFilter(cat) { selectedCategories.delete(cat); updateMultiSelectHeader('category'); applyFilters(); }
+        function removeSubcategoryFilter(sub) { selectedSubcategories.delete(sub); updateMultiSelectHeader('subcategory'); applyFilters(); }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.multi-select')) {
+                document.querySelectorAll('.multi-select-dropdown').forEach(d => d.classList.remove('open'));
+                document.querySelectorAll('.multi-select-header').forEach(h => h.classList.remove('open'));
+            }
+        });
+
+        // ===== CARGA DE DATOS =====
         async function loadData() {
             try {
                 const response = await fetch(JSON_URL);
                 if (!response.ok) throw new Error(`Error ${response.status}`);
                 const data = await response.json();
                 allTransactions = data.transactions || [];
+                const catSet = new Set();
+                const subSet = new Set();
+                allTransactions.forEach(t => { if (t.category) catSet.add(t.category); if (t.subcategory) subSet.add(t.subcategory); });
+                allCategoriesList = Array.from(catSet).sort();
+                allSubcategoriesList = Array.from(subSet).sort();
+                populateMultiSelectOptions();
                 applyFilters();
             } catch (error) {
                 console.error('Error al cargar datos:', error);
@@ -244,14 +391,16 @@
         }
 
         function applyFilters() {
-            selectedYear = document.getElementById('filterYear').value;
-            selectedMonth = document.getElementById('filterMonth').value;
+            const year = document.getElementById('filterYear').value;
+            const month = document.getElementById('filterMonth').value;
             const description = document.getElementById('filterDescription').value.toLowerCase();
             
             filteredTransactions = allTransactions.filter(t => {
                 const date = new Date(t.date + 'T00:00:00');
-                if (selectedYear && date.getFullYear() !== parseInt(selectedYear)) return false;
-                if (selectedMonth !== '' && date.getMonth() !== parseInt(selectedMonth)) return false;
+                if (year && date.getFullYear() !== parseInt(year)) return false;
+                if (month !== '' && date.getMonth() !== parseInt(month)) return false;
+                if (selectedCategories.size > 0 && !selectedCategories.has(t.category)) return false;
+                if (selectedSubcategories.size > 0 && !selectedSubcategories.has(t.subcategory)) return false;
                 if (description) {
                     const searchIn = `${t.description} ${t.category} ${t.subcategory}`.toLowerCase();
                     if (!searchIn.includes(description)) return false;
@@ -263,6 +412,7 @@
             updateSummary();
             updateChart();
             renderTransactions();
+            updateActiveFilters();
         }
 
         function updateSummary() {
