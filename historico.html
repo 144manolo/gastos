@@ -23,22 +23,19 @@
         .app-title h2 { font-size: 12px; color: var(--neon-blue); letter-spacing: 3px; font-weight: 400; }
         .filter-section { background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 14px; padding: 16px; margin-bottom: 16px; }
         .filter-section h3 { font-size: 13px; color: var(--neon-blue); letter-spacing: 1px; margin-bottom: 12px; }
+        
+        /* Selectores tipo dropdown con flechas */
+        .selector-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px; padding: 10px; background: rgba(0, 240, 255, 0.05); border-radius: 12px; border: 1px solid rgba(0, 240, 255, 0.2); }
+        .selector-row select { flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 14px; font-weight: 600; outline: none; cursor: pointer; text-align: center; }
+        .selector-row select:focus { border-color: var(--neon-blue); }
+        .selector-row select option { background: var(--bg-card); color: var(--text-primary); }
+        .selector-row button { width: 32px; height: 32px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--neon-blue); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .selector-row button:active { background: rgba(0, 240, 255, 0.2); }
+        
         .filter-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
         .filter-row input { flex: 1; min-width: 100px; padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 13px; outline: none; }
         .filter-row input:focus { border-color: var(--neon-blue); }
-
-        /* ===== NAVEGACIÓN CON FLECHAS ◀ ▶ ===== */
-        .nav-selector { margin-bottom: 14px; }
-        .nav-label { font-size: 11px; color: var(--text-secondary); letter-spacing: 1px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-        .nav-label .icon { font-size: 14px; }
-        .nav-row { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px; background: rgba(0, 240, 255, 0.05); border-radius: 12px; border: 1px solid rgba(0, 240, 255, 0.2); }
-        .nav-arrow { width: 40px; height: 40px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--neon-blue); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; -webkit-tap-highlight-color: transparent; flex-shrink: 0; }
-        .nav-arrow:active { background: rgba(0, 240, 255, 0.2); transform: scale(0.92); }
-        .nav-arrow:disabled { opacity: 0.3; cursor: not-allowed; }
-        .nav-row select { flex: 1; padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 14px; font-weight: 600; outline: none; cursor: pointer; text-align: center; -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2300f0ff' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
-        .nav-row select:focus { border-color: var(--neon-blue); }
-        .nav-row select option { background: var(--bg-card); color: var(--text-primary); }
-
+        
         .summary-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
         .summary-card { background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 14px; text-align: center; }
         .summary-card .label { font-size: 10px; color: var(--text-secondary); letter-spacing: 1px; margin-bottom: 6px; }
@@ -94,28 +91,43 @@
             <div style="width: 48px;"></div>
         </div>
 
-        <!-- Filtros -->
+        <!-- Filtros con selectores tipo dropdown -->
         <div class="filter-section">
             <h3>🔍 FILTROS</h3>
-
-            <!-- Selector de AÑO con flechas -->
-            <div class="nav-selector">
-                <div class="nav-label"><span class="icon">📅</span> AÑO</div>
-                <div class="nav-row">
-                    <button class="nav-arrow" id="yearPrev" onclick="changeYear(-1)">◀</button>
-                    <select id="yearSelect" onchange="applyFilters()"></select>
-                    <button class="nav-arrow" id="yearNext" onclick="changeYear(1)">▶</button>
-                </div>
+            
+            <!-- Selector de AÑO -->
+            <div class="selector-row">
+                <button onclick="changeYear(-1)">◀</button>
+                <select id="filterYear" onchange="applyFilters()">
+                    <option value="">Todos los años</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                </select>
+                <button onclick="changeYear(1)">▶</button>
             </div>
 
-            <!-- Selector de MES con flechas -->
-            <div class="nav-selector">
-                <div class="nav-label"><span class="icon">🗓️</span> MES</div>
-                <div class="nav-row">
-                    <button class="nav-arrow" id="monthPrev" onclick="changeMonth(-1)">◀</button>
-                    <select id="monthSelect" onchange="applyFilters()"></select>
-                    <button class="nav-arrow" id="monthNext" onclick="changeMonth(1)">▶</button>
-                </div>
+            <!-- Selector de MES -->
+            <div class="selector-row">
+                <button onclick="changeMonth(-1)">◀</button>
+                <select id="filterMonth" onchange="applyFilters()">
+                    <option value="">Todos los meses</option>
+                    <option value="0">Enero</option>
+                    <option value="1">Febrero</option>
+                    <option value="2">Marzo</option>
+                    <option value="3">Abril</option>
+                    <option value="4">Mayo</option>
+                    <option value="5">Junio</option>
+                    <option value="6">Julio</option>
+                    <option value="7">Agosto</option>
+                    <option value="8">Septiembre</option>
+                    <option value="9">Octubre</option>
+                    <option value="10">Noviembre</option>
+                    <option value="11">Diciembre</option>
+                </select>
+                <button onclick="changeMonth(1)">▶</button>
             </div>
 
             <!-- Buscador de descripción -->
@@ -178,62 +190,12 @@
         let allTransactions = [];
         let filteredTransactions = [];
         let mainChart = null;
+        let selectedYear = '';
+        let selectedMonth = '';
 
-        // ===== OPCIONES DE NAVEGACIÓN =====
-        const YEAR_OPTIONS = [
-            { value: '', label: 'Todos los años' },
-            { value: '2022', label: '2022' },
-            { value: '2023', label: '2023' },
-            { value: '2024', label: '2024' },
-            { value: '2025', label: '2025' },
-            { value: '2026', label: '2026' }
-        ];
-        const MONTH_OPTIONS = [
-            { value: '', label: 'Todos los meses' },
-            { value: '0', label: 'Enero' }, { value: '1', label: 'Febrero' }, { value: '2', label: 'Marzo' },
-            { value: '3', label: 'Abril' }, { value: '4', label: 'Mayo' }, { value: '5', label: 'Junio' },
-            { value: '6', label: 'Julio' }, { value: '7', label: 'Agosto' }, { value: '8', label: 'Septiembre' },
-            { value: '9', label: 'Octubre' }, { value: '10', label: 'Noviembre' }, { value: '11', label: 'Diciembre' }
-        ];
+        const YEARS = ['', '2022', '2023', '2024', '2025', '2026'];
+        const MONTHS = ['', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
 
-        function populateSelectors() {
-            const yearSel = document.getElementById('yearSelect');
-            const monthSel = document.getElementById('monthSelect');
-            yearSel.innerHTML = YEAR_OPTIONS.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
-            monthSel.innerHTML = MONTH_OPTIONS.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
-            updateArrowStates();
-        }
-
-        function changeYear(delta) {
-            const sel = document.getElementById('yearSelect');
-            let idx = sel.selectedIndex + delta;
-            if (idx < 0) idx = 0;
-            if (idx >= sel.options.length) idx = sel.options.length - 1;
-            sel.selectedIndex = idx;
-            updateArrowStates();
-            applyFilters();
-        }
-
-        function changeMonth(delta) {
-            const sel = document.getElementById('monthSelect');
-            let idx = sel.selectedIndex + delta;
-            if (idx < 0) idx = 0;
-            if (idx >= sel.options.length) idx = sel.options.length - 1;
-            sel.selectedIndex = idx;
-            updateArrowStates();
-            applyFilters();
-        }
-
-        function updateArrowStates() {
-            const yearSel = document.getElementById('yearSelect');
-            const monthSel = document.getElementById('monthSelect');
-            document.getElementById('yearPrev').disabled = yearSel.selectedIndex === 0;
-            document.getElementById('yearNext').disabled = yearSel.selectedIndex === yearSel.options.length - 1;
-            document.getElementById('monthPrev').disabled = monthSel.selectedIndex === 0;
-            document.getElementById('monthNext').disabled = monthSel.selectedIndex === monthSel.options.length - 1;
-        }
-
-        // ===== CONVERSIÓN DE URLS =====
         function convertToImageUrl(url) {
             if (!url) return null;
             url = url.trim();
@@ -246,9 +208,29 @@
             return url;
         }
 
-        // ===== CARGA DE DATOS =====
+        function changeYear(delta) {
+            const select = document.getElementById('filterYear');
+            const currentIndex = YEARS.indexOf(selectedYear);
+            let newIndex = currentIndex + delta;
+            if (newIndex < 0) newIndex = 0;
+            if (newIndex >= YEARS.length) newIndex = YEARS.length - 1;
+            selectedYear = YEARS[newIndex];
+            select.value = selectedYear;
+            applyFilters();
+        }
+
+        function changeMonth(delta) {
+            const select = document.getElementById('filterMonth');
+            const currentIndex = MONTHS.indexOf(selectedMonth);
+            let newIndex = currentIndex + delta;
+            if (newIndex < 0) newIndex = 0;
+            if (newIndex >= MONTHS.length) newIndex = MONTHS.length - 1;
+            selectedMonth = MONTHS[newIndex];
+            select.value = selectedMonth;
+            applyFilters();
+        }
+
         async function loadData() {
-            populateSelectors();
             try {
                 const response = await fetch(JSON_URL);
                 if (!response.ok) throw new Error(`Error ${response.status}`);
@@ -257,34 +239,27 @@
                 applyFilters();
             } catch (error) {
                 console.error('Error al cargar datos:', error);
-                document.getElementById('transactionsContainer').innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">❌</div>
-                        <div>Error al cargar datos</div>
-                        <div style="font-size: 11px; margin-top: 8px;">${error.message}</div>
-                    </div>
-                `;
+                document.getElementById('transactionsContainer').innerHTML = `<div class="empty-state"><div class="empty-state-icon">❌</div><div>Error al cargar datos</div><div style="font-size: 11px; margin-top: 8px;">${error.message}</div></div>`;
             }
         }
 
         function applyFilters() {
-            const year = document.getElementById('yearSelect').value;
-            const month = document.getElementById('monthSelect').value;
+            selectedYear = document.getElementById('filterYear').value;
+            selectedMonth = document.getElementById('filterMonth').value;
             const description = document.getElementById('filterDescription').value.toLowerCase();
-
+            
             filteredTransactions = allTransactions.filter(t => {
                 const date = new Date(t.date + 'T00:00:00');
-                if (year && date.getFullYear() !== parseInt(year)) return false;
-                if (month !== '' && date.getMonth() !== parseInt(month)) return false;
+                if (selectedYear && date.getFullYear() !== parseInt(selectedYear)) return false;
+                if (selectedMonth !== '' && date.getMonth() !== parseInt(selectedMonth)) return false;
                 if (description) {
                     const searchIn = `${t.description} ${t.category} ${t.subcategory}`.toLowerCase();
                     if (!searchIn.includes(description)) return false;
                 }
                 return true;
             });
-
+            
             filteredTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-
             updateSummary();
             updateChart();
             renderTransactions();
