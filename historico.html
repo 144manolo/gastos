@@ -26,21 +26,19 @@
         .filter-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
         .filter-row input { flex: 1; min-width: 100px; padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 13px; outline: none; }
         .filter-row input:focus { border-color: var(--neon-blue); }
-        
-        /* ===== SCROLL HORIZONTAL PARA AÑOS Y MESES ===== */
-        .scroll-selector { margin-bottom: 12px; }
-        .scroll-selector-label { font-size: 11px; color: var(--text-secondary); letter-spacing: 1px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-        .scroll-selector-label .icon { font-size: 14px; }
-        .scroll-container { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 8px; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
-        .scroll-container::-webkit-scrollbar { height: 4px; }
-        .scroll-container::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 2px; }
-        .scroll-container::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 2px; }
-        .scroll-chip { flex-shrink: 0; padding: 10px 16px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.03); color: var(--text-secondary); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; -webkit-tap-highlight-color: transparent; white-space: nowrap; }
-        .scroll-chip:active { transform: scale(0.95); }
-        .scroll-chip.active { border-color: var(--neon-blue); color: var(--neon-blue); background: rgba(0, 240, 255, 0.1); box-shadow: 0 0 10px rgba(0, 240, 255, 0.2); }
-        .scroll-chip.all { border-color: var(--neon-purple); color: var(--neon-purple); background: rgba(176, 38, 255, 0.1); }
-        .scroll-chip.all.active { border-color: var(--neon-purple); color: var(--neon-purple); background: rgba(176, 38, 255, 0.2); box-shadow: 0 0 10px rgba(176, 38, 255, 0.3); }
-        
+
+        /* ===== NAVEGACIÓN CON FLECHAS ◀ ▶ ===== */
+        .nav-selector { margin-bottom: 14px; }
+        .nav-label { font-size: 11px; color: var(--text-secondary); letter-spacing: 1px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .nav-label .icon { font-size: 14px; }
+        .nav-row { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px; background: rgba(0, 240, 255, 0.05); border-radius: 12px; border: 1px solid rgba(0, 240, 255, 0.2); }
+        .nav-arrow { width: 40px; height: 40px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--neon-blue); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; -webkit-tap-highlight-color: transparent; flex-shrink: 0; }
+        .nav-arrow:active { background: rgba(0, 240, 255, 0.2); transform: scale(0.92); }
+        .nav-arrow:disabled { opacity: 0.3; cursor: not-allowed; }
+        .nav-row select { flex: 1; padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 14px; font-weight: 600; outline: none; cursor: pointer; text-align: center; -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2300f0ff' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+        .nav-row select:focus { border-color: var(--neon-blue); }
+        .nav-row select option { background: var(--bg-card); color: var(--text-primary); }
+
         .summary-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
         .summary-card { background: var(--bg-card); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 14px; text-align: center; }
         .summary-card .label { font-size: 10px; color: var(--text-secondary); letter-spacing: 1px; margin-bottom: 6px; }
@@ -96,40 +94,27 @@
             <div style="width: 48px;"></div>
         </div>
 
-        <!-- Filtros con scroll horizontal -->
+        <!-- Filtros -->
         <div class="filter-section">
             <h3>🔍 FILTROS</h3>
-            
-            <!-- Selector de años con scroll horizontal -->
-            <div class="scroll-selector">
-                <div class="scroll-selector-label"><span class="icon">📅</span> AÑO</div>
-                <div class="scroll-container" id="yearScroll">
-                    <div class="scroll-chip all active" data-value="" onclick="selectYear('', this)">Todos</div>
-                    <div class="scroll-chip" data-value="2022" onclick="selectYear('2022', this)">2022</div>
-                    <div class="scroll-chip" data-value="2023" onclick="selectYear('2023', this)">2023</div>
-                    <div class="scroll-chip" data-value="2024" onclick="selectYear('2024', this)">2024</div>
-                    <div class="scroll-chip" data-value="2025" onclick="selectYear('2025', this)">2025</div>
-                    <div class="scroll-chip" data-value="2026" onclick="selectYear('2026', this)">2026</div>
+
+            <!-- Selector de AÑO con flechas -->
+            <div class="nav-selector">
+                <div class="nav-label"><span class="icon">📅</span> AÑO</div>
+                <div class="nav-row">
+                    <button class="nav-arrow" id="yearPrev" onclick="changeYear(-1)">◀</button>
+                    <select id="yearSelect" onchange="applyFilters()"></select>
+                    <button class="nav-arrow" id="yearNext" onclick="changeYear(1)">▶</button>
                 </div>
             </div>
 
-            <!-- Selector de meses con scroll horizontal -->
-            <div class="scroll-selector">
-                <div class="scroll-selector-label"><span class="icon">🗓️</span> MES</div>
-                <div class="scroll-container" id="monthScroll">
-                    <div class="scroll-chip all active" data-value="" onclick="selectMonth('', this)">Todos</div>
-                    <div class="scroll-chip" data-value="0" onclick="selectMonth('0', this)">Enero</div>
-                    <div class="scroll-chip" data-value="1" onclick="selectMonth('1', this)">Febrero</div>
-                    <div class="scroll-chip" data-value="2" onclick="selectMonth('2', this)">Marzo</div>
-                    <div class="scroll-chip" data-value="3" onclick="selectMonth('3', this)">Abril</div>
-                    <div class="scroll-chip" data-value="4" onclick="selectMonth('4', this)">Mayo</div>
-                    <div class="scroll-chip" data-value="5" onclick="selectMonth('5', this)">Junio</div>
-                    <div class="scroll-chip" data-value="6" onclick="selectMonth('6', this)">Julio</div>
-                    <div class="scroll-chip" data-value="7" onclick="selectMonth('7', this)">Agosto</div>
-                    <div class="scroll-chip" data-value="8" onclick="selectMonth('8', this)">Septiembre</div>
-                    <div class="scroll-chip" data-value="9" onclick="selectMonth('9', this)">Octubre</div>
-                    <div class="scroll-chip" data-value="10" onclick="selectMonth('10', this)">Noviembre</div>
-                    <div class="scroll-chip" data-value="11" onclick="selectMonth('11', this)">Diciembre</div>
+            <!-- Selector de MES con flechas -->
+            <div class="nav-selector">
+                <div class="nav-label"><span class="icon">🗓️</span> MES</div>
+                <div class="nav-row">
+                    <button class="nav-arrow" id="monthPrev" onclick="changeMonth(-1)">◀</button>
+                    <select id="monthSelect" onchange="applyFilters()"></select>
+                    <button class="nav-arrow" id="monthNext" onclick="changeMonth(1)">▶</button>
                 </div>
             </div>
 
@@ -193,9 +178,62 @@
         let allTransactions = [];
         let filteredTransactions = [];
         let mainChart = null;
-        let selectedYear = '';
-        let selectedMonth = '';
 
+        // ===== OPCIONES DE NAVEGACIÓN =====
+        const YEAR_OPTIONS = [
+            { value: '', label: 'Todos los años' },
+            { value: '2022', label: '2022' },
+            { value: '2023', label: '2023' },
+            { value: '2024', label: '2024' },
+            { value: '2025', label: '2025' },
+            { value: '2026', label: '2026' }
+        ];
+        const MONTH_OPTIONS = [
+            { value: '', label: 'Todos los meses' },
+            { value: '0', label: 'Enero' }, { value: '1', label: 'Febrero' }, { value: '2', label: 'Marzo' },
+            { value: '3', label: 'Abril' }, { value: '4', label: 'Mayo' }, { value: '5', label: 'Junio' },
+            { value: '6', label: 'Julio' }, { value: '7', label: 'Agosto' }, { value: '8', label: 'Septiembre' },
+            { value: '9', label: 'Octubre' }, { value: '10', label: 'Noviembre' }, { value: '11', label: 'Diciembre' }
+        ];
+
+        function populateSelectors() {
+            const yearSel = document.getElementById('yearSelect');
+            const monthSel = document.getElementById('monthSelect');
+            yearSel.innerHTML = YEAR_OPTIONS.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+            monthSel.innerHTML = MONTH_OPTIONS.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+            updateArrowStates();
+        }
+
+        function changeYear(delta) {
+            const sel = document.getElementById('yearSelect');
+            let idx = sel.selectedIndex + delta;
+            if (idx < 0) idx = 0;
+            if (idx >= sel.options.length) idx = sel.options.length - 1;
+            sel.selectedIndex = idx;
+            updateArrowStates();
+            applyFilters();
+        }
+
+        function changeMonth(delta) {
+            const sel = document.getElementById('monthSelect');
+            let idx = sel.selectedIndex + delta;
+            if (idx < 0) idx = 0;
+            if (idx >= sel.options.length) idx = sel.options.length - 1;
+            sel.selectedIndex = idx;
+            updateArrowStates();
+            applyFilters();
+        }
+
+        function updateArrowStates() {
+            const yearSel = document.getElementById('yearSelect');
+            const monthSel = document.getElementById('monthSelect');
+            document.getElementById('yearPrev').disabled = yearSel.selectedIndex === 0;
+            document.getElementById('yearNext').disabled = yearSel.selectedIndex === yearSel.options.length - 1;
+            document.getElementById('monthPrev').disabled = monthSel.selectedIndex === 0;
+            document.getElementById('monthNext').disabled = monthSel.selectedIndex === monthSel.options.length - 1;
+        }
+
+        // ===== CONVERSIÓN DE URLS =====
         function convertToImageUrl(url) {
             if (!url) return null;
             url = url.trim();
@@ -208,24 +246,9 @@
             return url;
         }
 
-        function selectYear(year, element) {
-            selectedYear = year;
-            document.querySelectorAll('#yearScroll .scroll-chip').forEach(c => c.classList.remove('active'));
-            element.classList.add('active');
-            // Scroll al chip seleccionado
-            element.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-            applyFilters();
-        }
-
-        function selectMonth(month, element) {
-            selectedMonth = month;
-            document.querySelectorAll('#monthScroll .scroll-chip').forEach(c => c.classList.remove('active'));
-            element.classList.add('active');
-            element.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-            applyFilters();
-        }
-
+        // ===== CARGA DE DATOS =====
         async function loadData() {
+            populateSelectors();
             try {
                 const response = await fetch(JSON_URL);
                 if (!response.ok) throw new Error(`Error ${response.status}`);
@@ -245,21 +268,23 @@
         }
 
         function applyFilters() {
+            const year = document.getElementById('yearSelect').value;
+            const month = document.getElementById('monthSelect').value;
             const description = document.getElementById('filterDescription').value.toLowerCase();
-            
+
             filteredTransactions = allTransactions.filter(t => {
                 const date = new Date(t.date + 'T00:00:00');
-                if (selectedYear && date.getFullYear() !== parseInt(selectedYear)) return false;
-                if (selectedMonth !== '' && date.getMonth() !== parseInt(selectedMonth)) return false;
+                if (year && date.getFullYear() !== parseInt(year)) return false;
+                if (month !== '' && date.getMonth() !== parseInt(month)) return false;
                 if (description) {
                     const searchIn = `${t.description} ${t.category} ${t.subcategory}`.toLowerCase();
                     if (!searchIn.includes(description)) return false;
                 }
                 return true;
             });
-            
+
             filteredTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
+
             updateSummary();
             updateChart();
             renderTransactions();
