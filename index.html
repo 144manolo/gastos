@@ -4,15 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Contabilidad MFB</title>
-    <!-- PWA -->
-<link rel="manifest" href="/gastos/manifest.json">
-<meta name="theme-color" content="#00f0ff">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Contabilidad MFB">
-<link rel="apple-touch-icon" href="/gastos/icons/icon-192.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/gastos/icons/icon-192.png">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -135,6 +128,7 @@
         .submit-btn:active { transform: scale(0.98); }
         .submit-btn.danger { background: transparent; border: 1px solid var(--neon-red); color: var(--neon-red); }
         .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .submit-btn.success { background: linear-gradient(135deg, var(--neon-green), #00cc6e); color: #000; }
         .voice-result { background: rgba(176, 38, 255, 0.1); border: 1px solid var(--neon-purple); border-radius: 10px; padding: 12px; margin-bottom: 16px; font-size: 13px; color: var(--neon-purple); display: none; }
         .voice-result.show { display: block; }
         .side-menu { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: var(--bg-card); border-right: 1px solid var(--border-glow); z-index: 250; transition: left 0.3s ease; padding: 24px; overflow-y: auto; }
@@ -320,6 +314,34 @@
         .insights-widget .insight-card { padding: 12px; }
         .insights-widget .insight-icon { width: 40px; height: 40px; font-size: 22px; }
         .insights-widget .insight-value { font-size: 16px; }
+        
+        /* OCR Styles */
+        .ocr-section { background: rgba(176, 38, 255, 0.05); border: 1px solid rgba(176, 38, 255, 0.2); border-radius: 12px; padding: 16px; margin: 16px 0; }
+        .ocr-section h4 { font-size: 14px; color: var(--neon-purple); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .ocr-btn { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--neon-purple); background: rgba(176, 38, 255, 0.1); color: var(--neon-purple); font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s; margin-bottom: 10px; }
+        .ocr-btn:active { background: rgba(176, 38, 255, 0.2); transform: scale(0.98); }
+        .ocr-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .ocr-progress { margin-top: 12px; }
+        .ocr-progress-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+        .ocr-progress-fill { height: 100%; background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue)); border-radius: 3px; transition: width 0.3s; width: 0%; }
+        .ocr-status { font-size: 12px; color: var(--text-secondary); text-align: center; }
+        .ocr-results { margin-top: 16px; padding: 12px; background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 10px; }
+        .ocr-result-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+        .ocr-result-item:last-child { border-bottom: none; }
+        .ocr-result-label { color: var(--text-secondary); }
+        .ocr-result-value { color: var(--neon-blue); font-weight: 600; }
+        .ocr-products { margin-top: 12px; max-height: 200px; overflow-y: auto; }
+        .ocr-product-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: rgba(255,255,255,0.03); border-radius: 6px; margin-bottom: 6px; font-size: 12px; }
+        .ocr-product-name { flex: 1; color: var(--text-primary); }
+        .ocr-product-price { color: var(--neon-green); font-weight: 600; margin-right: 8px; }
+        .ocr-product-category { color: var(--neon-purple); font-size: 10px; }
+        .ocr-actions { display: flex; gap: 8px; margin-top: 12px; }
+        .ocr-actions button { flex: 1; padding: 10px; border-radius: 8px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .ocr-save-btn { background: linear-gradient(135deg, var(--neon-green), #00cc6e); color: #000; }
+        .ocr-cancel-btn { background: transparent; border: 1px solid var(--text-secondary); color: var(--text-secondary); }
+        .ocr-massive-btn { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--neon-yellow); background: rgba(255, 193, 7, 0.1); color: var(--neon-yellow); font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s; }
+        .ocr-massive-btn:active { background: rgba(255, 193, 7, 0.2); }
+        
         @media (max-width: 430px) { .app-container { padding: 16px 12px 100px; } }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
@@ -348,6 +370,7 @@
         <div class="menu-item" onclick="openShoppingModal()"><span class="menu-item-icon">🛒</span><span>Lista de la compra</span></div>
         <div class="menu-item" onclick="showAllTransactions()"><span class="menu-item-icon">📋</span><span>Ver todos los movimientos</span></div>
         <div class="menu-item" onclick="openInsightsModal()"><span class="menu-item-icon">🧠</span><span>Patrones e Insights</span></div>
+        <div class="menu-item" onclick="openOCRModal()"><span class="menu-item-icon">📸</span><span>Escanear tickets (OCR)</span></div>
         <div class="menu-item" onclick="window.open('historico.html', '_blank')"><span class="menu-item-icon">📚</span><span>Ver histórico 2022-2026</span></div>
         <div class="menu-item" onclick="openCategoriesModal()"><span class="menu-item-icon">🏷️</span><span>Gestionar categorías</span></div>
         <div class="menu-item" onclick="exportData()"><span class="menu-item-icon">📥</span><span>Exportar datos</span></div>
@@ -365,9 +388,10 @@
                 <a href="historico.html" target="_blank" class="history-btn" title="Ver histórico">⏳</a>
             </div>
             <div class="app-title"><h1>CONTABILIDAD</h1><h2>MFB</h2></div>
-           <div class="header-right">
-<div class="cart-btn" onclick="event.stopPropagation(); event.preventDefault(); openShoppingModalDirect(); return false;" title="Lista de la compra">🛒<span class="cart-badge" id="cartBadge">0</span></div>    <div class="avatar" onclick="showNotification('Perfil - Próximamente')">👤</div>
-</div>
+            <div class="header-right">
+                <div class="cart-btn" onclick="event.stopPropagation(); event.preventDefault(); openShoppingModalDirect(); return false;" title="Lista de la compra">🛒<span class="cart-badge" id="cartBadge">0</span></div>
+                <div class="avatar" onclick="showNotification('Perfil - Próximamente')">👤</div>
+            </div>
         </div>
 
         <div id="demoBanner" class="demo-banner" style="display: none;">🎲 Modo demo activo<button onclick="clearAllData()">Limpiar</button></div>
@@ -446,6 +470,21 @@
                     <button class="voice-desc-btn" id="voiceDescBtn" onclick="startVoiceDescription()">🎤</button>
                 </div>
             </div>
+            
+            <!-- Sección OCR en modal de transacción -->
+            <div class="ocr-section">
+                <h4>📸 ESCANEAR TICKET (OCR)</h4>
+                <button class="ocr-btn" onclick="scanTicketFromModal()" id="scanTicketBtn">
+                    <span>🔍</span>
+                    <span>Escanear ticket desde imagen</span>
+                </button>
+                <div id="ocrProgress" class="ocr-progress" style="display: none;">
+                    <div class="ocr-progress-bar"><div class="ocr-progress-fill" id="ocrProgressFill"></div></div>
+                    <div class="ocr-status" id="ocrStatus">Iniciando OCR...</div>
+                </div>
+                <div id="ocrResults" class="ocr-results" style="display: none;"></div>
+            </div>
+            
             <div class="form-group">
                 <label>📎 IMAGEN (se sube a la nube ☁️)</label>
                 <div class="file-input-wrapper">
@@ -469,6 +508,31 @@
             </div>
             <div class="form-group"><label>FECHA</label><input type="date" id="date"></div>
             <button class="submit-btn" id="submitBtn" onclick="saveTransaction()">AGREGAR TRANSACCIÓN</button>
+        </div>
+    </div>
+
+    <!-- Modal OCR Masivo -->
+    <div class="modal-overlay" id="ocrMassiveModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>🔄 PROCESAMIENTO MASIVO OCR</h3>
+                <button class="modal-close" onclick="closeOCRMassiveModal()">✕</button>
+            </div>
+            <div id="ocrMassiveContent">
+                <div class="ocr-section">
+                    <h4>📊 Resumen</h4>
+                    <div id="ocrMassiveSummary"></div>
+                </div>
+                <button class="ocr-massive-btn" onclick="startMassiveOCR()" id="startMassiveBtn">
+                    <span>▶️</span>
+                    <span>Iniciar procesamiento</span>
+                </button>
+                <div id="ocrMassiveProgress" class="ocr-progress" style="display: none; margin-top: 16px;">
+                    <div class="ocr-progress-bar"><div class="ocr-progress-fill" id="ocrMassiveProgressFill"></div></div>
+                    <div class="ocr-status" id="ocrMassiveStatus">Procesando...</div>
+                </div>
+                <div id="ocrMassiveResults" style="margin-top: 16px;"></div>
+            </div>
         </div>
     </div>
 
@@ -608,6 +672,7 @@
     <input type="file" id="importCatFile" accept=".json" style="display: none" onchange="handleImportCategories(event)">
     <input type="file" id="fileCamera" accept="image/*" capture="environment" class="hidden-file-input" onchange="handleFileSelected(event)">
     <input type="file" id="fileGallery" accept="image/*" class="hidden-file-input" onchange="handleFileSelected(event)">
+    <input type="file" id="ocrFileInput" accept="image/*" class="hidden-file-input" onchange="handleOCRFile(event)">
 
     <script>
         const CLOUDINARY_CLOUD_NAME = 'wmvlmzm0';
@@ -624,6 +689,40 @@
         const defaultCategories = {
             income: { 'Salario': ['Sueldo base', 'Horas extra', 'Bonos', 'Comisiones'], 'Freelance': ['Diseño', 'Desarrollo', 'Consultoría'], 'Inversiones': ['Dividendos', 'Intereses'], 'Otros Ingresos': ['Regalos', 'Reembolsos'] },
             expense: { 'Alimentación': ['Supermercado', 'Restaurantes', 'Café', 'Delivery'], 'Transporte': ['Gasolina', 'Taxi/Uber', 'Transporte público'], 'Vivienda': ['Alquiler/Hipoteca', 'Servicios', 'Internet', 'Luz'], 'Salud': ['Farmacia', 'Consultas', 'Gimnasio'], 'Entretenimiento': ['Cine', 'Streaming', 'Juegos'], 'Educación': ['Cursos', 'Libros'], 'Ropa': ['Calzado', 'Accesorios'], 'Tecnología': ['Software', 'Hardware'], 'Otros Gastos': ['Regalos', 'Varios'] }
+        };
+
+        // Diccionario de clasificación de productos
+        const categoryMapping = {
+            'Alimentación': {
+                'Supermercado': ['leche', 'pan', 'arroz', 'aceite', 'fruta', 'verdura', 'carne', 'pescado', 'yogur', 'queso', 'cereal', 'pasta', 'mercado', 'super', 'aliment', 'jamón', 'huevo', 'mantequilla', 'azúcar', 'sal', 'harina'],
+                'Restaurantes': ['restaurante', 'menú', 'comida', 'cena', 'almuerzo', 'plato', 'bebida', 'vino', 'cerveza', 'bar', 'cafetería'],
+                'Café': ['café', 'cafe', 'latte', 'cappuccino', 'desayuno', 'tostada'],
+                'Snacks': ['chips', 'galletas', 'chocolate', 'caramelos', 'snack', 'patatas', 'dulces']
+            },
+            'Transporte': {
+                'Gasolina': ['gasolina', 'gasoleo', 'combustible', 'repsol', 'cepsa', 'bp', 'shell', 'estación servicio', 'gasolinera'],
+                'Taxi/Uber': ['taxi', 'uber', 'cabify', 'bolt', 'transporte privado'],
+                'Transporte público': ['metro', 'bus', 'autobús', 'tren', 'billete', 'abono']
+            },
+            'Salud': {
+                'Farmacia': ['farmacia', 'medicamento', 'paracetamol', 'ibuprofeno', 'vitamina'],
+                'Consultas': ['médico', 'doctor', 'consulta', 'especialista'],
+                'Gimnasio': ['gimnasio', 'fitness', 'cuota gym']
+            },
+            'Entretenimiento': {
+                'Cine': ['cine', 'entrada', 'película'],
+                'Streaming': ['netflix', 'spotify', 'amazon prime', 'disney', 'streaming'],
+                'Juegos': ['juego', 'videojuego', 'steam', 'playstation']
+            },
+            'Tecnología': {
+                'Software': ['software', 'licencia', 'suscripción', 'app', 'programa'],
+                'Hardware': ['ordenador', 'móvil', 'tablet', 'cable', 'cargador', 'auriculares', 'ratón', 'teclado']
+            },
+            'Ropa': {
+                'Calzado': ['zapatos', 'zapatillas', 'botas', 'sandalias'],
+                'Accesorios': ['bolso', 'cinturón', 'bufanda', 'gorro'],
+                'Ropa casual': ['camiseta', 'pantalón', 'vaqueros', 'sudadera']
+            }
         };
 
         let categories = {};
@@ -647,6 +746,7 @@
         let isShopModalOpen = false;
         let isViewModalOpen = false;
         let isInsightsModalOpen = false;
+        let isOCRMassiveOpen = false;
         let isDemoMode = false;
         let editingCat = null;
         let editingSub = null;
@@ -663,6 +763,7 @@
         let viewingTransactionId = null;
         let previousModalContext = null;
         let pendingAttachment = null;
+        let currentShopTab = 'list';
 
         let balanceVisible = false;
         let realBalance = 0;
@@ -895,6 +996,340 @@
 
         function removeShopImage() { pendingShopImage = null; document.getElementById('fileCamera').value = ''; document.getElementById('fileGallery').value = ''; const p = document.getElementById('shopImagePreview'); if (p) p.innerHTML = ''; }
         function removeShopEditImage() { pendingShopImage = null; document.getElementById('fileCamera').value = ''; document.getElementById('fileGallery').value = ''; const p = document.getElementById('editShopImagePreview'); if (p) p.innerHTML = ''; }
+
+        // ===== SISTEMA OCR =====
+        function openOCRModal() {
+            if (isOCRMassiveOpen) return;
+            isOCRMassiveOpen = true;
+            toggleMenu();
+            document.getElementById('ocrMassiveModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            renderOCRMassiveSummary();
+        }
+
+        function closeOCRMassiveModal() {
+            if (!isOCRMassiveOpen) return;
+            isOCRMassiveOpen = false;
+            document.getElementById('ocrMassiveModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function renderOCRMassiveSummary() {
+            const ticketsWithImages = transactions.filter(t => t.imageUrl);
+            const processed = ticketsWithImages.filter(t => t.ocrProcessed);
+            const pending = ticketsWithImages.filter(t => !t.ocrProcessed);
+            
+            document.getElementById('ocrMassiveSummary').innerHTML = `
+                <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.8;">
+                    📊 <strong>Total tickets con imagen:</strong> ${ticketsWithImages.length}<br>
+                    ✅ <strong>Ya procesados:</strong> ${processed.length}<br>
+                    ⏳ <strong>Pendientes:</strong> ${pending.length}
+                </div>
+            `;
+        }
+
+        async function startMassiveOCR() {
+            const ticketsWithImages = transactions.filter(t => t.imageUrl && !t.ocrProcessed);
+            if (ticketsWithImages.length === 0) {
+                showNotification('No hay tickets pendientes de procesar');
+                return;
+            }
+            
+            document.getElementById('startMassiveBtn').disabled = true;
+            document.getElementById('ocrMassiveProgress').style.display = 'block';
+            
+            let processed = 0;
+            let success = 0;
+            let failed = 0;
+            const results = [];
+            
+            for (const ticket of ticketsWithImages) {
+                try {
+                    const imageUrl = convertToImageUrl(ticket.imageUrl);
+                    const ocrResult = await performOCR(imageUrl);
+                    
+                    if (ocrResult && ocrResult.amount) {
+                        // Actualizar transacción con datos OCR
+                        const idx = transactions.findIndex(t => t.id === ticket.id);
+                        if (idx !== -1) {
+                            transactions[idx].ocrProcessed = true;
+                            transactions[idx].ocrData = ocrResult;
+                            if (ocrResult.date) transactions[idx].date = ocrResult.date;
+                            if (ocrResult.amount) transactions[idx].amount = ocrResult.amount;
+                            if (ocrResult.establishment) {
+                                transactions[idx].description = `Ticket ${ocrResult.establishment}`;
+                            }
+                        }
+                        success++;
+                        results.push({ id: ticket.id, status: 'success', data: ocrResult });
+                    } else {
+                        failed++;
+                        results.push({ id: ticket.id, status: 'failed' });
+                    }
+                } catch (error) {
+                    failed++;
+                    results.push({ id: ticket.id, status: 'error', error: error.message });
+                }
+                
+                processed++;
+                const percent = (processed / ticketsWithImages.length) * 100;
+                document.getElementById('ocrMassiveProgressFill').style.width = percent + '%';
+                document.getElementById('ocrMassiveStatus').textContent = `Procesando ${processed}/${ticketsWithImages.length}...`;
+                
+                // Pausa entre lotes
+                if (processed % 5 === 0) {
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+            }
+            
+            // Guardar cambios
+            saveTransactions();
+            
+            // Mostrar resultados
+            document.getElementById('ocrMassiveResults').innerHTML = `
+                <div class="ocr-results">
+                    <h4 style="color: var(--neon-blue); margin-bottom: 12px;">✅ Procesamiento completado</h4>
+                    <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.8;">
+                        📊 <strong>Total procesados:</strong> ${processed}<br>
+                        ✅ <strong>Exitosos:</strong> ${success}<br>
+                        ❌ <strong>Fallidos:</strong> ${failed}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('startMassiveBtn').disabled = false;
+            showNotification(`✓ OCR masivo completado: ${success} exitosos, ${failed} fallidos`);
+            renderOCRMassiveSummary();
+        }
+
+        async function performOCR(imageUrl) {
+            try {
+                const result = await Tesseract.recognize(imageUrl, 'spa', {
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            const percent = Math.round(m.progress * 100);
+                            document.getElementById('ocrProgressFill').style.width = percent + '%';
+                            document.getElementById('ocrStatus').textContent = `Procesando OCR... ${percent}%`;
+                        }
+                    }
+                });
+                
+                const text = result.data.text;
+                return analyzeTicketText(text);
+            } catch (error) {
+                console.error('OCR Error:', error);
+                return null;
+            }
+        }
+
+        function analyzeTicketText(text) {
+            const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+            
+            // Extraer establecimiento (primera línea no vacía)
+            const establishment = lines[0] || 'Desconocido';
+            
+            // Extraer fecha
+            let date = null;
+            const datePatterns = [
+                /(\d{2})[-\/](\d{2})[-\/](\d{2,4})/,
+                /(\d{2})\s*(Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)[a-z]*\s*(\d{2,4})/i,
+                /(\d{1,2})\s+de\s+(Enero|Febrero|Marzo|Abril|Mayo|Junio|Julio|Agosto|Septiembre|Octubre|Noviembre|Diciembre)\s+de\s+(\d{2,4})/i
+            ];
+            
+            for (const pattern of datePatterns) {
+                const match = text.match(pattern);
+                if (match) {
+                    try {
+                        if (match[2].match(/^\d+$/)) {
+                            let year = parseInt(match[3]);
+                            if (year < 100) year += 2000;
+                            date = `${year}-${match[2].padStart(2, '0')}-${match[1].padStart(2, '0')}`;
+                        } else {
+                            const monthNames = { 'Enero': 1, 'Febrero': 2, 'Marzo': 3, 'Abril': 4, 'Mayo': 5, 'Junio': 6, 'Julio': 7, 'Agosto': 8, 'Septiembre': 9, 'Octubre': 10, 'Noviembre': 11, 'Diciembre': 12, 'Ene': 1, 'Feb': 2, 'Mar': 3, 'Abr': 4, 'May': 5, 'Jun': 6, 'Jul': 7, 'Ago': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dic': 12 };
+                            const month = monthNames[match[2].charAt(0).toUpperCase() + match[2].slice(1).toLowerCase()] || monthNames[match[2].substring(0, 3).charAt(0).toUpperCase() + match[2].substring(1, 3).toLowerCase()];
+                            if (month) {
+                                let year = parseInt(match[3]);
+                                if (year < 100) year += 2000;
+                                date = `${year}-${String(month).padStart(2, '0')}-${match[1].padStart(2, '0')}`;
+                            }
+                        }
+                    } catch (e) {}
+                    if (date) break;
+                }
+            }
+            
+            // Extraer importe total
+            let amount = null;
+            const totalPatterns = [
+                /TOTAL[:\s]*[€$]?\s*([\d.,]+)/i,
+                /Importe\s+total[:\s]*[€$]?\s*([\d.,]+)/i,
+                /TOTAL\s+A\s+PAGAR[:\s]*[€$]?\s*([\d.,]+)/i,
+                /TOTAL\s+FACTURA[:\s]*[€$]?\s*([\d.,]+)/i
+            ];
+            
+            for (const pattern of totalPatterns) {
+                const match = text.match(pattern);
+                if (match) {
+                    amount = parseFloat(match[1].replace(',', '.'));
+                    if (!isNaN(amount)) break;
+                }
+            }
+            
+            // Extraer productos
+            const products = [];
+            const productPattern = /(.+?)\s+([\d.,]+)\s*[€$]?$/;
+            for (const line of lines) {
+                const match = line.match(productPattern);
+                if (match && !line.toUpperCase().includes('TOTAL') && !line.toUpperCase().includes('IMPORTE')) {
+                    const price = parseFloat(match[2].replace(',', '.'));
+                    if (!isNaN(price) && price > 0 && price < 10000) {
+                        products.push({
+                            name: match[1].trim(),
+                            price: price,
+                            category: classifyProduct(match[1].trim())
+                        });
+                    }
+                }
+            }
+            
+            return {
+                establishment,
+                date,
+                amount,
+                products,
+                fullText: text
+            };
+        }
+
+        function classifyProduct(productName) {
+            const normalized = productName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            
+            for (const [category, subcategories] of Object.entries(categoryMapping)) {
+                for (const [subcategory, keywords] of Object.entries(subcategories)) {
+                    for (const keyword of keywords) {
+                        if (normalized.includes(keyword.toLowerCase())) {
+                            return { category, subcategory };
+                        }
+                    }
+                }
+            }
+            
+            return { category: 'Otros Gastos', subcategory: 'Varios' };
+        }
+
+        async function scanTicketFromModal() {
+            const imageUrl = pendingImageUrl || document.getElementById('imageUrlInput').value.trim();
+            if (!imageUrl) {
+                showNotification('Primero añade una imagen del ticket', true);
+                return;
+            }
+            
+            const btn = document.getElementById('scanTicketBtn');
+            const progress = document.getElementById('ocrProgress');
+            const results = document.getElementById('ocrResults');
+            
+            btn.disabled = true;
+            progress.style.display = 'block';
+            results.style.display = 'none';
+            document.getElementById('ocrProgressFill').style.width = '0%';
+            document.getElementById('ocrStatus').textContent = 'Iniciando OCR...';
+            
+            try {
+                const convertedUrl = convertToImageUrl(imageUrl);
+                const ocrResult = await performOCR(convertedUrl);
+                
+                if (ocrResult) {
+                    // Mostrar resultados
+                    let html = `<h4 style="color: var(--neon-blue); margin-bottom: 12px;">📊 Datos extraídos</h4>`;
+                    
+                    if (ocrResult.establishment) {
+                        html += `<div class="ocr-result-item"><span class="ocr-result-label">🏪 Establecimiento:</span><span class="ocr-result-value">${escapeHtml(ocrResult.establishment)}</span></div>`;
+                    }
+                    if (ocrResult.date) {
+                        html += `<div class="ocr-result-item"><span class="ocr-result-label">📅 Fecha:</span><span class="ocr-result-value">${ocrResult.date}</span></div>`;
+                    }
+                    if (ocrResult.amount) {
+                        html += `<div class="ocr-result-item"><span class="ocr-result-label">💰 Importe total:</span><span class="ocr-result-value">${ocrResult.amount.toFixed(2)}€</span></div>`;
+                    }
+                    
+                    if (ocrResult.products.length > 0) {
+                        html += `<h4 style="color: var(--neon-purple); margin: 16px 0 8px;">🛍️ Productos detectados (${ocrResult.products.length})</h4>`;
+                        html += `<div class="ocr-products">`;
+                        ocrResult.products.forEach(p => {
+                            html += `<div class="ocr-product-item">
+                                <span class="ocr-product-name">${escapeHtml(p.name)}</span>
+                                <span class="ocr-product-price">${p.price.toFixed(2)}€</span>
+                                <span class="ocr-product-category">${p.category.category} > ${p.category.subcategory}</span>
+                            </div>`;
+                        });
+                        html += `</div>`;
+                    }
+                    
+                    html += `<div class="ocr-actions">
+                        <button class="ocr-save-btn" onclick="saveOCRResults()">💾 Guardar transacción</button>
+                        <button class="ocr-cancel-btn" onclick="cancelOCR()">✕ Cancelar</button>
+                    </div>`;
+                    
+                    results.innerHTML = html;
+                    results.style.display = 'block';
+                    
+                    // Guardar resultados temporalmente
+                    window.pendingOCRResult = ocrResult;
+                } else {
+                    showNotification('No se pudo procesar el ticket', true);
+                }
+            } catch (error) {
+                showNotification('Error en OCR: ' + error.message, true);
+            } finally {
+                btn.disabled = false;
+                progress.style.display = 'none';
+            }
+        }
+
+        function saveOCRResults() {
+            const ocrResult = window.pendingOCRResult;
+            if (!ocrResult) return;
+            
+            // Rellenar campos del formulario
+            if (ocrResult.amount) document.getElementById('amount').value = ocrResult.amount;
+            if (ocrResult.date) document.getElementById('date').value = ocrResult.date;
+            if (ocrResult.establishment) {
+                document.getElementById('description').value = `Ticket ${ocrResult.establishment}`;
+            }
+            
+            // Sugerir categoría basada en productos
+            if (ocrResult.products.length > 0) {
+                const categoryCounts = {};
+                ocrResult.products.forEach(p => {
+                    const cat = p.category.category;
+                    categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+                });
+                const topCategory = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1])[0][0];
+                document.getElementById('category').value = topCategory;
+                updateSubcategories();
+            }
+            
+            document.getElementById('ocrResults').style.display = 'none';
+            showNotification('✓ Datos OCR aplicados al formulario');
+        }
+
+        function cancelOCR() {
+            document.getElementById('ocrResults').style.display = 'none';
+            window.pendingOCRResult = null;
+        }
+
+        function handleOCRFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                pendingImageUrl = e.target.result;
+                document.getElementById('imagePreview').innerHTML = `<div class="attachment-preview"><img src="${e.target.result}" alt="Preview"></div>`;
+                await scanTicketFromModal();
+            };
+            reader.readAsDataURL(file);
+        }
 
         function viewTransaction(id, context) {
             const t = transactions.find(x => x.id === id);
@@ -1195,33 +1630,29 @@
             else alertEl.className = 'budget-alert';
         }
 
-function openShoppingModalDirect() { 
-    if (isShopModalOpen) return; 
-    isShopModalOpen = true; 
-    currentShopTab = 'list';
-    document.getElementById('shopModalOverlay').classList.add('active'); 
-    document.body.style.overflow = 'hidden'; 
-    document.getElementById('shopTabList').classList.add('active'); 
-    document.getElementById('shopTabHistory').classList.remove('active'); 
-    // Forzar renderizado después de que el modal esté visible
-    setTimeout(() => {
-        renderShoppingTab();
-    }, 150);
-}
-function openShoppingModal() { 
-    if (isShopModalOpen) return; 
-    isShopModalOpen = true; 
-    currentShopTab = 'list'; // ← AÑADIR ESTA LÍNEA
-    toggleMenu(); 
-    document.getElementById('shopModalOverlay').classList.add('active'); 
-    document.body.style.overflow = 'hidden'; 
-    document.getElementById('shopTabList').classList.add('active'); 
-    document.getElementById('shopTabHistory').classList.remove('active'); 
-    // Forzar renderizado inmediato
-    setTimeout(() => {
-        renderShoppingTab();
-    }, 100);
-}        
+        function openShoppingModalDirect() { 
+            if (isShopModalOpen) return; 
+            isShopModalOpen = true; 
+            currentShopTab = 'list';
+            document.getElementById('shopModalOverlay').classList.add('active'); 
+            document.body.style.overflow = 'hidden'; 
+            document.getElementById('shopTabList').classList.add('active'); 
+            document.getElementById('shopTabHistory').classList.remove('active'); 
+            setTimeout(() => { renderShoppingTab(); }, 150);
+        }
+        
+        function openShoppingModal() { 
+            if (isShopModalOpen) return; 
+            isShopModalOpen = true; 
+            currentShopTab = 'list';
+            toggleMenu(); 
+            document.getElementById('shopModalOverlay').classList.add('active'); 
+            document.body.style.overflow = 'hidden'; 
+            document.getElementById('shopTabList').classList.add('active'); 
+            document.getElementById('shopTabHistory').classList.remove('active'); 
+            setTimeout(() => { renderShoppingTab(); }, 150);
+        }
+        
         function closeShoppingModal() { if (!isShopModalOpen) return; isShopModalOpen = false; document.getElementById('shopModalOverlay').classList.remove('active'); document.body.style.overflow = ''; }
 
         function switchShopTab(tab) { currentShopTab = tab; document.getElementById('shopTabList').classList.toggle('active', tab === 'list'); document.getElementById('shopTabHistory').classList.toggle('active', tab === 'history'); renderShoppingTab(); }
@@ -1361,11 +1792,11 @@ function openShoppingModal() {
 
         function openModal() { if (isModalOpen) return; isModalOpen = true; editingTransactionId = null; pendingImageUrl = null; pendingAttachment = null; document.getElementById('modalTitle').textContent = 'NUEVA TRANSACCIÓN'; document.getElementById('submitBtn').textContent = 'AGREGAR TRANSACCIÓN'; document.getElementById('modalOverlay').classList.add('active'); document.getElementById('date').valueAsDate = new Date(); document.body.style.overflow = 'hidden'; resetForm(); }
         function closeModal() { if (!isModalOpen) return; isModalOpen = false; editingTransactionId = null; pendingImageUrl = null; pendingAttachment = null; document.getElementById('modalOverlay').classList.remove('active'); document.body.style.overflow = ''; resetForm(); }
-        function resetForm() { document.getElementById('amount').value = ''; document.getElementById('description').value = ''; document.getElementById('category').value = ''; document.getElementById('subcategory').value = ''; document.getElementById('voiceResult').classList.remove('show'); document.getElementById('imageUrlInput').value = ''; document.getElementById('urlPreviewContainer').innerHTML = ''; document.getElementById('fileCamera').value = ''; document.getElementById('fileGallery').value = ''; document.getElementById('fileAttachment').value = ''; document.getElementById('imagePreview').innerHTML = ''; document.getElementById('attachmentInfo').innerHTML = ''; document.getElementById('uploadProgress').classList.remove('active'); pendingImageUrl = null; pendingAttachment = null; selectType('expense'); }
+        function resetForm() { document.getElementById('amount').value = ''; document.getElementById('description').value = ''; document.getElementById('category').value = ''; document.getElementById('subcategory').value = ''; document.getElementById('voiceResult').classList.remove('show'); document.getElementById('imageUrlInput').value = ''; document.getElementById('urlPreviewContainer').innerHTML = ''; document.getElementById('fileCamera').value = ''; document.getElementById('fileGallery').value = ''; document.getElementById('fileAttachment').value = ''; document.getElementById('imagePreview').innerHTML = ''; document.getElementById('attachmentInfo').innerHTML = ''; document.getElementById('uploadProgress').classList.remove('active'); document.getElementById('ocrResults').style.display = 'none'; document.getElementById('ocrProgress').style.display = 'none'; pendingImageUrl = null; pendingAttachment = null; window.pendingOCRResult = null; selectType('expense'); }
 
         async function saveTransaction() { const amount = parseFloat(document.getElementById('amount').value); const description = document.getElementById('description').value.trim(); const category = document.getElementById('category').value; const subcategory = document.getElementById('subcategory').value; const date = document.getElementById('date').value; const imageUrlManual = document.getElementById('imageUrlInput').value.trim(); if (!amount || amount <= 0) { showNotification('Monto válido', true); return; } if (!description) { showNotification('Descripción', true); return; } if (!category) { showNotification('Categoría', true); return; } const finalImageUrl = pendingImageUrl || imageUrlManual || null; const transactionData = { type: currentType, amount, description, category, subcategory: subcategory || category, date: date || new Date().toISOString().split('T')[0], imageUrl: finalImageUrl, attachment: pendingAttachment }; if (editingTransactionId) { const idx = transactions.findIndex(t => t.id === editingTransactionId); if (idx !== -1) transactions[idx] = { ...transactions[idx], ...transactionData }; showNotification('✓ Transacción actualizada'); } else { transactionData.id = Date.now(); transactions.unshift(transactionData); showNotification('✓ Transacción agregada'); } saveTransactions(); updateUI(); closeModal(); }
 
-        function editTransaction(id) { const t = transactions.find(x => x.id === id); if (!t) return; editingTransactionId = id; document.getElementById('modalTitle').textContent = '✏️ EDITAR TRANSACCIÓN'; document.getElementById('submitBtn').textContent = 'GUARDAR CAMBIOS'; selectType(t.type); document.getElementById('amount').value = t.amount; document.getElementById('description').value = t.description; document.getElementById('category').value = t.category; updateSubcategories(); document.getElementById('subcategory').value = t.subcategory; document.getElementById('date').value = t.date; document.getElementById('imageUrlInput').value = t.imageUrl || ''; pendingImageUrl = t.imageUrl || null; pendingAttachment = t.attachment || null; document.getElementById('imagePreview').innerHTML = t.imageUrl ? `<div class="attachment-preview"><img src="${convertToImageUrl(t.imageUrl)}" alt="Imagen"><button class="remove-attachment" onclick="removeImage()">✕ Quitar</button></div>` : ''; if (t.attachment) { const sizeMB = (t.attachment.size / 1024 / 1024).toFixed(2); document.getElementById('attachmentInfo').innerHTML = `<div style="display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 10px; background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 8px; font-size: 12px; color: var(--neon-blue);"><span>📄</span><span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(t.attachment.name)} (${sizeMB} MB)</span><button class="remove-attachment" onclick="removeAttachment()">✕</button></div>`; } else { document.getElementById('attachmentInfo').innerHTML = ''; } document.getElementById('urlPreviewContainer').innerHTML = ''; if (isListModalOpen) closeListModal(); if (isAllModalOpen) closeAllModal(); if (isViewModalOpen) closeViewModal(); document.getElementById('modalOverlay').classList.add('active'); isModalOpen = true; document.body.style.overflow = 'hidden'; }
+        function editTransaction(id) { const t = transactions.find(x => x.id === id); if (!t) return; editingTransactionId = id; document.getElementById('modalTitle').textContent = '✏️ EDITAR TRANSACCIÓN'; document.getElementById('submitBtn').textContent = 'GUARDAR CAMBIOS'; selectType(t.type); document.getElementById('amount').value = t.amount; document.getElementById('description').value = t.description; document.getElementById('category').value = t.category; updateSubcategories(); document.getElementById('subcategory').value = t.subcategory; document.getElementById('date').value = t.date; document.getElementById('imageUrlInput').value = t.imageUrl || ''; pendingImageUrl = t.imageUrl || null; pendingAttachment = t.attachment || null; document.getElementById('imagePreview').innerHTML = t.imageUrl ? `<div class="attachment-preview"><img src="${convertToImageUrl(t.imageUrl)}" alt="Imagen"><button class="remove-attachment" onclick="removeImage()">✕ Quitar</button></div>` : ''; if (t.attachment) { const sizeMB = (t.attachment.size / 1024 / 1024).toFixed(2); document.getElementById('attachmentInfo').innerHTML = `<div style="display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 10px; background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 8px; font-size: 12px; color: var(--neon-blue);"><span>📄</span><span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(t.attachment.name)} (${sizeMB} MB)</span><button class="remove-attachment" onclick="removeAttachment()">✕</button></div>`; } else { document.getElementById('attachmentInfo').innerHTML = ''; } document.getElementById('urlPreviewContainer').innerHTML = ''; document.getElementById('ocrResults').style.display = 'none'; if (isListModalOpen) closeListModal(); if (isAllModalOpen) closeAllModal(); if (isViewModalOpen) closeViewModal(); document.getElementById('modalOverlay').classList.add('active'); isModalOpen = true; document.body.style.overflow = 'hidden'; }
 
         function deleteTransaction(id) { if (!confirm('¿Eliminar?')) return; transactions = transactions.filter(t => t.id !== id); saveTransactions(); updateUI(); showNotification('Eliminada'); }
         function saveTransactions() { saveTransactionsLocal(); saveToCloud(); }
@@ -1412,69 +1843,10 @@ function openShoppingModal() {
         document.getElementById('shopEditModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeShopEditModal(); });
         document.getElementById('viewModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeViewModal(); });
         document.getElementById('insightsModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeInsightsModal(); });
+        document.getElementById('ocrMassiveModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeOCRMassiveModal(); });
         document.getElementById('imageChoiceModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeImageChoice(); });
 
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (isModalOpen) closeModal(); if (isCatModalOpen) closeCategoriesModal(); if (isListModalOpen) closeListModal(); if (isAllModalOpen) closeAllModal(); if (isBudgetModalOpen) closeBudgetModal(); if (isShopModalOpen) closeShoppingModal(); if (isViewModalOpen) closeViewModal(); if (isInsightsModalOpen) closeInsightsModal(); closeShopEditModal(); if (editingCat || editingSub) cancelEdit(); const menu = document.getElementById('sideMenu'); if (menu.classList.contains('active')) toggleMenu(); closeImageChoice(); } if (e.key === 'Enter') { if (editingCat) { const input = document.getElementById('catEditInput'); if (input && document.activeElement === input) saveCatEdit(editingCat); } if (editingSub) { const input = document.getElementById('subEditInput'); if (input && document.activeElement === input) { const parts = editingSub.split('::'); saveSubEdit(parts[0], parseInt(parts[1])); } } } });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (isModalOpen) closeModal(); if (isCatModalOpen) closeCategoriesModal(); if (isListModalOpen) closeListModal(); if (isAllModalOpen) closeAllModal(); if (isBudgetModalOpen) closeBudgetModal(); if (isShopModalOpen) closeShoppingModal(); if (isViewModalOpen) closeViewModal(); if (isInsightsModalOpen) closeInsightsModal(); if (isOCRMassiveOpen) closeOCRMassiveModal(); closeShopEditModal(); if (editingCat || editingSub) cancelEdit(); const menu = document.getElementById('sideMenu'); if (menu.classList.contains('active')) toggleMenu(); closeImageChoice(); } if (e.key === 'Enter') { if (editingCat) { const input = document.getElementById('catEditInput'); if (input && document.activeElement === input) saveCatEdit(editingCat); } if (editingSub) { const input = document.getElementById('subEditInput'); if (input && document.activeElement === input) { const parts = editingSub.split('::'); saveSubEdit(parts[0], parseInt(parts[1])); } } } });
     </script>
-    <!-- PWA Install -->
-<script>
-  // Registro del Service Worker con auto-actualización
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/gastos/sw.js')
-        .then((reg) => {
-          console.log('SW registrado:', reg.scope);
-          
-          // Detectar cuando hay una nueva versión
-          reg.addEventListener('updatefound', () => {
-            const newWorker = reg.installing;
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                // Hay nueva versión disponible
-                if (confirm('🔄 Nueva versión disponible. ¿Recargar para actualizar?')) {
-                  window.location.reload();
-                }
-              }
-            });
-          });
-        })
-        .catch((err) => console.log('Error SW:', err));
-    });
-    
-    // Forzar actualización si hay un nuevo Service Worker
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      console.log('Service Worker actualizado');
-      window.location.reload();
-    });
-  }
-  
-  // Botón de instalación PWA
-  let deferredPrompt;
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    const installBtn = document.createElement('div');
-    installBtn.className = 'menu-item';
-    installBtn.id = 'installBtn';
-    installBtn.innerHTML = '<span class="menu-item-icon">📲</span><span>Instalar app</span>';
-    installBtn.onclick = async () => {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') showNotification('✓ App instalada');
-      deferredPrompt = null;
-      const btn = document.getElementById('installBtn');
-      if (btn) btn.remove();
-    };
-    const syncStatus = document.querySelector('.sync-status');
-    if (syncStatus) syncStatus.parentNode.insertBefore(installBtn, syncStatus);
-  });
-  
-  window.addEventListener('appinstalled', () => {
-    showNotification('✓ ¡App instalada con éxito!');
-    const btn = document.getElementById('installBtn');
-    if (btn) btn.remove();
-  });
-</script>
 </body>
 </html>
