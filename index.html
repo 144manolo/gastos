@@ -325,24 +325,15 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-dark
 .ocr-status { font-size: 12px; color: var(--text-secondary); text-align: center; }
 .ocr-massive-btn { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--neon-yellow); background: rgba(255, 193, 7, 0.1); color: var(--neon-yellow); font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s; }
 .ocr-massive-btn:active { background: rgba(255, 193, 7, 0.2); }
-.ocr-line { display: flex; align-items: center; gap: 6px; padding: 8px; margin-bottom: 6px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; transition: all 0.2s; }
-.ocr-line:hover { background: rgba(0, 240, 255, 0.05); border-color: rgba(0, 240, 255, 0.2); }
-.ocr-line input { padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.3); color: var(--text-primary); font-size: 12px; outline: none; }
-.ocr-line input:focus { border-color: var(--neon-blue); }
-.ocr-line .ocr-cantidad { width: 55px; text-align: center; }
-.ocr-line .ocr-nombre { flex: 2; min-width: 0; }
-.ocr-line .ocr-precio { width: 70px; text-align: right; color: var(--neon-green); font-weight: 600; }
-.ocr-line .ocr-delete { width: 30px; height: 30px; border-radius: 6px; border: none; background: rgba(255, 71, 87, 0.15); color: var(--neon-red); cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.ocr-line .ocr-delete:hover { background: rgba(255, 71, 87, 0.3); }
-.ocr-products-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.ocr-products-title label { font-size: 12px; color: var(--neon-purple); font-weight: 600; }
-.ocr-add-line-btn { padding: 4px 10px; border-radius: 6px; border: 1px solid var(--neon-blue); background: rgba(0, 240, 255, 0.1); color: var(--neon-blue); font-size: 11px; cursor: pointer; }
-.ocr-add-line-btn:active { background: rgba(0, 240, 255, 0.2); }
-.ocr-products-container { max-height: 250px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 8px; background: rgba(0,0,0,0.2); margin-bottom: 16px; }
-.ocr-description-preview { width: 100%; min-height: 120px; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: var(--text-primary); font-size: 12px; font-family: 'Courier New', monospace; resize: vertical; outline: none; }
-.ocr-actions-row { display: flex; gap: 10px; }
-.ocr-actions-row .submit-btn { flex: 1; }
-.ocr-actions-row .submit-btn.danger { flex: 0.5; }
+/* NUEVO: Previsualización OCR inline */
+.ocr-preview-box { margin-top: 12px; padding: 12px; background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 10px; display: none; }
+.ocr-preview-box.show { display: block; }
+.ocr-preview-box textarea { width: 100%; min-height: 120px; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: var(--text-primary); font-size: 12px; font-family: 'Courier New', monospace; resize: vertical; outline: none; margin-bottom: 10px; }
+.ocr-preview-box textarea:focus { border-color: var(--neon-blue); }
+.ocr-preview-actions { display: flex; gap: 8px; }
+.ocr-preview-actions button { flex: 1; padding: 10px; border-radius: 8px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; }
+.ocr-use-btn { background: linear-gradient(135deg, var(--neon-green), #00cc6e); color: #000; }
+.ocr-clear-btn { background: transparent; border: 1px solid var(--neon-red) !important; color: var(--neon-red); }
 @media (max-width: 430px) { .app-container { padding: 16px 12px 100px; } }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg-dark); }
@@ -454,20 +445,29 @@ SALDO <span id="currentMonthLabel" style="color: var(--neon-blue); font-size: 11
 <div class="form-group">
 <label>DESCRIPCIÓN<span style="font-size: 10px; color: var(--neon-purple);">🎤 Dictar</span></label>
 <div class="description-input-wrapper">
-<input type="text" id="description" placeholder="Ej: Compra supermercado" maxlength="50">
+<input type="text" id="description" placeholder="Ej: Compra supermercado" maxlength="200">
 <button class="voice-desc-btn" id="voiceDescBtn" onclick="startVoiceDescription()">🎤</button>
 </div>
 </div>
-<!-- Sección OCR en modal de transacción -->
+<!-- Sección OCR inline (sin modal) -->
 <div class="ocr-section">
 <h4>📸 ESCANEAR TICKET (OCR)</h4>
-<button class="ocr-btn" onclick="scanTicketFromModal()" id="scanTicketBtn">
+<button class="ocr-btn" onclick="scanTicketInline()" id="scanTicketBtn">
 <span>🔍</span>
 <span>Escanear ticket desde imagen</span>
 </button>
 <div id="ocrProgress" class="ocr-progress" style="display: none;">
 <div class="ocr-progress-bar"><div class="ocr-progress-fill" id="ocrProgressFill"></div></div>
 <div class="ocr-status" id="ocrStatus">Iniciando OCR...</div>
+</div>
+<!-- NUEVA: Previsualización inline del OCR -->
+<div id="ocrPreviewBox" class="ocr-preview-box">
+<label style="font-size: 12px; color: var(--neon-blue); margin-bottom: 8px; display: block;">📝 TEXTO EXTRAÍDO DEL TICKET (editable):</label>
+<textarea id="ocrPreviewText" placeholder="Aquí aparecerá el texto del ticket..."></textarea>
+<div class="ocr-preview-actions">
+<button class="ocr-use-btn" onclick="useOcrInDescription()">✅ Usar en descripción</button>
+<button class="ocr-clear-btn" onclick="clearOcrPreview()">✕ Descartar</button>
+</div>
 </div>
 </div>
 <div class="form-group">
@@ -516,48 +516,6 @@ SALDO <span id="currentMonthLabel" style="color: var(--neon-blue); font-size: 11
 <div class="ocr-status" id="ocrMassiveStatus">Procesando...</div>
 </div>
 <div id="ocrMassiveResults" style="margin-top: 16px;"></div>
-</div>
-</div>
-</div>
-<!-- ===== MODAL OCR SIMPLIFICADO ===== -->
-<div class="modal-overlay" id="ocrResultsModal">
-<div class="modal" style="max-height: 90vh;">
-<div class="modal-header">
-<h3>🧾 PRODUCTOS DEL TICKET</h3>
-<button class="modal-close" onclick="closeOcrResults()">✕</button>
-</div>
-<div class="ocr-products-title">
-<label>📦 PRODUCTOS DETECTADOS</label>
-<button class="ocr-add-line-btn" onclick="addOcrLine()">+ Añadir línea</button>
-</div>
-<div class="ocr-products-container" id="ocrProductsList"></div>
-<div class="form-group" style="margin-bottom: 16px;">
-<label>📝 DESCRIPCIÓN (se guardará así)</label>
-<textarea id="ocrDescripcionFinal" class="ocr-description-preview" readonly></textarea>
-</div>
-<div class="form-group" style="margin-bottom: 16px;">
-<label>💰 IMPORTE TOTAL</label>
-<input type="number" id="ocrImporteTotal" step="0.01" placeholder="0.00" oninput="updateOcrDescripcion()">
-</div>
-<div class="form-group" style="margin-bottom: 16px;">
-<label>📂 CATEGORÍA</label>
-<select id="ocrCategoria" onchange="updateOcrSubcategoria()">
-<option value="">Seleccionar categoría</option>
-</select>
-</div>
-<div class="form-group" style="margin-bottom: 16px;">
-<label>📁 SUBCATEGORÍA</label>
-<select id="ocrSubcategoria">
-<option value="">Seleccionar subcategoría</option>
-</select>
-</div>
-<div class="form-group" style="margin-bottom: 16px;">
-<label>📅 FECHA</label>
-<input type="date" id="ocrFecha">
-</div>
-<div class="ocr-actions-row">
-<button class="submit-btn" onclick="guardarTransaccionOCR()">💾 Guardar</button>
-<button class="submit-btn danger" onclick="closeOcrResults()">✕ Cancelar</button>
 </div>
 </div>
 </div>
@@ -724,7 +682,6 @@ let isShopModalOpen = false;
 let isViewModalOpen = false;
 let isInsightsModalOpen = false;
 let isOCRMassiveOpen = false;
-let isOCRResultsOpen = false;
 let isDemoMode = false;
 let editingCat = null;
 let editingSub = null;
@@ -746,9 +703,6 @@ let balanceVisible = false;
 let realBalance = 0;
 let realIncome = 0;
 let realExpense = 0;
-// ===== VARIABLES OCR =====
-let ocrLines = [];
-let ocrFullText = '';
 function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 function formatDate(dateStr) { const date = new Date(dateStr + 'T00:00:00'); return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }); }
 function formatDateFull(dateStr) { const date = new Date(dateStr + 'T00:00:00'); return date.toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }); }
@@ -1050,221 +1004,14 @@ if (status) status.textContent = `Procesando OCR... ${percent}%`;
 }
 }
 });
-const text = result.data.text;
-return analyzeTicketText(text);
+return result.data.text;
 } catch (error) {
 console.error('OCR Error:', error);
 return null;
 }
 }
-function analyzeTicketText(text) {
-const lines = text.split('\n').map(l => l.trim()).filter(l => l);
-// Extraer fecha
-let date = null;
-const datePatterns = [
-/(\d{2})[-\/](\d{2})[-\/](\d{2,4})/,
-/(\d{2})\s*(Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)[a-z]*\s*(\d{2,4})/i,
-/(\d{1,2})\s+de\s+(Enero|Febrero|Marzo|Abril|Mayo|Junio|Julio|Agosto|Septiembre|Octubre|Noviembre|Diciembre)\s+de\s+(\d{2,4})/i
-];
-for (const pattern of datePatterns) {
-const match = text.match(pattern);
-if (match) {
-try {
-if (match[2].match(/^\d+$/)) {
-let year = parseInt(match[3]);
-if (year < 100) year += 2000;
-date = `${year}-${match[2].padStart(2, '0')}-${match[1].padStart(2, '0')}`;
-} else {
-const monthNames = { 'Enero': 1, 'Febrero': 2, 'Marzo': 3, 'Abril': 4, 'Mayo': 5, 'Junio': 6, 'Julio': 7, 'Agosto': 8, 'Septiembre': 9, 'Octubre': 10, 'Noviembre': 11, 'Diciembre': 12, 'Ene': 1, 'Feb': 2, 'Mar': 3, 'Abr': 4, 'May': 5, 'Jun': 6, 'Jul': 7, 'Ago': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dic': 12 };
-const month = monthNames[match[2].charAt(0).toUpperCase() + match[2].slice(1).toLowerCase()] || monthNames[match[2].substring(0, 3).charAt(0).toUpperCase() + match[2].substring(1, 3).toLowerCase()];
-if (month) {
-let year = parseInt(match[3]);
-if (year < 100) year += 2000;
-date = `${year}-${String(month).padStart(2, '0')}-${match[1].padStart(2, '0')}`;
-}
-}
-} catch (e) {}
-if (date) break;
-}
-}
-// Extraer importe total
-let amount = null;
-const totalPatterns = [
-/TOTAL[:\s]*[€$]?\s*([\d.,]+)/i,
-/Importe\s+total[:\s]*[€$]?\s*([\d.,]+)/i,
-/TOTAL\s+A\s+PAGAR[:\s]*[€$]?\s*([\d.,]+)/i,
-/TOTAL\s+FACTURA[:\s]*[€$]?\s*([\d.,]+)/i
-];
-for (const pattern of totalPatterns) {
-const match = text.match(pattern);
-if (match) {
-amount = parseFloat(match[1].replace(',', '.'));
-if (!isNaN(amount)) break;
-}
-}
-// Extraer productos SIN categorizar
-const products = [];
-const productPattern = /^(.+?)\s+([\d.,]+)\s*[€$]?$/;
-for (const line of lines) {
-const match = line.match(productPattern);
-if (match && !line.toUpperCase().includes('TOTAL') && !line.toUpperCase().includes('IMPORTE') && !line.toUpperCase().includes('TICKET')) {
-const price = parseFloat(match[2].replace(',', '.'));
-if (!isNaN(price) && price > 0 && price < 10000) {
-products.push({
-name: match[1].trim(),
-price: price,
-cantidad: '1'
-});
-}
-}
-}
-return {
-establishment: '',
-date,
-amount,
-products,
-fullText: text
-};
-}
-// ===== SISTEMA OCR SIMPLIFICADO =====
-function mostrarResultadosOCR(datosOCR) {
-ocrLines = (datosOCR.products || []).map((p, idx) => ({
-id: Date.now() + idx,
-cantidad: p.cantidad || '1',
-nombre: p.name || p.nombre || '',
-precio: p.price || p.precio || 0
-}));
-ocrFullText = datosOCR.fullText || '';
-// Campos vacíos para que los rellene el usuario
-document.getElementById('ocrImporteTotal').value = '';
-document.getElementById('ocrFecha').value = datosOCR.date || new Date().toISOString().split('T')[0];
-// Cargar categorías en el select (vacío, sin sugerencia)
-const catSelect = document.getElementById('ocrCategoria');
-catSelect.innerHTML = '<option value="">Seleccionar categoría</option>';
-for (let cat in categories.expense) {
-catSelect.innerHTML += `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`;
-}
-document.getElementById('ocrSubcategoria').innerHTML = '<option value="">Seleccionar subcategoría</option>';
-renderOcrLines();
-updateOcrDescripcion();
-document.getElementById('ocrResultsModal').classList.add('active');
-isOCRResultsOpen = true;
-document.body.style.overflow = 'hidden';
-}
-function renderOcrLines() {
-const container = document.getElementById('ocrProductsList');
-if (ocrLines.length === 0) {
-container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-secondary); font-size: 12px;">Sin productos. Pulsa "+ Añadir línea"</div>';
-return;
-}
-container.innerHTML = ocrLines.map((line) => `
-<div class="ocr-line" data-id="${line.id}">
-<input type="text" class="ocr-cantidad" value="${escapeHtml(String(line.cantidad))}" placeholder="Cant." onchange="updateOcrLine(${line.id}, 'cantidad', this.value)">
-<input type="text" class="ocr-nombre" value="${escapeHtml(line.nombre)}" placeholder="Producto" onchange="updateOcrLine(${line.id}, 'nombre', this.value)">
-<input type="number" class="ocr-precio" value="${line.precio}" step="0.01" placeholder="€" onchange="updateOcrLine(${line.id}, 'precio', this.value)">
-<button class="ocr-delete" onclick="deleteOcrLine(${line.id})" title="Eliminar línea">🗑️</button>
-</div>
-`).join('');
-}
-function updateOcrLine(id, campo, valor) {
-const line = ocrLines.find(l => l.id === id);
-if (line) {
-line[campo] = campo === 'precio' ? (parseFloat(valor) || 0) : valor;
-updateOcrDescripcion();
-}
-}
-function addOcrLine() {
-ocrLines.push({ id: Date.now(), cantidad: '1', nombre: '', precio: 0 });
-renderOcrLines();
-updateOcrDescripcion();
-}
-function deleteOcrLine(id) {
-ocrLines = ocrLines.filter(l => l.id !== id);
-renderOcrLines();
-updateOcrDescripcion();
-}
-function updateOcrDescripcion() {
-let descripcion = '';
-ocrLines.forEach(line => {
-if (line.nombre.trim()) {
-const cant = line.cantidad ? `${line.cantidad} ` : '';
-const precio = line.precio ? ` ${Number(line.precio).toFixed(2)}€` : '';
-descripcion += `${cant}${line.nombre}${precio}\n`;
-}
-});
-const importe = document.getElementById('ocrImporteTotal').value;
-if (importe) {
-descripcion += `${'─'.repeat(28)}\n`;
-descripcion += `💰 TOTAL: ${parseFloat(importe).toFixed(2)}€`;
-}
-document.getElementById('ocrDescripcionFinal').value = descripcion;
-}
-document.addEventListener('DOMContentLoaded', () => {
-const impInput = document.getElementById('ocrImporteTotal');
-if (impInput) impInput.addEventListener('input', updateOcrDescripcion);
-});
-function updateOcrSubcategoria() {
-const categoria = document.getElementById('ocrCategoria').value;
-const subSelect = document.getElementById('ocrSubcategoria');
-subSelect.innerHTML = '<option value="">Seleccionar subcategoría</option>';
-if (categoria && categories.expense && categories.expense[categoria]) {
-categories.expense[categoria].forEach(sub => {
-subSelect.innerHTML += `<option value="${escapeHtml(sub)}">${escapeHtml(sub)}</option>`;
-});
-}
-}
-function guardarTransaccionOCR() {
-const descripcion = document.getElementById('ocrDescripcionFinal').value.trim();
-const importe = parseFloat(document.getElementById('ocrImporteTotal').value);
-const categoria = document.getElementById('ocrCategoria').value;
-const subcategoria = document.getElementById('ocrSubcategoria').value;
-const fecha = document.getElementById('ocrFecha').value || new Date().toISOString().split('T')[0];
-if (!descripcion) { showNotification('La descripción está vacía', true); return; }
-if (!importe || importe <= 0) { showNotification('Introduce un importe válido', true); return; }
-// Si estamos EDITANDO una transacción existente, actualizarla
-if (editingTransactionId) {
-const idx = transactions.findIndex(t => t.id === editingTransactionId);
-if (idx !== -1) {
-transactions[idx].amount = importe;
-transactions[idx].description = descripcion;
-transactions[idx].date = fecha;
-if (categoria) transactions[idx].category = categoria;
-if (subcategoria) transactions[idx].subcategory = subcategoria;
-transactions[idx].ocr = true;
-showNotification('✓ Transacción actualizada desde OCR');
-}
-} else {
-// Crear transacción nueva
-if (!categoria) { showNotification('Selecciona una categoría', true); return; }
-const transaction = {
-id: Date.now(),
-type: 'expense',
-amount: importe,
-description: descripcion,
-category: categoria,
-subcategory: subcategoria || categoria,
-date: fecha,
-imageUrl: pendingImageUrl || null,
-ocr: true
-};
-transactions.unshift(transaction);
-showNotification('✓ Ticket guardado desde OCR');
-}
-saveTransactions();
-updateUI();
-closeOcrResults();
-closeModal();
-}
-function closeOcrResults() {
-if (!isOCRResultsOpen) return;
-isOCRResultsOpen = false;
-document.getElementById('ocrResultsModal').classList.remove('active');
-document.body.style.overflow = '';
-ocrLines = [];
-ocrFullText = '';
-}
-// ===== SCAN DESDE MODAL DE TRANSACCIÓN =====
-async function scanTicketFromModal() {
+// ===== NUEVO: OCR INLINE (sin modal) =====
+async function scanTicketInline() {
 const imageUrl = pendingImageUrl || document.getElementById('imageUrlInput').value.trim();
 if (!imageUrl) {
 showNotification('Primero añade una imagen del ticket', true);
@@ -1272,18 +1019,23 @@ return;
 }
 const btn = document.getElementById('scanTicketBtn');
 const progress = document.getElementById('ocrProgress');
+const previewBox = document.getElementById('ocrPreviewBox');
 btn.disabled = true;
 progress.style.display = 'block';
+previewBox.classList.remove('show');
 document.getElementById('ocrProgressFill').style.width = '0%';
 document.getElementById('ocrStatus').textContent = 'Iniciando OCR...';
 try {
 const convertedUrl = convertToImageUrl(imageUrl);
-const ocrResult = await performOCR(convertedUrl);
-if (ocrResult) {
+const ocrText = await performOCR(convertedUrl);
+if (ocrText && ocrText.trim()) {
+// Mostrar el texto extraído en la previsualización
+document.getElementById('ocrPreviewText').value = ocrText.trim();
+previewBox.classList.add('show');
 progress.style.display = 'none';
-mostrarResultadosOCR(ocrResult);
+showNotification('✓ Texto extraído. Revísalo y pulsa "Usar en descripción"');
 } else {
-showNotification('No se pudo procesar el ticket', true);
+showNotification('No se pudo extraer texto del ticket', true);
 progress.style.display = 'none';
 }
 } catch (error) {
@@ -1293,6 +1045,24 @@ progress.style.display = 'none';
 btn.disabled = false;
 }
 }
+function useOcrInDescription() {
+const ocrText = document.getElementById('ocrPreviewText').value.trim();
+if (!ocrText) {
+showNotification('No hay texto para usar', true);
+return;
+}
+// Poner en el campo de descripción (limitado a 200 chars)
+document.getElementById('description').value = ocrText.substring(0, 200);
+// Ocultar la previsualización
+document.getElementById('ocrPreviewBox').classList.remove('show');
+document.getElementById('ocrPreviewText').value = '';
+showNotification('✓ Texto copiado a la descripción');
+}
+function clearOcrPreview() {
+document.getElementById('ocrPreviewBox').classList.remove('show');
+document.getElementById('ocrPreviewText').value = '';
+showNotification('Previsualización descartada');
+}
 function handleOCRFile(event) {
 const file = event.target.files[0];
 if (!file) return;
@@ -1300,7 +1070,7 @@ const reader = new FileReader();
 reader.onload = async (e) => {
 pendingImageUrl = e.target.result;
 document.getElementById('imagePreview').innerHTML = `<div class="attachment-preview"><img src="${e.target.result}" alt="Preview"></div>`;
-await scanTicketFromModal();
+await scanTicketInline();
 };
 reader.readAsDataURL(file);
 }
@@ -1697,9 +1467,9 @@ function updateSubcategories() { const category = document.getElementById('categ
 function selectType(type) { currentType = type; document.getElementById('btnIncome').classList.toggle('active', type === 'income'); document.getElementById('btnExpense').classList.toggle('active', type === 'expense'); updateCategoriesSelect(); document.getElementById('subcategory').innerHTML = '<option value="">Seleccionar subcategoría</option>'; }
 function openModal() { if (isModalOpen) return; isModalOpen = true; editingTransactionId = null; pendingImageUrl = null; pendingAttachment = null; document.getElementById('modalTitle').textContent = 'NUEVA TRANSACCIÓN'; document.getElementById('submitBtn').textContent = 'AGREGAR TRANSACCIÓN'; document.getElementById('modalOverlay').classList.add('active'); document.getElementById('date').valueAsDate = new Date(); document.body.style.overflow = 'hidden'; resetForm(); }
 function closeModal() { if (!isModalOpen) return; isModalOpen = false; editingTransactionId = null; pendingImageUrl = null; pendingAttachment = null; document.getElementById('modalOverlay').classList.remove('active'); document.body.style.overflow = ''; resetForm(); }
-function resetForm() { document.getElementById('amount').value = ''; document.getElementById('description').value = ''; document.getElementById('category').value = ''; document.getElementById('subcategory').value = ''; document.getElementById('voiceResult').classList.remove('show'); document.getElementById('imageUrlInput').value = ''; document.getElementById('urlPreviewContainer').innerHTML = ''; document.getElementById('fileCamera').value = ''; document.getElementById('fileGallery').value = ''; document.getElementById('fileAttachment').value = ''; document.getElementById('imagePreview').innerHTML = ''; document.getElementById('attachmentInfo').innerHTML = ''; document.getElementById('uploadProgress').classList.remove('active'); document.getElementById('ocrProgress').style.display = 'none'; pendingImageUrl = null; pendingAttachment = null; selectType('expense'); }
+function resetForm() { document.getElementById('amount').value = ''; document.getElementById('description').value = ''; document.getElementById('category').value = ''; document.getElementById('subcategory').value = ''; document.getElementById('voiceResult').classList.remove('show'); document.getElementById('imageUrlInput').value = ''; document.getElementById('urlPreviewContainer').innerHTML = ''; document.getElementById('fileCamera').value = ''; document.getElementById('fileGallery').value = ''; document.getElementById('fileAttachment').value = ''; document.getElementById('imagePreview').innerHTML = ''; document.getElementById('attachmentInfo').innerHTML = ''; document.getElementById('uploadProgress').classList.remove('active'); document.getElementById('ocrProgress').style.display = 'none'; document.getElementById('ocrPreviewBox').classList.remove('show'); document.getElementById('ocrPreviewText').value = ''; pendingImageUrl = null; pendingAttachment = null; selectType('expense'); }
 async function saveTransaction() { const amount = parseFloat(document.getElementById('amount').value); const description = document.getElementById('description').value.trim(); const category = document.getElementById('category').value; const subcategory = document.getElementById('subcategory').value; const date = document.getElementById('date').value; const imageUrlManual = document.getElementById('imageUrlInput').value.trim(); if (!amount || amount <= 0) { showNotification('Monto válido', true); return; } if (!description) { showNotification('Descripción', true); return; } if (!category) { showNotification('Categoría', true); return; } const finalImageUrl = pendingImageUrl || imageUrlManual || null; const transactionData = { type: currentType, amount, description, category, subcategory: subcategory || category, date: date || new Date().toISOString().split('T')[0], imageUrl: finalImageUrl, attachment: pendingAttachment }; if (editingTransactionId) { const idx = transactions.findIndex(t => t.id === editingTransactionId); if (idx !== -1) transactions[idx] = { ...transactions[idx], ...transactionData }; showNotification('✓ Transacción actualizada'); } else { transactionData.id = Date.now(); transactions.unshift(transactionData); showNotification('✓ Transacción agregada'); } saveTransactions(); updateUI(); closeModal(); }
-function editTransaction(id) { const t = transactions.find(x => x.id === id); if (!t) return; editingTransactionId = id; document.getElementById('modalTitle').textContent = '✏️ EDITAR TRANSACCIÓN'; document.getElementById('submitBtn').textContent = 'GUARDAR CAMBIOS'; selectType(t.type); document.getElementById('amount').value = t.amount; document.getElementById('description').value = t.description; document.getElementById('category').value = t.category; updateSubcategories(); document.getElementById('subcategory').value = t.subcategory; document.getElementById('date').value = t.date; document.getElementById('imageUrlInput').value = t.imageUrl || ''; pendingImageUrl = t.imageUrl || null; pendingAttachment = t.attachment || null; document.getElementById('imagePreview').innerHTML = t.imageUrl ? `<div class="attachment-preview"><img src="${convertToImageUrl(t.imageUrl)}" alt="Imagen"><button class="remove-attachment" onclick="removeImage()">✕ Quitar</button></div>` : ''; if (t.attachment) { const sizeMB = (t.attachment.size / 1024 / 1024).toFixed(2); document.getElementById('attachmentInfo').innerHTML = `<div style="display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 10px; background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 8px; font-size: 12px; color: var(--neon-blue);"><span>📄</span><span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(t.attachment.name)} (${sizeMB} MB)</span><button class="remove-attachment" onclick="removeAttachment()">✕</button></div>`; } else { document.getElementById('attachmentInfo').innerHTML = ''; } document.getElementById('urlPreviewContainer').innerHTML = ''; if (isListModalOpen) closeListModal(); if (isAllModalOpen) closeAllModal(); if (isViewModalOpen) closeViewModal(); document.getElementById('modalOverlay').classList.add('active'); isModalOpen = true; document.body.style.overflow = 'hidden'; }
+function editTransaction(id) { const t = transactions.find(x => x.id === id); if (!t) return; editingTransactionId = id; document.getElementById('modalTitle').textContent = '✏️ EDITAR TRANSACCIÓN'; document.getElementById('submitBtn').textContent = 'GUARDAR CAMBIOS'; selectType(t.type); document.getElementById('amount').value = t.amount; document.getElementById('description').value = t.description; document.getElementById('category').value = t.category; updateSubcategories(); document.getElementById('subcategory').value = t.subcategory; document.getElementById('date').value = t.date; document.getElementById('imageUrlInput').value = t.imageUrl || ''; pendingImageUrl = t.imageUrl || null; pendingAttachment = t.attachment || null; document.getElementById('imagePreview').innerHTML = t.imageUrl ? `<div class="attachment-preview"><img src="${convertToImageUrl(t.imageUrl)}" alt="Imagen"><button class="remove-attachment" onclick="removeImage()">✕ Quitar</button></div>` : ''; if (t.attachment) { const sizeMB = (t.attachment.size / 1024 / 1024).toFixed(2); document.getElementById('attachmentInfo').innerHTML = `<div style="display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 10px; background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 8px; font-size: 12px; color: var(--neon-blue);"><span>📄</span><span style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(t.attachment.name)} (${sizeMB} MB)</span><button class="remove-attachment" onclick="removeAttachment()">✕</button></div>`; } else { document.getElementById('attachmentInfo').innerHTML = ''; } document.getElementById('urlPreviewContainer').innerHTML = ''; document.getElementById('ocrPreviewBox').classList.remove('show'); if (isListModalOpen) closeListModal(); if (isAllModalOpen) closeAllModal(); if (isViewModalOpen) closeViewModal(); document.getElementById('modalOverlay').classList.add('active'); isModalOpen = true; document.body.style.overflow = 'hidden'; }
 function deleteTransaction(id) { if (!confirm('¿Eliminar?')) return; transactions = transactions.filter(t => t.id !== id); saveTransactions(); updateUI(); showNotification('Eliminada'); }
 function saveTransactions() { saveTransactionsLocal(); saveToCloud(); }
 function saveCategories() { saveCategoriesLocal(); saveToCloud(); }
@@ -1735,9 +1505,8 @@ document.getElementById('shopEditModalOverlay').addEventListener('click', (e) =>
 document.getElementById('viewModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeViewModal(); });
 document.getElementById('insightsModalOverlay').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeInsightsModal(); });
 document.getElementById('ocrMassiveModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeOCRMassiveModal(); });
-document.getElementById('ocrResultsModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeOcrResults(); });
 document.getElementById('imageChoiceModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeImageChoice(); });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (isModalOpen) closeModal(); if (isCatModalOpen) closeCategoriesModal(); if (isListModalOpen) closeListModal(); if (isAllModalOpen) closeAllModal(); if (isBudgetModalOpen) closeBudgetModal(); if (isShopModalOpen) closeShoppingModal(); if (isViewModalOpen) closeViewModal(); if (isInsightsModalOpen) closeInsightsModal(); if (isOCRMassiveOpen) closeOCRMassiveModal(); if (isOCRResultsOpen) closeOcrResults(); closeShopEditModal(); if (editingCat || editingSub) cancelEdit(); const menu = document.getElementById('sideMenu'); if (menu.classList.contains('active')) toggleMenu(); closeImageChoice(); } if (e.key === 'Enter') { if (editingCat) { const input = document.getElementById('catEditInput'); if (input && document.activeElement === input) saveCatEdit(editingCat); } if (editingSub) { const input = document.getElementById('subEditInput'); if (input && document.activeElement === input) { const parts = editingSub.split('::'); saveSubEdit(parts[0], parseInt(parts[1])); } } } });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (isModalOpen) closeModal(); if (isCatModalOpen) closeCategoriesModal(); if (isListModalOpen) closeListModal(); if (isAllModalOpen) closeAllModal(); if (isBudgetModalOpen) closeBudgetModal(); if (isShopModalOpen) closeShoppingModal(); if (isViewModalOpen) closeViewModal(); if (isInsightsModalOpen) closeInsightsModal(); if (isOCRMassiveOpen) closeOCRMassiveModal(); closeShopEditModal(); if (editingCat || editingSub) cancelEdit(); const menu = document.getElementById('sideMenu'); if (menu.classList.contains('active')) toggleMenu(); closeImageChoice(); } if (e.key === 'Enter') { if (editingCat) { const input = document.getElementById('catEditInput'); if (input && document.activeElement === input) saveCatEdit(editingCat); } if (editingSub) { const input = document.getElementById('subEditInput'); if (input && document.activeElement === input) { const parts = editingSub.split('::'); saveSubEdit(parts[0], parseInt(parts[1])); } } } });
 </script>
 </body>
 </html>
