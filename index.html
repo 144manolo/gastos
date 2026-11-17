@@ -443,11 +443,11 @@ SALDO <span id="currentMonthLabel" style="color: var(--neon-blue); font-size: 11
 <div class="form-group"><label>CATEGORÍA</label><select id="category" onchange="updateSubcategories()"><option value="">Seleccionar categoría</option></select></div>
 <div class="form-group"><label>SUBCATEGORÍA</label><select id="subcategory"><option value="">Seleccionar subcategoría</option></select></div>
 <div class="form-group">
-<label>DESCRIPCIÓN<span style="font-size: 10px; color: var(--neon-purple);">🎤 Dictar</span></label>
-<div class="description-input-wrapper">
-<input type="text" id="description" placeholder="Ej: Compra supermercado" maxlength="200">
-<button class="voice-desc-btn" id="voiceDescBtn" onclick="startVoiceDescription()">🎤</button>
-</div>
+    <label>DESCRIPCIÓN<span style="font-size: 10px; color: var(--neon-purple);">🎤 Dictar</span></label>
+    <div class="description-input-wrapper" style="flex-direction: column; gap: 8px;">
+        <textarea id="description" placeholder="Ej: Compra supermercado" style="width: 100%; min-height: 80px; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: var(--text-primary); font-size: 12px; font-family: 'Courier New', monospace; resize: vertical; outline: none; line-height: 1.4;"></textarea>
+        <button class="voice-desc-btn" id="voiceDescBtn" onclick="startVoiceDescription()" style="align-self: flex-end;">🎤</button>
+    </div>
 </div>
 <!-- Sección OCR inline (sin modal) -->
 <div class="ocr-section">
@@ -1046,17 +1046,17 @@ btn.disabled = false;
 }
 }
 function useOcrInDescription() {
-const ocrText = document.getElementById('ocrPreviewText').value.trim();
-if (!ocrText) {
-showNotification('No hay texto para usar', true);
-return;
-}
-// Poner en el campo de descripción (limitado a 200 chars)
-document.getElementById('description').value = ocrText.substring(0, 200);
-// Ocultar la previsualización
-document.getElementById('ocrPreviewBox').classList.remove('show');
-document.getElementById('ocrPreviewText').value = '';
-showNotification('✓ Texto copiado a la descripción');
+    const ocrText = document.getElementById('ocrPreviewText').value.trim();
+    if (!ocrText) {
+        showNotification('No hay texto para usar', true);
+        return;
+    }
+    // Poner en el campo de descripción (sin límite de caracteres)
+    document.getElementById('description').value = ocrText;
+    // Ocultar la previsualización
+    document.getElementById('ocrPreviewBox').classList.remove('show');
+    document.getElementById('ocrPreviewText').value = '';
+    showNotification('✓ Texto copiado a la descripción');
 }
 function clearOcrPreview() {
 document.getElementById('ocrPreviewBox').classList.remove('show');
@@ -1487,8 +1487,34 @@ function updateCharts() { const ctx = document.getElementById('mainChart').getCo
 function updateMiniCharts() { const monthTransactions = getMonthTransactions(); const incomeCtx = document.getElementById('incomeChart'); if (incomeCtx) { const incomeData = monthTransactions.filter(t => t.type === 'income').map(t => t.amount); if (incomeMiniChart) { incomeMiniChart.destroy(); incomeMiniChart = null; } incomeMiniChart = new Chart(incomeCtx, { type: 'line', data: { labels: incomeData.map((_, i) => i), datasets: [{ data: incomeData.length ? incomeData : [0,0,0,0,0,0,0], borderColor: '#00f0ff', borderWidth: 2, tension: 0.4, fill: false, pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false, min: 0 } }, layout: { padding: 0 }, animation: { duration: 0 } } }); } const expenseCtx = document.getElementById('expenseChart'); if (expenseCtx) { const expenseData = monthTransactions.filter(t => t.type === 'expense').map(t => t.amount); if (expenseMiniChart) { expenseMiniChart.destroy(); expenseMiniChart = null; } expenseMiniChart = new Chart(expenseCtx, { type: 'line', data: { labels: expenseData.map((_, i) => i), datasets: [{ data: expenseData.length ? expenseData : [0,0,0,0,0,0,0], borderColor: '#ff2d95', borderWidth: 2, tension: 0.4, fill: false, pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false, min: 0 } }, layout: { padding: 0 }, animation: { duration: 0 } } }); } }
 function startVoice() { const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) { showNotification('Voz no disponible', true); return; } const r = new SR(); r.lang = 'es-ES'; r.continuous = false; r.interimResults = false; const voiceBtn = document.getElementById('voiceBtn'), voiceText = document.getElementById('voiceText'), voiceResult = document.getElementById('voiceResult'); voiceBtn.classList.add('listening'); voiceText.textContent = 'Escuchando...'; r.onresult = (e) => { const t = e.results[0][0].transcript; voiceResult.textContent = `🎤 "${t}"`; voiceResult.classList.add('show'); parseVoiceCommand(t); }; r.onerror = (e) => showNotification('Error: ' + e.error, true); r.onend = () => { voiceBtn.classList.remove('listening'); voiceText.textContent = 'Dictar transacción completa'; }; r.start(); }
 function parseVoiceCommand(text) { const lower = text.toLowerCase(); if (lower.includes('gasto') || lower.includes('pagué') || lower.includes('compré')) selectType('expense'); else if (lower.includes('ingreso') || lower.includes('cobré') || lower.includes('recibí')) selectType('income'); const m = text.match(/(\d+[.,]?\d*)/); if (m) document.getElementById('amount').value = parseFloat(m[1].replace(',', '.')); for (let cat in categories[currentType]) { if (lower.includes(cat.toLowerCase())) { document.getElementById('category').value = cat; updateSubcategories(); for (let sub of categories[currentType][cat]) { if (lower.includes(sub.toLowerCase())) { document.getElementById('subcategory').value = sub; break; } } break; } } showNotification('✓ Monto, categoría y subcategoría detectados'); }
-function startVoiceDescription() { const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) { showNotification('Voz no disponible', true); return; } const r = new SR(); r.lang = 'es-ES'; r.continuous = false; r.interimResults = false; const btn = document.getElementById('voiceDescBtn'), input = document.getElementById('description'); btn.classList.add('listening'); btn.textContent = '⏺️'; r.onresult = (e) => { input.value = e.results[0][0].transcript.substring(0, 50); showNotification('✓ Descripción dictada'); }; r.onerror = (e) => showNotification('Error: ' + e.error, true); r.onend = () => { btn.classList.remove('listening'); btn.textContent = '🎤'; }; r.start(); }
-let notifTimeout;
+function startVoiceDescription() { 
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition; 
+    if (!SR) { showNotification('Voz no disponible', true); return; } 
+    const r = new SR(); 
+    r.lang = 'es-ES'; 
+    r.continuous = false; 
+    r.interimResults = false; 
+    const btn = document.getElementById('voiceDescBtn'), input = document.getElementById('description'); 
+    btn.classList.add('listening'); 
+    btn.textContent = '⏺️'; 
+    r.onresult = (e) => { 
+        const textoDictado = e.results[0][0].transcript;
+        // Si ya hay texto, añadir al final; si no, reemplazar
+        if (input.value && input.value.trim()) {
+            input.value = input.value.trim() + ' ' + textoDictado;
+        } else {
+            input.value = textoDictado;
+        }
+        showNotification('✓ Descripción dictada'); 
+    }; 
+    r.onerror = (e) => showNotification('Error: ' + e.error, true); 
+    r.onend = () => { 
+        btn.classList.remove('listening'); 
+        btn.textContent = '🎤'; 
+    }; 
+    r.start(); 
+}
+  let notifTimeout;
 function showNotification(message, isError = false) { const notif = document.getElementById('notification'); clearTimeout(notifTimeout); notif.textContent = message; notif.className = 'notification show' + (isError ? ' error' : ''); notifTimeout = setTimeout(() => notif.classList.remove('show'), 3000); }
 function exportData() { const data = JSON.stringify({ transactions, categories, budgets, shoppingList, shoppingHistory }, null, 2); const blob = new Blob([data], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `billetera-2025-2026-${new Date().toISOString().split('T')[0]}.json`; a.click(); URL.revokeObjectURL(url); toggleMenu(); showNotification('✓ Datos exportados'); }
 function importData() { document.getElementById('importFile').click(); }
