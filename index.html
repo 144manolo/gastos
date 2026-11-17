@@ -1189,7 +1189,6 @@ catSelect.innerHTML += `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</o
 }
 renderOcrLines();
 updateOcrDescripcion();
-sugerirCategoriaOCR(datosOCR.establishment);
 document.getElementById('ocrResultsModal').classList.add('active');
 isOCRResultsOpen = true;
 document.body.style.overflow = 'hidden';
@@ -1247,40 +1246,6 @@ descripcion += `💰 TOTAL: ${parseFloat(importe).toFixed(2)}€`;
 }
 document.getElementById('ocrDescripcionFinal').value = descripcion;
 }
-function sugerirCategoriaOCR(establecimiento) {
-if (!establecimiento) return;
-const nombre = establecimiento.toLowerCase();
-let categoriaSugerida = '';
-let subcategoriaSugerida = '';
-for (const regla of establishmentRules) {
-if (regla.keywords.some(k => nombre.includes(k))) {
-categoriaSugerida = regla.categoria;
-subcategoriaSugerida = regla.subcategoria;
-break;
-}
-}
-if (categoriaSugerida) {
-const catSelect = document.getElementById('ocrCategoria');
-for (let option of catSelect.options) {
-if (option.value === categoriaSugerida) {
-option.selected = true;
-updateOcrSubcategoria();
-break;
-}
-}
-}
-if (subcategoriaSugerida) {
-setTimeout(() => {
-const subSelect = document.getElementById('ocrSubcategoria');
-for (let option of subSelect.options) {
-if (option.value === subcategoriaSugerida) {
-option.selected = true;
-break;
-}
-}
-}, 100);
-}
-}
 function updateOcrSubcategoria() {
 const categoria = document.getElementById('ocrCategoria').value;
 const subSelect = document.getElementById('ocrSubcategoria');
@@ -1292,30 +1257,50 @@ subSelect.innerHTML += `<option value="${escapeHtml(sub)}">${escapeHtml(sub)}</o
 }
 }
 function guardarTransaccionOCR() {
-const descripcion = document.getElementById('ocrDescripcionFinal').value.trim();
-const importe = parseFloat(document.getElementById('ocrImporteTotal').value);
-const categoria = document.getElementById('ocrCategoria').value;
-const subcategoria = document.getElementById('ocrSubcategoria').value;
-const fecha = document.getElementById('ocrFecha').value || new Date().toISOString().split('T')[0];
-if (!descripcion) { showNotification('La descripción está vacía', true); return; }
-if (!importe || importe <= 0) { showNotification('Introduce un importe válido', true); return; }
-if (!categoria) { showNotification('Selecciona una categoría', true); return; }
-const transaction = {
-id: Date.now(),
-type: 'expense',
-amount: importe,
-description: descripcion,
-category: categoria,
-subcategory: subcategoria || categoria,
-date: fecha,
-imageUrl: pendingImageUrl || null,
-ocr: true
-};
-transactions.unshift(transaction);
-saveTransactions();
-updateUI();
-closeOcrResults();
-showNotification('✓ Ticket guardado desde OCR');
+    const descripcion = document.getElementById('ocrDescripcionFinal').value.trim();
+    const importe = parseFloat(document.getElementById('ocrImporteTotal').value);
+    const categoria = document.getElementById('ocrCategoria').value;
+    const subcategoria = document.getElementById('ocrSubcategoria').value;
+    const fecha = document.getElementById('ocrFecha').value || new Date().toISOString().split('T')[0];
+    
+    if (!descripcion) { showNotification('La descripción está vacía', true); return; }
+    if (!importe || importe <= 0) { showNotification('Introduce un importe válido', true); return; }
+    
+    // ✅ NUEVO: Si estamos editando una transacción existente, actualizarla
+    if (editingTransactionId) {
+        const idx = transactions.findIndex(t => t.id === editingTransactionId);
+        if (idx !== -1) {
+            transactions[idx].amount = importe;
+            transactions[idx].description = descripcion;
+            transactions[idx].date = fecha;
+            transactions[idx].category = categoria || transactions[idx].category;
+            transactions[idx].subcategory = subcategoria || transactions[idx].subcategory;
+            transactions[idx].ocr = true;
+            showNotification('✓ Transacción actualizada desde OCR');
+        }
+    } else {
+        // Crear nueva transacción solo si no estamos editando
+        if (!categoria) { showNotification('Selecciona una categoría', true); return; }
+        
+        const transaction = {
+            id: Date.now(),
+            type: 'expense',
+            amount: importe,
+            description: descripcion,
+            category: categoria,
+            subcategory: subcategoria || categoria,
+            date: fecha,
+            imageUrl: pendingImageUrl || null,
+            ocr: true
+        };
+        transactions.unshift(transaction);
+        showNotification('✓ Ticket guardado desde OCR');
+    }
+    
+    saveTransactions();
+    updateUI();
+    closeOcrResults();
+    closeModal(); // ✅ Cierra también el modal de edición si estaba abierto
 }
 function closeOcrResults() {
 if (!isOCRResultsOpen) return;
@@ -1327,33 +1312,33 @@ ocrFullText = '';
 }
 // ===== SCAN DESDE MODAL DE TRANSACCIÓN =====
 async function scanTicketFromModal() {
-const imageUrl = pendingImageUrl || document.getElementById('imageUrlInput').value.trim();
-if (!imageUrl) {
-showNotification('Primero añade una imagen del ticket', true);
-return;
-}
-const btn = document.getElementById('scanTicketBtn');
-const progress = document.getElementById('ocrProgress');
-btn.disabled = true;
-progress.style.display = 'block';
-document.getElementById('ocrProgressFill').style.width = '0%';
-document.getElementById('ocrStatus').textContent = 'Iniciando OCR...';
-try {
-const convertedUrl = convertToImageUrl(imageUrl);
-const ocrResult = await performOCR(convertedUrl);
-if (ocrResult) {
-progress.style.display = 'none';
-mostrarResultadosOCR(ocrResult);
-} else {
-showNotification('No se pudo procesar el ticket', true);
-progress.style.display = 'none';
-}
-} catch (error) {
-showNotification('Error en OCR: ' + error.message, true);
-progress.style.display = 'none';
-} finally {
-btn.disabled = false;
-}
+    const imageUrl = pendingImageUrl || document.getElementById('imageUrlInput').value.trim();
+    if (!imageUrl) {
+        showNotification('Primero añade una imagen del ticket', true);
+        return;
+    }
+    const btn = document.getElementById('scanTicketBtn');
+    const progress = document.getElementById('ocrProgress');
+    btn.disabled = true;
+    progress.style.display = 'block';
+    document.getElementById('ocrProgressFill').style.width = '0%';
+    document.getElementById('ocrStatus').textContent = 'Iniciando OCR...';
+    try {
+        const convertedUrl = convertToImageUrl(imageUrl);
+        const ocrResult = await performOCR(convertedUrl);
+        if (ocrResult) {
+            progress.style.display = 'none';
+            mostrarResultadosOCR(ocrResult); // ✅ Esto abre el modal de resultados
+        } else {
+            showNotification('No se pudo procesar el ticket', true);
+            progress.style.display = 'none';
+        }
+    } catch (error) {
+        showNotification('Error en OCR: ' + error.message, true);
+        progress.style.display = 'none';
+    } finally {
+        btn.disabled = false;
+    }
 }
 function handleOCRFile(event) {
 const file = event.target.files[0];
