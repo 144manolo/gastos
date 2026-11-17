@@ -314,7 +314,6 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-dark
 .insights-widget .insight-card { padding: 12px; }
 .insights-widget .insight-icon { width: 40px; height: 40px; font-size: 22px; }
 .insights-widget .insight-value { font-size: 16px; }
-/* OCR Styles */
 .ocr-section { background: rgba(176, 38, 255, 0.05); border: 1px solid rgba(176, 38, 255, 0.2); border-radius: 12px; padding: 16px; margin: 16px 0; }
 .ocr-section h4 { font-size: 14px; color: var(--neon-purple); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 .ocr-btn { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--neon-purple); background: rgba(176, 38, 255, 0.1); color: var(--neon-purple); font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s; margin-bottom: 10px; }
@@ -324,23 +323,8 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-dark
 .ocr-progress-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
 .ocr-progress-fill { height: 100%; background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue)); border-radius: 3px; transition: width 0.3s; width: 0%; }
 .ocr-status { font-size: 12px; color: var(--text-secondary); text-align: center; }
-.ocr-results { margin-top: 16px; padding: 12px; background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 10px; }
-.ocr-result-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
-.ocr-result-item:last-child { border-bottom: none; }
-.ocr-result-label { color: var(--text-secondary); }
-.ocr-result-value { color: var(--neon-blue); font-weight: 600; }
-.ocr-products { margin-top: 12px; max-height: 200px; overflow-y: auto; }
-.ocr-product-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: rgba(255,255,255,0.03); border-radius: 6px; margin-bottom: 6px; font-size: 12px; }
-.ocr-product-name { flex: 1; color: var(--text-primary); }
-.ocr-product-price { color: var(--neon-green); font-weight: 600; margin-right: 8px; }
-.ocr-product-category { color: var(--neon-purple); font-size: 10px; }
-.ocr-actions { display: flex; gap: 8px; margin-top: 12px; }
-.ocr-actions button { flex: 1; padding: 10px; border-radius: 8px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; }
-.ocr-save-btn { background: linear-gradient(135deg, var(--neon-green), #00cc6e); color: #000; }
-.ocr-cancel-btn { background: transparent; border: 1px solid var(--text-secondary); color: var(--text-secondary); }
 .ocr-massive-btn { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid var(--neon-yellow); background: rgba(255, 193, 7, 0.1); color: var(--neon-yellow); font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s; }
 .ocr-massive-btn:active { background: rgba(255, 193, 7, 0.2); }
-/* ===== NUEVOS ESTILOS PARA LÍNEAS OCR EDITABLES ===== */
 .ocr-line { display: flex; align-items: center; gap: 6px; padding: 8px; margin-bottom: 6px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; transition: all 0.2s; }
 .ocr-line:hover { background: rgba(0, 240, 255, 0.05); border-color: rgba(0, 240, 255, 0.2); }
 .ocr-line input { padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.3); color: var(--text-primary); font-size: 12px; outline: none; }
@@ -350,7 +334,6 @@ body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-dark
 .ocr-line .ocr-precio { width: 70px; text-align: right; color: var(--neon-green); font-weight: 600; }
 .ocr-line .ocr-delete { width: 30px; height: 30px; border-radius: 6px; border: none; background: rgba(255, 71, 87, 0.15); color: var(--neon-red); cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .ocr-line .ocr-delete:hover { background: rgba(255, 71, 87, 0.3); }
-.ocr-header-box { background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 12px; padding: 14px; margin-bottom: 16px; }
 .ocr-products-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .ocr-products-title label { font-size: 12px; color: var(--neon-purple); font-weight: 600; }
 .ocr-add-line-btn { padding: 4px 10px; border-radius: 6px; border: 1px solid var(--neon-blue); background: rgba(0, 240, 255, 0.1); color: var(--neon-blue); font-size: 11px; cursor: pointer; }
@@ -536,61 +519,47 @@ SALDO <span id="currentMonthLabel" style="color: var(--neon-blue); font-size: 11
 </div>
 </div>
 </div>
-<!-- ===== NUEVO MODAL RESULTADOS OCR EDITABLE ===== -->
 <!-- ===== MODAL OCR SIMPLIFICADO ===== -->
 <div class="modal-overlay" id="ocrResultsModal">
-    <div class="modal" style="max-height: 90vh;">
-        <div class="modal-header">
-            <h3>🧾 PRODUCTOS DEL TICKET</h3>
-            <button class="modal-close" onclick="closeOcrResults()">✕</button>
-        </div>
-        
-        <!-- Lista de productos editable -->
-        <div style="margin-bottom: 16px;">
-            <div class="ocr-products-title">
-                <label>📦 PRODUCTOS DETECTADOS</label>
-                <button class="ocr-add-line-btn" onclick="addOcrLine()">+ Añadir línea</button>
-            </div>
-            <div class="ocr-products-container" id="ocrProductsList"></div>
-        </div>
-
-        <!-- Descripción completa (preview) -->
-        <div class="form-group" style="margin-bottom: 16px;">
-            <label>📝 DESCRIPCIÓN (se guardará así)</label>
-            <textarea id="ocrDescripcionFinal" class="ocr-description-preview" readonly></textarea>
-        </div>
-
-        <!-- Campos que rellena el usuario -->
-        <div class="form-group" style="margin-bottom: 16px;">
-            <label>💰 IMPORTE TOTAL</label>
-            <input type="number" id="ocrImporteTotal" step="0.01" placeholder="0.00">
-        </div>
-        
-        <div class="form-group" style="margin-bottom: 16px;">
-            <label>📂 CATEGORÍA</label>
-            <select id="ocrCategoria" onchange="updateOcrSubcategoria()">
-                <option value="">Seleccionar categoría</option>
-            </select>
-        </div>
-        
-        <div class="form-group" style="margin-bottom: 16px;">
-            <label>📁 SUBCATEGORÍA</label>
-            <select id="ocrSubcategoria">
-                <option value="">Seleccionar subcategoría</option>
-            </select>
-        </div>
-        
-        <div class="form-group" style="margin-bottom: 16px;">
-            <label>📅 FECHA</label>
-            <input type="date" id="ocrFecha">
-        </div>
-
-        <!-- Botones -->
-        <div class="ocr-actions-row">
-            <button class="submit-btn" onclick="guardarTransaccionOCR()">💾 Guardar</button>
-            <button class="submit-btn danger" onclick="closeOcrResults()">✕ Cancelar</button>
-        </div>
-    </div>
+<div class="modal" style="max-height: 90vh;">
+<div class="modal-header">
+<h3>🧾 PRODUCTOS DEL TICKET</h3>
+<button class="modal-close" onclick="closeOcrResults()">✕</button>
+</div>
+<div class="ocr-products-title">
+<label>📦 PRODUCTOS DETECTADOS</label>
+<button class="ocr-add-line-btn" onclick="addOcrLine()">+ Añadir línea</button>
+</div>
+<div class="ocr-products-container" id="ocrProductsList"></div>
+<div class="form-group" style="margin-bottom: 16px;">
+<label>📝 DESCRIPCIÓN (se guardará así)</label>
+<textarea id="ocrDescripcionFinal" class="ocr-description-preview" readonly></textarea>
+</div>
+<div class="form-group" style="margin-bottom: 16px;">
+<label>💰 IMPORTE TOTAL</label>
+<input type="number" id="ocrImporteTotal" step="0.01" placeholder="0.00" oninput="updateOcrDescripcion()">
+</div>
+<div class="form-group" style="margin-bottom: 16px;">
+<label>📂 CATEGORÍA</label>
+<select id="ocrCategoria" onchange="updateOcrSubcategoria()">
+<option value="">Seleccionar categoría</option>
+</select>
+</div>
+<div class="form-group" style="margin-bottom: 16px;">
+<label>📁 SUBCATEGORÍA</label>
+<select id="ocrSubcategoria">
+<option value="">Seleccionar subcategoría</option>
+</select>
+</div>
+<div class="form-group" style="margin-bottom: 16px;">
+<label>📅 FECHA</label>
+<input type="date" id="ocrFecha">
+</div>
+<div class="ocr-actions-row">
+<button class="submit-btn" onclick="guardarTransaccionOCR()">💾 Guardar</button>
+<button class="submit-btn danger" onclick="closeOcrResults()">✕ Cancelar</button>
+</div>
+</div>
 </div>
 <!-- Modal de visualización -->
 <div class="modal-overlay" id="viewModalOverlay">
@@ -733,24 +702,6 @@ const defaultCategories = {
 income: { 'Salario': ['Sueldo base', 'Horas extra', 'Bonos', 'Comisiones'], 'Freelance': ['Diseño', 'Desarrollo', 'Consultoría'], 'Inversiones': ['Dividendos', 'Intereses'], 'Otros Ingresos': ['Regalos', 'Reembolsos'] },
 expense: { 'Alimentación': ['Supermercado', 'Restaurantes', 'Café', 'Delivery'], 'Transporte': ['Gasolina', 'Taxi/Uber', 'Transporte público'], 'Vivienda': ['Alquiler/Hipoteca', 'Servicios', 'Internet', 'Luz'], 'Salud': ['Farmacia', 'Consultas', 'Gimnasio'], 'Entretenimiento': ['Cine', 'Streaming', 'Juegos'], 'Educación': ['Cursos', 'Libros'], 'Ropa': ['Calzado', 'Accesorios'], 'Tecnología': ['Software', 'Hardware'], 'Otros Gastos': ['Regalos', 'Varios'] }
 };
-// Reglas de categorización por NOMBRE DE ESTABLECIMIENTO (no por producto)
-const establishmentRules = [
-{ keywords: ['mercadona', 'lidl', 'aldi', 'dia', 'carrefour', 'consum', 'eroski', 'supersol', 'spar', 'bonpreu', 'caprabo', 'hipercor', 'el corte', 'alcampo', 'family cash', 'mas y mas', 'santamarta', 'bm'], categoria: 'Alimentación', subcategoria: 'Supermercado' },
-{ keywords: ['restaurante', 'bar ', 'cafetería', 'mcDonalds', 'burger', 'telepizza', 'dominos', 'kfc', 'pizzeria', 'asador', 'meson'], categoria: 'Alimentación', subcategoria: 'Restaurantes' },
-{ keywords: ['starbucks', 'cafe', 'coffee', 'panaria'], categoria: 'Alimentación', subcategoria: 'Café' },
-{ keywords: ['just eat', 'deliveroo', 'ubereats', 'glovo'], categoria: 'Alimentación', subcategoria: 'Delivery' },
-{ keywords: ['repsol', 'cepsa', 'bp', 'shell', 'gasolinera', 'estación servicio'], categoria: 'Transporte', subcategoria: 'Gasolina' },
-{ keywords: ['taxi', 'uber', 'cabify', 'bolt'], categoria: 'Transporte', subcategoria: 'Taxi/Uber' },
-{ keywords: ['renfe', 'metro', 'bus', 'avanza', 'alsas'], categoria: 'Transporte', subcategoria: 'Transporte público' },
-{ keywords: ['farmacia', 'parafarmacia', 'apothek'], categoria: 'Salud', subcategoria: 'Farmacia' },
-{ keywords: ['gimnasio', 'fitness', 'anytime', 'basic fit', 'viva gym'], categoria: 'Salud', subcategoria: 'Gimnasio' },
-{ keywords: ['cine', 'kinépolis', 'yelmo', 'ocine'], categoria: 'Entretenimiento', subcategoria: 'Cine' },
-{ keywords: ['netflix', 'spotify', 'amazon prime', 'disney', 'hbo', 'movistar'], categoria: 'Entretenimiento', subcategoria: 'Streaming' },
-{ keywords: ['zara', 'hm', 'mango', 'bershka', 'pull bear', 'lefties', 'decathlon', 'sport'], categoria: 'Ropa', subcategoria: 'Calzado' },
-{ keywords: ['fnac', 'mediamarkt', 'worten', 'pc componentes', 'apple store'], categoria: 'Tecnología', subcategoria: 'Hardware' },
-{ keywords: ['ikea', 'leroy', 'bricomart', 'bricodepot', 'bauhaus'], categoria: 'Vivienda', subcategoria: 'Servicios' },
-{ keywords: ['vodafone', 'movistar', 'orange', 'masmovil', 'yoigo'], categoria: 'Vivienda', subcategoria: 'Internet' }
-];
 let categories = {};
 let transactions = [];
 let budgets = {};
@@ -795,7 +746,7 @@ let balanceVisible = false;
 let realBalance = 0;
 let realIncome = 0;
 let realExpense = 0;
-// ===== VARIABLES OCR NUEVAS =====
+// ===== VARIABLES OCR =====
 let ocrLines = [];
 let ocrFullText = '';
 function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
@@ -1055,9 +1006,6 @@ transactions[idx].ocrProcessed = true;
 transactions[idx].ocrData = ocrResult;
 if (ocrResult.date) transactions[idx].date = ocrResult.date;
 if (ocrResult.amount) transactions[idx].amount = ocrResult.amount;
-if (ocrResult.establishment) {
-transactions[idx].description = `Ticket ${ocrResult.establishment}`;
-}
 }
 success++;
 } else {
@@ -1076,7 +1024,7 @@ await new Promise(r => setTimeout(r, 1000));
 }
 saveTransactions();
 document.getElementById('ocrMassiveResults').innerHTML = `
-<div class="ocr-results">
+<div class="ocr-results" style="margin-top: 16px; padding: 12px; background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 10px;">
 <h4 style="color: var(--neon-blue); margin-bottom: 12px;">✅ Procesamiento completado</h4>
 <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.8;">
 📊 <strong>Total procesados:</strong> ${processed}<br>
@@ -1110,266 +1058,240 @@ return null;
 }
 }
 function analyzeTicketText(text) {
-    const lines = text.split('\n').map(l => l.trim()).filter(l => l);
-    
-    // Extraer fecha
-    let date = null;
-    const datePatterns = [
-        /(\d{2})[-\/](\d{2})[-\/](\d{2,4})/,
-        /(\d{2})\s*(Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)[a-z]*\s*(\d{2,4})/i,
-        /(\d{1,2})\s+de\s+(Enero|Febrero|Marzo|Abril|Mayo|Junio|Julio|Agosto|Septiembre|Octubre|Noviembre|Diciembre)\s+de\s+(\d{2,4})/i
-    ];
-    for (const pattern of datePatterns) {
-        const match = text.match(pattern);
-        if (match) {
-            try {
-                if (match[2].match(/^\d+$/)) {
-                    let year = parseInt(match[3]);
-                    if (year < 100) year += 2000;
-                    date = `${year}-${match[2].padStart(2, '0')}-${match[1].padStart(2, '0')}`;
-                } else {
-                    const monthNames = { 'Enero': 1, 'Febrero': 2, 'Marzo': 3, 'Abril': 4, 'Mayo': 5, 'Junio': 6, 'Julio': 7, 'Agosto': 8, 'Septiembre': 9, 'Octubre': 10, 'Noviembre': 11, 'Diciembre': 12, 'Ene': 1, 'Feb': 2, 'Mar': 3, 'Abr': 4, 'May': 5, 'Jun': 6, 'Jul': 7, 'Ago': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dic': 12 };
-                    const month = monthNames[match[2].charAt(0).toUpperCase() + match[2].slice(1).toLowerCase()] || monthNames[match[2].substring(0, 3).charAt(0).toUpperCase() + match[2].substring(1, 3).toLowerCase()];
-                    if (month) {
-                        let year = parseInt(match[3]);
-                        if (year < 100) year += 2000;
-                        date = `${year}-${String(month).padStart(2, '0')}-${match[1].padStart(2, '0')}`;
-                    }
-                }
-            } catch (e) {}
-            if (date) break;
-        }
-    }
-    
-    // Extraer importe total
-    let amount = null;
-    const totalPatterns = [
-        /TOTAL[:\s]*[€$]?\s*([\d.,]+)/i,
-        /Importe\s+total[:\s]*[€$]?\s*([\d.,]+)/i,
-        /TOTAL\s+A\s+PAGAR[:\s]*[€$]?\s*([\d.,]+)/i,
-        /TOTAL\s+FACTURA[:\s]*[€$]?\s*([\d.,]+)/i
-    ];
-    for (const pattern of totalPatterns) {
-        const match = text.match(pattern);
-        if (match) {
-            amount = parseFloat(match[1].replace(',', '.'));
-            if (!isNaN(amount)) break;
-        }
-    }
-    
-    // Extraer productos SIN categorizar
-    const products = [];
-    const productPattern = /^(.+?)\s+([\d.,]+)\s*[€$]?$/;
-    for (const line of lines) {
-        const match = line.match(productPattern);
-        if (match && !line.toUpperCase().includes('TOTAL') && !line.toUpperCase().includes('IMPORTE') && !line.toUpperCase().includes('TICKET')) {
-            const price = parseFloat(match[2].replace(',', '.'));
-            if (!isNaN(price) && price > 0 && price < 10000) {
-                products.push({
-                    name: match[1].trim(),
-                    price: price,
-                    cantidad: '1'
-                });
-            }
-        }
-    }
-    
-    return {
-        establishment: '', // Vacío, no lo usamos
-        date,
-        amount, // Solo informativo, el usuario lo pone a mano
-        products, // Sin categoría
-        fullText: text
-    };
+const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+// Extraer fecha
+let date = null;
+const datePatterns = [
+/(\d{2})[-\/](\d{2})[-\/](\d{2,4})/,
+/(\d{2})\s*(Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic)[a-z]*\s*(\d{2,4})/i,
+/(\d{1,2})\s+de\s+(Enero|Febrero|Marzo|Abril|Mayo|Junio|Julio|Agosto|Septiembre|Octubre|Noviembre|Diciembre)\s+de\s+(\d{2,4})/i
+];
+for (const pattern of datePatterns) {
+const match = text.match(pattern);
+if (match) {
+try {
+if (match[2].match(/^\d+$/)) {
+let year = parseInt(match[3]);
+if (year < 100) year += 2000;
+date = `${year}-${match[2].padStart(2, '0')}-${match[1].padStart(2, '0')}`;
+} else {
+const monthNames = { 'Enero': 1, 'Febrero': 2, 'Marzo': 3, 'Abril': 4, 'Mayo': 5, 'Junio': 6, 'Julio': 7, 'Agosto': 8, 'Septiembre': 9, 'Octubre': 10, 'Noviembre': 11, 'Diciembre': 12, 'Ene': 1, 'Feb': 2, 'Mar': 3, 'Abr': 4, 'May': 5, 'Jun': 6, 'Jul': 7, 'Ago': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dic': 12 };
+const month = monthNames[match[2].charAt(0).toUpperCase() + match[2].slice(1).toLowerCase()] || monthNames[match[2].substring(0, 3).charAt(0).toUpperCase() + match[2].substring(1, 3).toLowerCase()];
+if (month) {
+let year = parseInt(match[3]);
+if (year < 100) year += 2000;
+date = `${year}-${String(month).padStart(2, '0')}-${match[1].padStart(2, '0')}`;
 }
-// ===== NUEVO SISTEMA DE RESULTADOS OCR EDITABLES =====
-// ===== SISTEMA OCR SIMPLIFICADO =====
-let ocrLines = [];
-let ocrFullText = '';
-
-function mostrarResultadosOCR(datosOCR) {
-    // Solo guardar los productos, SIN rellenar nada más
-    ocrLines = (datosOCR.products || []).map((p, idx) => ({
-        id: Date.now() + idx,
-        cantidad: p.cantidad || '1',
-        nombre: p.name || p.nombre || '',
-        precio: p.price || p.precio || 0
-    }));
-    ocrFullText = datosOCR.fullText || '';
-    
-    // Campos vacíos para que los rellene el usuario
-    document.getElementById('ocrImporteTotal').value = '';
-    document.getElementById('ocrFecha').value = new Date().toISOString().split('T')[0];
-    
-    // Cargar categorías en el select (vacío, sin sugerencia)
-    const catSelect = document.getElementById('ocrCategoria');
-    catSelect.innerHTML = '<option value="">Seleccionar categoría</option>';
-    for (let cat in categories.expense) {
-        catSelect.innerHTML += `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`;
-    }
-    document.getElementById('ocrSubcategoria').innerHTML = '<option value="">Seleccionar subcategoría</option>';
-    
-    renderOcrLines();
-    updateOcrDescripcion();
-    
-    document.getElementById('ocrResultsModal').classList.add('active');
-    isOCRResultsOpen = true;
-    document.body.style.overflow = 'hidden';
 }
-
-function renderOcrLines() {
-    const container = document.getElementById('ocrProductsList');
-    if (ocrLines.length === 0) {
-        container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-secondary); font-size: 12px;">Sin productos. Pulsa "+ Añadir línea"</div>';
-        return;
-    }
-    container.innerHTML = ocrLines.map((line) => `
-        <div class="ocr-line" data-id="${line.id}">
-            <input type="text" class="ocr-cantidad" value="${escapeHtml(String(line.cantidad))}" placeholder="Cant." onchange="updateOcrLine(${line.id}, 'cantidad', this.value)">
-            <input type="text" class="ocr-nombre" value="${escapeHtml(line.nombre)}" placeholder="Producto" onchange="updateOcrLine(${line.id}, 'nombre', this.value)">
-            <input type="number" class="ocr-precio" value="${line.precio}" step="0.01" placeholder="€" onchange="updateOcrLine(${line.id}, 'precio', this.value)">
-            <button class="ocr-delete" onclick="deleteOcrLine(${line.id})" title="Eliminar línea">🗑️</button>
-        </div>
-    `).join('');
+} catch (e) {}
+if (date) break;
 }
-
-function updateOcrLine(id, campo, valor) {
-    const line = ocrLines.find(l => l.id === id);
-    if (line) {
-        line[campo] = campo === 'precio' ? (parseFloat(valor) || 0) : valor;
-        updateOcrDescripcion();
-    }
 }
-
-function addOcrLine() {
-    ocrLines.push({ id: Date.now(), cantidad: '1', nombre: '', precio: 0 });
-    renderOcrLines();
-    updateOcrDescripcion();
+// Extraer importe total
+let amount = null;
+const totalPatterns = [
+/TOTAL[:\s]*[€$]?\s*([\d.,]+)/i,
+/Importe\s+total[:\s]*[€$]?\s*([\d.,]+)/i,
+/TOTAL\s+A\s+PAGAR[:\s]*[€$]?\s*([\d.,]+)/i,
+/TOTAL\s+FACTURA[:\s]*[€$]?\s*([\d.,]+)/i
+];
+for (const pattern of totalPatterns) {
+const match = text.match(pattern);
+if (match) {
+amount = parseFloat(match[1].replace(',', '.'));
+if (!isNaN(amount)) break;
 }
-
-function deleteOcrLine(id) {
-    ocrLines = ocrLines.filter(l => l.id !== id);
-    renderOcrLines();
-    updateOcrDescripcion();
 }
-
-function updateOcrDescripcion() {
-    let descripcion = '';
-    ocrLines.forEach(line => {
-        if (line.nombre.trim()) {
-            const cant = line.cantidad ? `${line.cantidad} ` : '';
-            const precio = line.precio ? ` ${Number(line.precio).toFixed(2)}€` : '';
-            descripcion += `${cant}${line.nombre}${precio}\n`;
-        }
-    });
-    const importe = document.getElementById('ocrImporteTotal').value;
-    if (importe) {
-        descripcion += `${'─'.repeat(28)}\n`;
-        descripcion += `💰 TOTAL: ${parseFloat(importe).toFixed(2)}€`;
-    }
-    document.getElementById('ocrDescripcionFinal').value = descripcion;
-}
-
-// Listener para actualizar descripción cuando cambie el importe
-document.addEventListener('DOMContentLoaded', () => {
-    const impInput = document.getElementById('ocrImporteTotal');
-    if (impInput) impInput.addEventListener('input', updateOcrDescripcion);
+// Extraer productos SIN categorizar
+const products = [];
+const productPattern = /^(.+?)\s+([\d.,]+)\s*[€$]?$/;
+for (const line of lines) {
+const match = line.match(productPattern);
+if (match && !line.toUpperCase().includes('TOTAL') && !line.toUpperCase().includes('IMPORTE') && !line.toUpperCase().includes('TICKET')) {
+const price = parseFloat(match[2].replace(',', '.'));
+if (!isNaN(price) && price > 0 && price < 10000) {
+products.push({
+name: match[1].trim(),
+price: price,
+cantidad: '1'
 });
-
+}
+}
+}
+return {
+establishment: '',
+date,
+amount,
+products,
+fullText: text
+};
+}
+// ===== SISTEMA OCR SIMPLIFICADO =====
+function mostrarResultadosOCR(datosOCR) {
+ocrLines = (datosOCR.products || []).map((p, idx) => ({
+id: Date.now() + idx,
+cantidad: p.cantidad || '1',
+nombre: p.name || p.nombre || '',
+precio: p.price || p.precio || 0
+}));
+ocrFullText = datosOCR.fullText || '';
+// Campos vacíos para que los rellene el usuario
+document.getElementById('ocrImporteTotal').value = '';
+document.getElementById('ocrFecha').value = datosOCR.date || new Date().toISOString().split('T')[0];
+// Cargar categorías en el select (vacío, sin sugerencia)
+const catSelect = document.getElementById('ocrCategoria');
+catSelect.innerHTML = '<option value="">Seleccionar categoría</option>';
+for (let cat in categories.expense) {
+catSelect.innerHTML += `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`;
+}
+document.getElementById('ocrSubcategoria').innerHTML = '<option value="">Seleccionar subcategoría</option>';
+renderOcrLines();
+updateOcrDescripcion();
+document.getElementById('ocrResultsModal').classList.add('active');
+isOCRResultsOpen = true;
+document.body.style.overflow = 'hidden';
+}
+function renderOcrLines() {
+const container = document.getElementById('ocrProductsList');
+if (ocrLines.length === 0) {
+container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-secondary); font-size: 12px;">Sin productos. Pulsa "+ Añadir línea"</div>';
+return;
+}
+container.innerHTML = ocrLines.map((line) => `
+<div class="ocr-line" data-id="${line.id}">
+<input type="text" class="ocr-cantidad" value="${escapeHtml(String(line.cantidad))}" placeholder="Cant." onchange="updateOcrLine(${line.id}, 'cantidad', this.value)">
+<input type="text" class="ocr-nombre" value="${escapeHtml(line.nombre)}" placeholder="Producto" onchange="updateOcrLine(${line.id}, 'nombre', this.value)">
+<input type="number" class="ocr-precio" value="${line.precio}" step="0.01" placeholder="€" onchange="updateOcrLine(${line.id}, 'precio', this.value)">
+<button class="ocr-delete" onclick="deleteOcrLine(${line.id})" title="Eliminar línea">🗑️</button>
+</div>
+`).join('');
+}
+function updateOcrLine(id, campo, valor) {
+const line = ocrLines.find(l => l.id === id);
+if (line) {
+line[campo] = campo === 'precio' ? (parseFloat(valor) || 0) : valor;
+updateOcrDescripcion();
+}
+}
+function addOcrLine() {
+ocrLines.push({ id: Date.now(), cantidad: '1', nombre: '', precio: 0 });
+renderOcrLines();
+updateOcrDescripcion();
+}
+function deleteOcrLine(id) {
+ocrLines = ocrLines.filter(l => l.id !== id);
+renderOcrLines();
+updateOcrDescripcion();
+}
+function updateOcrDescripcion() {
+let descripcion = '';
+ocrLines.forEach(line => {
+if (line.nombre.trim()) {
+const cant = line.cantidad ? `${line.cantidad} ` : '';
+const precio = line.precio ? ` ${Number(line.precio).toFixed(2)}€` : '';
+descripcion += `${cant}${line.nombre}${precio}\n`;
+}
+});
+const importe = document.getElementById('ocrImporteTotal').value;
+if (importe) {
+descripcion += `${'─'.repeat(28)}\n`;
+descripcion += `💰 TOTAL: ${parseFloat(importe).toFixed(2)}€`;
+}
+document.getElementById('ocrDescripcionFinal').value = descripcion;
+}
+document.addEventListener('DOMContentLoaded', () => {
+const impInput = document.getElementById('ocrImporteTotal');
+if (impInput) impInput.addEventListener('input', updateOcrDescripcion);
+});
 function updateOcrSubcategoria() {
-    const categoria = document.getElementById('ocrCategoria').value;
-    const subSelect = document.getElementById('ocrSubcategoria');
-    subSelect.innerHTML = '<option value="">Seleccionar subcategoría</option>';
-    if (categoria && categories.expense && categories.expense[categoria]) {
-        categories.expense[categoria].forEach(sub => {
-            subSelect.innerHTML += `<option value="${escapeHtml(sub)}">${escapeHtml(sub)}</option>`;
-        });
-    }
+const categoria = document.getElementById('ocrCategoria').value;
+const subSelect = document.getElementById('ocrSubcategoria');
+subSelect.innerHTML = '<option value="">Seleccionar subcategoría</option>';
+if (categoria && categories.expense && categories.expense[categoria]) {
+categories.expense[categoria].forEach(sub => {
+subSelect.innerHTML += `<option value="${escapeHtml(sub)}">${escapeHtml(sub)}</option>`;
+});
 }
-
+}
 function guardarTransaccionOCR() {
-    const descripcion = document.getElementById('ocrDescripcionFinal').value.trim();
-    const importe = parseFloat(document.getElementById('ocrImporteTotal').value);
-    const categoria = document.getElementById('ocrCategoria').value;
-    const subcategoria = document.getElementById('ocrSubcategoria').value;
-    const fecha = document.getElementById('ocrFecha').value || new Date().toISOString().split('T')[0];
-    
-    if (!descripcion) { showNotification('La descripción está vacía', true); return; }
-    if (!importe || importe <= 0) { showNotification('Introduce un importe válido', true); return; }
-    if (!categoria) { showNotification('Selecciona una categoría', true); return; }
-    
-    // Si estamos EDITANDO una transacción existente, actualizarla
-    if (editingTransactionId) {
-        const idx = transactions.findIndex(t => t.id === editingTransactionId);
-        if (idx !== -1) {
-            transactions[idx].amount = importe;
-            transactions[idx].description = descripcion;
-            transactions[idx].date = fecha;
-            transactions[idx].category = categoria;
-            transactions[idx].subcategory = subcategoria || categoria;
-            transactions[idx].ocr = true;
-            showNotification('✓ Transacción actualizada desde OCR');
-        }
-    } else {
-        // Crear transacción nueva
-        const transaction = {
-            id: Date.now(),
-            type: 'expense',
-            amount: importe,
-            description: descripcion,
-            category: categoria,
-            subcategory: subcategoria || categoria,
-            date: fecha,
-            imageUrl: pendingImageUrl || null,
-            ocr: true
-        };
-        transactions.unshift(transaction);
-        showNotification('✓ Ticket guardado desde OCR');
-    }
-    
-    saveTransactions();
-    updateUI();
-    closeOcrResults();
-    closeModal(); // Cierra también el modal de edición si estaba abierto
+const descripcion = document.getElementById('ocrDescripcionFinal').value.trim();
+const importe = parseFloat(document.getElementById('ocrImporteTotal').value);
+const categoria = document.getElementById('ocrCategoria').value;
+const subcategoria = document.getElementById('ocrSubcategoria').value;
+const fecha = document.getElementById('ocrFecha').value || new Date().toISOString().split('T')[0];
+if (!descripcion) { showNotification('La descripción está vacía', true); return; }
+if (!importe || importe <= 0) { showNotification('Introduce un importe válido', true); return; }
+// Si estamos EDITANDO una transacción existente, actualizarla
+if (editingTransactionId) {
+const idx = transactions.findIndex(t => t.id === editingTransactionId);
+if (idx !== -1) {
+transactions[idx].amount = importe;
+transactions[idx].description = descripcion;
+transactions[idx].date = fecha;
+if (categoria) transactions[idx].category = categoria;
+if (subcategoria) transactions[idx].subcategory = subcategoria;
+transactions[idx].ocr = true;
+showNotification('✓ Transacción actualizada desde OCR');
 }
-
+} else {
+// Crear transacción nueva
+if (!categoria) { showNotification('Selecciona una categoría', true); return; }
+const transaction = {
+id: Date.now(),
+type: 'expense',
+amount: importe,
+description: descripcion,
+category: categoria,
+subcategory: subcategoria || categoria,
+date: fecha,
+imageUrl: pendingImageUrl || null,
+ocr: true
+};
+transactions.unshift(transaction);
+showNotification('✓ Ticket guardado desde OCR');
+}
+saveTransactions();
+updateUI();
+closeOcrResults();
+closeModal();
+}
 function closeOcrResults() {
-    if (!isOCRResultsOpen) return;
-    isOCRResultsOpen = false;
-    document.getElementById('ocrResultsModal').classList.remove('active');
-    document.body.style.overflow = '';
-    ocrLines = [];
-    ocrFullText = '';
+if (!isOCRResultsOpen) return;
+isOCRResultsOpen = false;
+document.getElementById('ocrResultsModal').classList.remove('active');
+document.body.style.overflow = '';
+ocrLines = [];
+ocrFullText = '';
 }
 // ===== SCAN DESDE MODAL DE TRANSACCIÓN =====
 async function scanTicketFromModal() {
-    const imageUrl = pendingImageUrl || document.getElementById('imageUrlInput').value.trim();
-    if (!imageUrl) {
-        showNotification('Primero añade una imagen del ticket', true);
-        return;
-    }
-    const btn = document.getElementById('scanTicketBtn');
-    const progress = document.getElementById('ocrProgress');
-    btn.disabled = true;
-    progress.style.display = 'block';
-    document.getElementById('ocrProgressFill').style.width = '0%';
-    document.getElementById('ocrStatus').textContent = 'Iniciando OCR...';
-    try {
-        const convertedUrl = convertToImageUrl(imageUrl);
-        const ocrResult = await performOCR(convertedUrl);
-        if (ocrResult) {
-            progress.style.display = 'none';
-            mostrarResultadosOCR(ocrResult); // ✅ Esto abre el modal de resultados
-        } else {
-            showNotification('No se pudo procesar el ticket', true);
-            progress.style.display = 'none';
-        }
-    } catch (error) {
-        showNotification('Error en OCR: ' + error.message, true);
-        progress.style.display = 'none';
-    } finally {
-        btn.disabled = false;
-    }
+const imageUrl = pendingImageUrl || document.getElementById('imageUrlInput').value.trim();
+if (!imageUrl) {
+showNotification('Primero añade una imagen del ticket', true);
+return;
+}
+const btn = document.getElementById('scanTicketBtn');
+const progress = document.getElementById('ocrProgress');
+btn.disabled = true;
+progress.style.display = 'block';
+document.getElementById('ocrProgressFill').style.width = '0%';
+document.getElementById('ocrStatus').textContent = 'Iniciando OCR...';
+try {
+const convertedUrl = convertToImageUrl(imageUrl);
+const ocrResult = await performOCR(convertedUrl);
+if (ocrResult) {
+progress.style.display = 'none';
+mostrarResultadosOCR(ocrResult);
+} else {
+showNotification('No se pudo procesar el ticket', true);
+progress.style.display = 'none';
+}
+} catch (error) {
+showNotification('Error en OCR: ' + error.message, true);
+progress.style.display = 'none';
+} finally {
+btn.disabled = false;
+}
 }
 function handleOCRFile(event) {
 const file = event.target.files[0];
