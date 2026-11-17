@@ -366,8 +366,7 @@
             </div>
             <div class="app-title"><h1>CONTABILIDAD</h1><h2>MFB</h2></div>
            <div class="header-right">
-    <div class="cart-btn" onclick="openShoppingModalDirect()" title="Lista de la compra">🛒<span class="cart-badge" id="cartBadge">0</span></div>
-    <div class="avatar" onclick="showNotification('Perfil - Próximamente')">👤</div>
+<div class="cart-btn" onclick="event.stopPropagation(); event.preventDefault(); openShoppingModalDirect(); return false;" title="Lista de la compra">🛒<span class="cart-badge" id="cartBadge">0</span></div>    <div class="avatar" onclick="showNotification('Perfil - Próximamente')">👤</div>
 </div>
         </div>
 
@@ -1199,14 +1198,30 @@
 function openShoppingModalDirect() { 
     if (isShopModalOpen) return; 
     isShopModalOpen = true; 
-    currentShopTab = 'list'; // ← AÑADIR ESTA LÍNEA
+    currentShopTab = 'list';
     document.getElementById('shopModalOverlay').classList.add('active'); 
     document.body.style.overflow = 'hidden'; 
     document.getElementById('shopTabList').classList.add('active'); 
     document.getElementById('shopTabHistory').classList.remove('active'); 
-    renderShoppingTab(); 
-}    
-        function openShoppingModal() { if (isShopModalOpen) return; isShopModalOpen = true; toggleMenu(); document.getElementById('shopModalOverlay').classList.add('active'); document.body.style.overflow = 'hidden'; document.getElementById('shopTabList').classList.add('active'); document.getElementById('shopTabHistory').classList.remove('active'); renderShoppingTab(); }
+    // Forzar renderizado después de que el modal esté visible
+    setTimeout(() => {
+        renderShoppingTab();
+    }, 150);
+}
+function openShoppingModal() { 
+    if (isShopModalOpen) return; 
+    isShopModalOpen = true; 
+    currentShopTab = 'list'; // ← AÑADIR ESTA LÍNEA
+    toggleMenu(); 
+    document.getElementById('shopModalOverlay').classList.add('active'); 
+    document.body.style.overflow = 'hidden'; 
+    document.getElementById('shopTabList').classList.add('active'); 
+    document.getElementById('shopTabHistory').classList.remove('active'); 
+    // Forzar renderizado inmediato
+    setTimeout(() => {
+        renderShoppingTab();
+    }, 100);
+}        
         function closeShoppingModal() { if (!isShopModalOpen) return; isShopModalOpen = false; document.getElementById('shopModalOverlay').classList.remove('active'); document.body.style.overflow = ''; }
 
         function switchShopTab(tab) { currentShopTab = tab; document.getElementById('shopTabList').classList.toggle('active', tab === 'list'); document.getElementById('shopTabHistory').classList.toggle('active', tab === 'history'); renderShoppingTab(); }
