@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mfb-v1';
+const CACHE_NAME = 'mfb-v2';
 const urlsToCache = [
   '/gastos/',
   '/gastos/index.html',
