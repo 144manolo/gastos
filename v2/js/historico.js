@@ -52,6 +52,28 @@ function histSearchInput() {
   clearTimeout(histQTimer);
   histQTimer = setTimeout(() => { hist.q = document.getElementById('histQ').value; hist.shown = HIST_PAGE; histRender(); }, 220);
 }
+// ◀ ▶ del periodo: mes a mes (o año a año si solo hay año). Sin periodo: empieza en el último mes con datos.
+function histStep(d) {
+  const all = getAllTransactions();
+  if (!hist.year) {
+    const last = all.reduce((m, t) => t.date > m ? t.date : m, '0000-00');
+    hist.year = last.slice(0, 4); hist.month = String(Number(last.slice(5, 7)) - 1);
+  } else if (hist.month === '') {
+    hist.year = String(Number(hist.year) + d);
+  } else {
+    let m = Number(hist.month) + d, y = Number(hist.year);
+    if (m < 0) { m = 11; y--; } else if (m > 11) { m = 0; y++; }
+    hist.year = String(y); hist.month = String(m);
+  }
+  hist.shown = HIST_PAGE;
+  histRender();
+}
+// Tocar el nombre del periodo: mes → año → todo
+function histZoomOut() {
+  if (hist.month !== '') hist.month = ''; else hist.year = '';
+  hist.shown = HIST_PAGE;
+  histRender();
+}
 function histClear() {
   hist = { q: '', year: '', month: '', cat: '', sub: '', type: 'all', shown: HIST_PAGE };
   document.getElementById('histQ').value = '';
@@ -65,8 +87,7 @@ function histFillSelects(all) {
   const cats = [...new Set(all.map(t => t.category))].filter(Boolean).sort((a, b) => a.localeCompare(b, 'es'));
   const subs = hist.cat ? [...new Set(all.filter(t => t.category === hist.cat).map(t => t.subcategory || t.category))].sort((a, b) => a.localeCompare(b, 'es')) : [];
   const opt = (v, l, sel) => '<option value="' + escapeHtml(v) + '"' + (String(sel) === String(v) ? ' selected' : '') + '>' + escapeHtml(l) + '</option>';
-  document.getElementById('histYear').innerHTML = opt('', 'Todos los años', hist.year) + years.map(y => opt(y, y, hist.year)).join('');
-  document.getElementById('histMonth').innerHTML = opt('', 'Todos los meses', hist.month) + MONTHS.map((m, i) => opt(String(i), m, hist.month)).join('');
+  document.getElementById('histPeriod').textContent = hist.year ? (hist.month !== '' ? MONTHS[Number(hist.month)] + ' ' + hist.year : 'Año ' + hist.year) : 'Todo el histórico';
   document.getElementById('histCat').innerHTML = opt('', 'Todas las categorías', hist.cat) + cats.map(c => opt(c, c, hist.cat)).join('');
   const subSel = document.getElementById('histSub');
   subSel.disabled = !hist.cat;

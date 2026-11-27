@@ -466,6 +466,7 @@ html, body { overscroll-behavior-x: none; }
 .rev-main { display: block; width: 100%; margin: 6px 0; } .rev-btns { display: flex; gap: 8px; }
 .rbtns { display: flex; gap: 4px; flex: none; } .rbtns button { background: transparent; border: none; font-size: 16px; padding: 4px; }
 .menu-badge { display: none; margin-left: auto; background: #ff2d95; color: #fff; border-radius: 10px; font-size: 11px; padding: 1px 7px; font-weight: 700; }
+.month-selector button.hp-label { width: auto; min-width: 170px; padding: 0 14px; height: 36px; color: var(--text-primary); font-size: 14px; font-weight: 600; background: var(--bg-card); }
 
 </style>
 </head>
@@ -559,10 +560,9 @@ html, body { overscroll-behavior-x: none; }
 <div class="v2-head"><button onclick="closeHistorico()" aria-label="Volver">‹</button><h2>HISTÓRICO</h2><button onclick="exportHistCsv()" title="Exportar lo filtrado a CSV">CSV</button></div>
 <div class="v2-body" id="histBody">
 <div id="histArchive"></div>
+<div class="month-selector" id="histPeriodBar" style="margin-bottom:10px"><button onclick="histStep(-1)" aria-label="Anterior">◀</button><button class="hp-label" id="histPeriod" onclick="histZoomOut()"></button><button onclick="histStep(1)" aria-label="Siguiente">▶</button></div>
 <div class="h-filters">
 <input type="search" id="histQ" placeholder="🔍 Buscar descripción, categoría, importe…" oninput="histSearchInput()">
-<select id="histYear" onchange="histSet('year', this.value)"></select>
-<select id="histMonth" onchange="histSet('month', this.value)"></select>
 <select id="histCat" onchange="histSet('cat', this.value)"></select>
 <select id="histSub" onchange="histSet('sub', this.value)"></select>
 </div>
