@@ -62,7 +62,7 @@ function updateMonthDisplay() {
 }
 function getMonthTransactions() {
   const key = monthKey(selectedYear, selectedMonth);
-  return transactions.filter(t => t.date && t.date.startsWith(key));
+  return getAllTransactions().filter(t => t.date && t.date.startsWith(key));
 }
 
 // ---------- Cálculos y comparativas ----------
@@ -70,7 +70,7 @@ function getMonthTransactions() {
 function monthStats(y, m, maxDay) {
   const key = monthKey(y, m);
   let inc = 0, exp = 0, n = 0, nAll = 0;
-  for (const t of transactions) {
+  for (const t of getAllTransactions()) {
     if (!t.date || !t.date.startsWith(key)) continue;
     nAll++;
     if (maxDay && parseInt(t.date.slice(8, 10), 10) > maxDay) continue;
@@ -153,8 +153,21 @@ function toggleBalanceVisibility() {
 function updateUI() {
   renderHero();
   renderList();
-  if (chartExpanded) updateCharts();
+  if (chartExpanded) { if (chartMode === 'cats') renderCatPanel(); else updateCharts(); }
   updateBudgetAlert();
+  updateReviewBadge();
+  if (typeof histRefresh === 'function') histRefresh();
+  if (typeof reviewRefresh === 'function') reviewRefresh();
+}
+
+// Punto rojo en el menú si hay datos que revisar
+function updateReviewBadge() {
+  const b = $('reviewBadge');
+  if (!b || typeof DataCheck === 'undefined') return;
+  const c = DataCheck.findIssues(getAllTransactions(), categories).counts;
+  const n = c.zeros + c.negatives + c.duplicateExtras + c.unknownSubGroups + c.noSub + c.tests + archiveOnlyRecent().length;
+  b.textContent = n > 0 ? n : '';
+  b.style.display = n > 0 ? 'inline-block' : 'none';
 }
 
 // ---------- Lista del mes, agrupada por día ----------
@@ -199,19 +212,59 @@ function renderList() {
 }
 
 // ---------- Gráfico y búsqueda (barra de herramientas) ----------
+let chartMode = 'evol';
 function toggleChart() {
   chartExpanded = !chartExpanded;
   $('chartCard').style.display = chartExpanded ? 'block' : 'none';
   $('chartBtn').classList.toggle('active', chartExpanded);
-  if (chartExpanded) setTimeout(updateCharts, 50);
+  if (chartExpanded) setTimeout(() => setChartMode(chartMode), 50);
 }
-function openAllFromToolbar() {
-  populateSearchFilters();
-  renderAllTransactions();
-  $('allModalOverlay').classList.add('active');
-  isAllModalOpen = true;
-  document.body.style.overflow = 'hidden';
+function setChartMode(mode) {
+  chartMode = mode;
+  document.querySelectorAll('#chartTabs button').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  $('chartContainer').style.display = mode === 'evol' ? 'block' : 'none';
+  $('catPanel').style.display = mode === 'cats' ? 'block' : 'none';
+  if (mode === 'evol') updateCharts(); else renderCatPanel();
 }
+// Gastos del mes por categoría, con variación frente al mes anterior y al mismo mes del año pasado
+function catTotals(y, m, maxDay) {
+  const key = monthKey(y, m), o = {};
+  for (const t of getAllTransactions()) {
+    if (t.type !== 'expense' || !t.date || !t.date.startsWith(key)) continue;
+    if (maxDay && parseInt(t.date.slice(8, 10), 10) > maxDay) continue;
+    o[t.category] = (o[t.category] || 0) + t.amount;
+  }
+  return o;
+}
+function renderCatPanel() {
+  const now = new Date();
+  const cut = (selectedYear === now.getFullYear() && selectedMonth === now.getMonth()) ? now.getDate() : null;
+  const cur = catTotals(selectedYear, selectedMonth);
+  const p = prevMonthOf(selectedYear, selectedMonth);
+  const prev = catTotals(p.y, p.m, cut), yoy = catTotals(selectedYear - 1, selectedMonth, cut);
+  const curCmp = cut ? catTotals(selectedYear, selectedMonth, cut) : cur;
+  const rows = Object.keys(cur).map(c => ({ c, v: cur[c] })).filter(r => r.v > 0).sort((a, b) => b.v - a.v);
+  const total = rows.reduce((s, r) => s + r.v, 0);
+  const box = $('catPanel');
+  if (!rows.length) { box.innerHTML = '<div class="empty-state"><div>Sin gastos este mes</div></div>'; return; }
+  const delta = (v, ref) => {
+    if (!ref) return '<span class="cd na">nuevo</span>';
+    const d = v - ref;
+    if (Math.abs(d) < 0.005) return '<span class="cd">=</span>';
+    return '<span class="cd ' + (d > 0 ? 'bad' : 'good') + '">' + (d > 0 ? '▲' : '▼') + Math.abs(d / ref * 100).toFixed(0) + '%</span>';
+  };
+  const max = rows[0].v;
+  box.innerHTML = '<div class="cat-head"><span>CATEGORÍA</span><span>vs ' + MONTHS_SHORT[p.m] + '</span><span>vs ' + String(selectedYear - 1).slice(2) + '</span></div>' +
+    rows.map(r => '<div class="cat-row" onclick="openCatHistory(\'' + r.c.replace(/'/g, "\\'") + '\')">' +
+      '<div class="cat-top"><b>' + escapeHtml(r.c) + '</b><span>' + fmtEUR(r.v) + ' · ' + (r.v / total * 100).toFixed(0) + '%</span>' +
+      delta(curCmp[r.c] || 0, prev[r.c]) + delta(curCmp[r.c] || 0, yoy[r.c]) + '</div>' +
+      '<div class="cat-bar"><i style="width:' + (r.v / max * 100) + '%"></i></div></div>').join('') +
+    '<div class="cat-foot">Toca una categoría para ver sus movimientos' + (cut ? ' · variación hasta el día ' + cut : '') + '</div>';
+}
+function openCatHistory(cat) {
+  openHistorico({ filters: { year: String(selectedYear), month: String(selectedMonth), cat, type: 'expense' } });
+}
+function openAllFromToolbar() { openHistorico({ focusSearch: true }); }
 
 // ---------- Gestos ----------
 const ACT_W = 116;

@@ -2,9 +2,9 @@
  * - Archivos de la app: primero red (los cambios llegan al instante), caché si no hay conexión.
  * - Librerías (Chart.js, Tesseract): caché con actualización en segundo plano.
  * - Nunca toca GitHub (Gist), Cloudinary ni Google Drive: los datos siempre vienen frescos. */
-const APP_CACHE = 'mfb-v2-app-1';
+const APP_CACHE = 'mfb-v2-app-2';
 const LIB_CACHE = 'mfb-v2-lib-1';
-const CORE = ['./', './index.html', './manifest.json', './js/home.js', './js/ocr.js', './js/ticket-parser.js'];
+const CORE = ['./', './index.html', './manifest.json', './js/home.js', './js/ocr.js', './js/ticket-parser.js', './js/sync-merge.js', './js/data-check.js', './js/archive.js', './js/sync.js', './js/historico.js', './js/review.js'];
 const LIB_HOSTS = ['cdn.jsdelivr.net', 'tessdata.projectnaptha.com', 'unpkg.com'];
 const NEVER = ['api.github.com', 'gist.githubusercontent.com', 'cloudinary.com', 'drive.google.com', 'googleusercontent.com'];
 
