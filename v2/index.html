@@ -466,7 +466,12 @@ html, body { overscroll-behavior-x: none; }
 .rev-main { display: block; width: 100%; margin: 6px 0; } .rev-btns { display: flex; gap: 8px; }
 .rbtns { display: flex; gap: 4px; flex: none; } .rbtns button { background: transparent; border: none; font-size: 16px; padding: 4px; }
 .menu-badge { display: none; margin-left: auto; background: #ff2d95; color: #fff; border-radius: 10px; font-size: 11px; padding: 1px 7px; font-weight: 700; }
-.month-selector button.hp-label { width: auto; min-width: 170px; padding: 0 14px; height: 36px; color: var(--text-primary); font-size: 14px; font-weight: 600; background: var(--bg-card); }
+.hp-row { display: flex; gap: 10px; margin-bottom: 10px; }
+.hp-box { flex: 1; min-width: 0; padding: 8px 10px; background: rgba(0,240,255,.05); border: 1px solid rgba(0,240,255,.2); border-radius: 12px; }
+.hp-cap { font-size: 10px; letter-spacing: 1px; color: var(--text-secondary); text-align: center; margin-bottom: 4px; }
+.hp-ctl { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.hp-ctl b { font-size: 14px; white-space: nowrap; }
+.hp-ctl button { width: 32px; height: 32px; flex: none; border-radius: 8px; border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.05); color: var(--neon-blue); font-size: 16px; }
 
 </style>
 </head>
@@ -560,7 +565,10 @@ html, body { overscroll-behavior-x: none; }
 <div class="v2-head"><button onclick="closeHistorico()" aria-label="Volver">‹</button><h2>HISTÓRICO</h2><button onclick="exportHistCsv()" title="Exportar lo filtrado a CSV">CSV</button></div>
 <div class="v2-body" id="histBody">
 <div id="histArchive"></div>
-<div class="month-selector" id="histPeriodBar" style="margin-bottom:10px"><button onclick="histStep(-1)" aria-label="Anterior">◀</button><button class="hp-label" id="histPeriod" onclick="histZoomOut()"></button><button onclick="histStep(1)" aria-label="Siguiente">▶</button></div>
+<div class="hp-row" id="histPeriodBar">
+<div class="hp-box"><div class="hp-cap">📅 AÑO</div><div class="hp-ctl"><button onclick="histStepYear(-1)" aria-label="Año anterior">◀</button><b id="histYearLbl">Todos</b><button onclick="histStepYear(1)" aria-label="Año siguiente">▶</button></div></div>
+<div class="hp-box"><div class="hp-cap">📅 MES</div><div class="hp-ctl"><button onclick="histStepMonth(-1)" aria-label="Mes anterior">◀</button><b id="histMonthLbl">Todos</b><button onclick="histStepMonth(1)" aria-label="Mes siguiente">▶</button></div></div>
+</div>
 <div class="h-filters">
 <input type="search" id="histQ" placeholder="🔍 Buscar descripción, categoría, importe…" oninput="histSearchInput()">
 <select id="histCat" onchange="histSet('cat', this.value)"></select>
